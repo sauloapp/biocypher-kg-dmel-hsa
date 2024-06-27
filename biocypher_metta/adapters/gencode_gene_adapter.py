@@ -12,10 +12,15 @@ from biocypher_metta.adapters.helpers import check_genomic_location
 # chr1    HAVANA  exon    11869   12227   .       +       .       gene_id "ENSG00000290825.1"; transcript_id "ENST00000456328.2"; gene_type "lncRNA"; gene_name "DDX11L2"; transcript_type "lncRNA"; transcript_name "DDX11L2-202"; exon_number 1; exon_id "ENSE00002234944.1"; level 2; transcript_support_level "1"; tag "basic"; tag "Ensembl_canonical"; havana_transcript "OTTHUMT00000362751.1";
 # chr1    HAVANA  exon    12613   12721   .       +       .       gene_id "ENSG00000290825.1"; transcript_id "ENST00000456328.2"; gene_type "lncRNA"; gene_name "DDX11L2"; transcript_type "lncRNA"; transcript_name "DDX11L2-202"; exon_number 2; exon_id "ENSE00003582793.1"; level 2; transcript_support_level "1"; tag "basic"; tag "Ensembl_canonical"; havana_transcript "OTTHUMT00000362751.1";
 
+# Dmel:
+# 3R	FlyBase	gene	17750129	17763188	.	-	.	gene_id "FBgn0038542"; gene_name "TyrR"; gene_source "FlyBase"; gene_biotype "protein_coding";
+# 3R	FlyBase	transcript	17750129	17758978	.	-	.	gene_id "FBgn0038542"; transcript_id "FBtr0344474"; gene_name "TyrR"; gene_source "FlyBase"; gene_biotype "protein_coding"; transcript_name "TyrR-RB"; transcript_source "FlyBase"; transcript_biotype "protein_coding";
+# 3R	FlyBase	exon	17758709	17758978	.	-	.	gene_id "FBgn0038542"; transcript_id "FBtr0344474"; exon_number "1"; gene_name "TyrR"; gene_source "FlyBase"; gene_biotype "protein_coding"; transcript_name "TyrR-RB"; transcript_source "FlyBase"; transcript_biotype "protein_coding"; exon_id "FBtr0344474-E1";
+# 3R	FlyBase	exon	17757024	17757709	.	-	.	gene_id "FBgn0038542"; transcript_id "FBtr0344474"; exon_number "2"; gene_name "TyrR"; gene_source "FlyBase"; gene_biotype "protein_coding"; transcript_name "TyrR-RB"; transcript_source "FlyBase"; transcript_biotype "protein_coding"; exon_id "FBtr0344474-E2";
 
 class GencodeGeneAdapter(Adapter):
-    ALLOWED_KEYS = ['gene_id', 'gene_type', 'gene_name',
-                    'transcript_id', 'transcript_type', 'transcript_name', 'hgnc_id']
+    ALLOWED_KEYS = ['gene_id', 'gene_type', 'gene_biotype', 'gene_name',  # 'gene_biotype'  key for dmel data
+                    'transcript_id', 'transcript_type', 'transcript_name', 'transcript_biotype', 'hgnc_id']  # 'transcript_biotype'  key for dmel data
     INDEX = {'chr': 0, 'type': 2, 'coord_start': 3, 'coord_end': 4, 'info': 8}
 
     def __init__(self, write_properties, add_provenance, filepath=None, 
@@ -28,8 +33,9 @@ class GencodeGeneAdapter(Adapter):
         self.label = 'gene'
         self.dataset = 'gencode_gene'
         self.gene_alias_file_path = gene_alias_file_path
+        self.type = 'gene'
         self.source = 'GENCODE'
-        self.version = 'v44'
+        self.version = 'v44'                                        # changing value ---> take it from data file header
         self.source_url = 'https://www.gencodegenes.org/human/'
 
         super(GencodeGeneAdapter, self).__init__(write_properties, add_provenance)
@@ -87,6 +93,7 @@ class GencodeGeneAdapter(Adapter):
             for line in input:
                 if line.startswith('#'):
                     continue
+                #print(line)
                 split_line = line.strip().split()
                 if split_line[GencodeGeneAdapter.INDEX['type']] == 'gene':
                     info = self.parse_info_metadata(
@@ -94,7 +101,7 @@ class GencodeGeneAdapter(Adapter):
                     gene_id = info['gene_id']
                     id = gene_id.split('.')[0]
                     alias = alias_dict.get(id)
-                    if not alias:
+                    if not alias:                           # check this for dmel
                         hgnc_id = info.get('hgnc_id')
                         if hgnc_id:
                             alias = alias_dict.get(hgnc_id)
@@ -110,7 +117,8 @@ class GencodeGeneAdapter(Adapter):
                             if self.write_properties:
                                 props = {
                                     # 'gene_id': gene_id, # TODO should this be included?
-                                    'gene_type': info['gene_type'],
+                                    #'gene_type': info['gene_type'],                        # to test  dmel data
+                                    'gene_type': info['gene_biotype'],
                                     'chr': chr,
                                     'start': start,
                                     'end': end,

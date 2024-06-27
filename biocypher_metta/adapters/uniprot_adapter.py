@@ -1,4 +1,5 @@
 import gzip
+import sys
 from Bio import SeqIO
 from biocypher_metta.adapters import Adapter
 
@@ -37,7 +38,9 @@ class UniprotAdapter(Adapter):
                 if self.type == 'translates to':
                     dbxrefs = record.dbxrefs
                     for item in dbxrefs:
-                        if item.startswith('Ensembl') and 'ENST' in item:
+                        #if item.startswith('Ensembl') and 'ENST' in item:
+                        if item.startswith('EnsemblMetazoa') and 'FBtr' in item:
+                            print(f'translates to::: DBXREF ITEM: {item} for protein {record.id}')
                             try:
                                 ensg_id = item.split(':')[-1].split('.')[0]
                                 _id = record.id + '_' + ensg_id
@@ -56,7 +59,9 @@ class UniprotAdapter(Adapter):
                 elif self.type == 'translation of':
                     dbxrefs = record.dbxrefs
                     for item in dbxrefs:
-                        if item.startswith('Ensembl') and 'ENST' in item:
+                        #if item.startswith('Ensembl') and 'ENST' in item:
+                        if item.startswith('EnsemblMetazoa') and 'FBtr' in item:
+                            print(f'translation of::: DBXREF ITEM: {item} for protein {record.id}')
                             try:
                                 ensg_id = item.split(':')[-1].split('.')[0]
                                 _id = ensg_id + '_' + record.id
