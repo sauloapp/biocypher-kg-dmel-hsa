@@ -15,7 +15,8 @@ from biocypher_metta.adapters.helpers import check_genomic_location
 
 
 class GencodeExonAdapter(Adapter):
-    ALLOWED_KEYS = ['gene_id', 'transcript_id', 'transcript_type', 'transcript_name', 'exon_number', 'exon_id']
+    ALLOWED_KEYS = ['gene_id', 'transcript_id', 'transcript_type', 'transcript_name', 'transcript_biotype', # 'transcript_biotype'  key for dmel data
+                    'exon_number', 'exon_id']
     INDEX = {'chr': 0, 'type': 2, 'coord_start': 3, 'coord_end': 4, 'info': 8}
 
     def __init__(self, write_properties, add_provenance, filepath=None,
@@ -25,6 +26,7 @@ class GencodeExonAdapter(Adapter):
         self.start = start
         self.end = end
         self.label = 'exon'
+        self.type = 'exon'
         self.dataset = 'gencode_exon'
         self.source = 'GENCODE'
         self.version = 'v44'
@@ -75,4 +77,3 @@ class GencodeExonAdapter(Adapter):
                     except:
                         print(
                             f'fail to process for label to load: {self.label}, type to load: {self.type}, data: {line}')
-

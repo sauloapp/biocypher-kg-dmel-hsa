@@ -26,9 +26,9 @@ def main(output_dir: Annotated[pathlib.Path, typer.Option(exists=True, file_okay
 
     # Start biocypher
     logger.info("Loading dbsnp rsids map")
-    dbsnp_rsids_dict = pickle.load(open(dbsnp_rsids, 'rb'))
+#    dbsnp_rsids_dict = pickle.load(open(dbsnp_rsids, 'rb'))
     logger.info("Loading dbsnp pos map")
-    dbsnp_pos_dict = pickle.load(open(dbsnp_pos, 'rb'))
+#    dbsnp_pos_dict = pickle.load(open(dbsnp_pos, 'rb'))
 
 
     bc = MeTTaWriter(schema_config="config/schema_config.yaml",
