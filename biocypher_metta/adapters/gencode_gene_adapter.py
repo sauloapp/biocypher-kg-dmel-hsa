@@ -1,6 +1,9 @@
 import gzip
 from biocypher_metta.adapters import Adapter
 from biocypher_metta.adapters.helpers import check_genomic_location
+from biocypher._logger import logger
+
+
 # Example genocde vcf input file:
 # ##description: evidence-based annotation of the human genome (GRCh38), version 42 (Ensembl 108)
 # ##provider: GENCODE
@@ -131,5 +134,5 @@ class GencodeGeneAdapter(Adapter):
 
                             yield id, self.label, props
                     except:
-                        print(
+                        logger.info(
                             f'fail to process for label to load: {self.label}, type to load: {self.type}, data: {line}')

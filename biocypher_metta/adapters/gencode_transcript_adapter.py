@@ -1,7 +1,8 @@
 from biocypher_metta.adapters import Adapter
 import gzip
-
+from biocypher._logger import logger
 from biocypher_metta.adapters.helpers import check_genomic_location
+
 # Example genocde vcf input file:
 # ##description: evidence-based annotation of the human genome (GRCh38), version 42 (Ensembl 108)
 # ##provider: GENCODE
@@ -94,9 +95,10 @@ class GencodeAdapter(Adapter):
                                     props['source_url'] = self.source_url
                             yield transcript_key, self.label, props
                 except:
-                    print(
+                    logger.info(
                         f'fail to process for label to load: {self.label}, type to load: {self.type}, data: {line}')
 
+                    
     def get_edges(self):
         with gzip.open(self.filepath, 'rt') as input:
             for line in input:
@@ -132,6 +134,5 @@ class GencodeAdapter(Adapter):
                         _target = gene_key
                         yield _source, _target, self.label, _props
                 except:
-                    print(
+                    logger.info(
                         f'fail to process for label to load: {self.label}, type to load: {self.type}, data: {line}')
-                    continue
