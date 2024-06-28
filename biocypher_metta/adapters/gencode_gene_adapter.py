@@ -26,19 +26,21 @@ class GencodeGeneAdapter(Adapter):
                     'transcript_id', 'transcript_type', 'transcript_name', 'transcript_biotype', 'hgnc_id']  # 'transcript_biotype'  key for dmel data
     INDEX = {'chr': 0, 'type': 2, 'coord_start': 3, 'coord_end': 4, 'info': 8}
 
-    def __init__(self, write_properties, add_provenance, filepath=None, 
-                 gene_alias_file_path=None, chr=None, start=None, end=None):
+    def __init__(self, write_properties, add_provenance, hsa_filepath=None, hsa_gene_alias_file_path=None,
+                 dmel_filepath=None, dmel_gene_alias_file_path=None, chr=None, start=None, end=None):
 
-        self.filepath = filepath
+        self.hsa_filepath = hsa_filepath
+        self.hsa_gene_alias_file_path = hsa_gene_alias_file_path
+        self.dmel_filepath = dmel_filepath
+        self.dmel_gene_alias_file_path = dmel_gene_alias_file_path
         self.chr = chr
         self.start = start
         self.end = end
         self.label = 'gene'
         self.dataset = 'gencode_gene'
-        self.gene_alias_file_path = gene_alias_file_path
         self.type = 'gene'
         self.source = 'GENCODE'
-        self.version = 'v44'                                        # changing value ---> take it from data file header
+        self.version = 'v44'                                        # TODO changing value ---> take it from data file header
         self.source_url = 'https://www.gencodegenes.org/human/'
 
         super(GencodeGeneAdapter, self).__init__(write_properties, add_provenance)
@@ -51,9 +53,9 @@ class GencodeGeneAdapter(Adapter):
         return parsed_info
 
     # the gene alias dict will use both ensembl id and hgnc id as key
-    def get_gene_alias(self):
+    def get_gene_alias(self, gene_alias_file_path):
         alias_dict = {}
-        with gzip.open(self.gene_alias_file_path, 'rt') as input:
+        with gzip.open(gene_alias_file_path, 'rt') as input:
             next(input)
             for line in input:
                 (tax_id, gene_id, symbol, locus_tag, synonyms, dbxrefs, chromosome, map_location, description, type_of_gene, symbol_from_nomenclature_authority,
@@ -91,8 +93,104 @@ class GencodeGeneAdapter(Adapter):
         return alias_dict
 
     def get_nodes(self):
-        alias_dict = self.get_gene_alias()
-        with gzip.open(self.filepath, 'rt') as input:
+        dmel_alias_dict = self.get_gene_alias(self.dmel_gene_alias_file_path)
+        hsa_alias_dict = self.get_gene_alias(self.hsa_gene_alias_file_path)
+        #self.get_organism_nodes(self.dmel_filepath, dmel_alias_dict, 'gene_biotype')
+        with gzip.open(self.dmel_filepath, 'rt') as input:
+            for line in input:
+                if line.startswith('#'):
+                    continue
+                #print(line)
+                split_line = line.strip().split()
+                if split_line[GencodeGeneAdapter.INDEX['type']] == 'gene':
+                    info = self.parse_info_metadata(
+                        split_line[GencodeGeneAdapter.INDEX['info']:])
+                    gene_id = info['gene_id']
+                    id = gene_id.split('.')[0]
+                    alias = dmel_alias_dict.get(id)
+                    if not alias:                           # check this for dmel
+                        hgnc_id = info.get('hgnc_id')
+                        if hgnc_id:
+                            alias = dmel_alias_dict.get(hgnc_id)
+                    if gene_id.endswith('_PAR_Y'):
+                        id = id + '_PAR_Y'
+
+                    chr = split_line[GencodeGeneAdapter.INDEX['chr']]
+                    start = int(split_line[GencodeGeneAdapter.INDEX['coord_start']])
+                    end = int(split_line[GencodeGeneAdapter.INDEX['coord_end']])
+                    props = {}
+                    try:
+                        if check_genomic_location(self.chr, self.start, self.end, chr, start, end):
+                            if self.write_properties:
+                                props = {
+                                    # 'gene_id': gene_id, # TODO should this be included?
+                                    'gene_type': info['gene_biotype'],
+                                    'chr': chr,
+                                    'start': start,
+                                    'end': end,
+                                    'gene_name': info['gene_name'],
+                                    'synonyms': alias
+                                }
+                                if self.add_provenance:
+                                    props['source'] = self.source
+                                    props['source_url'] = self.source_url
+
+                            yield id, self.label, props
+                    except:
+                        logger.info(
+                            f'fail to process for label to load: {self.label}, type to load: {self.type}, data: {line}')
+
+                # self.get_organism_nodes(self.hsa_filepath, hsa_alias_dict, 'gene_type')
+                with gzip.open(self.hsa_filepath, 'rt') as input:
+                    for line in input:
+                        if line.startswith('#'):
+                            continue
+                        # print(line)
+                        split_line = line.strip().split()
+                        if split_line[GencodeGeneAdapter.INDEX['type']] == 'gene':
+                            info = self.parse_info_metadata(
+                                split_line[GencodeGeneAdapter.INDEX['info']:])
+                            gene_id = info['gene_id']
+                            id = gene_id.split('.')[0]
+                            alias = hsa_alias_dict.get(id)
+                            if not alias:  # check this for dmel
+                                hgnc_id = info.get('hgnc_id')
+                                if hgnc_id:
+                                    alias = hsa_alias_dict.get(hgnc_id)
+                            if gene_id.endswith('_PAR_Y'):
+                                id = id + '_PAR_Y'
+
+                            chr = split_line[GencodeGeneAdapter.INDEX['chr']]
+                            start = int(split_line[GencodeGeneAdapter.INDEX['coord_start']])
+                            end = int(split_line[GencodeGeneAdapter.INDEX['coord_end']])
+                            props = {}
+                            try:
+                                if check_genomic_location(self.chr, self.start, self.end, chr, start, end):
+                                    if self.write_properties:
+                                        props = {
+                                            # 'gene_id': gene_id, # TODO should this be included?
+                                            'gene_type': info['gene_type'],
+                                            'chr': chr,
+                                            'start': start,
+                                            'end': end,
+                                            'gene_name': info['gene_name'],
+                                            'synonyms': alias
+                                        }
+                                        if self.add_provenance:
+                                            props['source'] = self.source
+                                            props['source_url'] = self.source_url
+
+                                    yield id, self.label, props
+                            except:
+                                logger.info(
+                                    f'fail to process for label to load: {self.label}, type to load: {self.type}, data: {line}')
+
+    def get_organism_nodes(self, filepath, alias_dict, gene_type_string):
+        '''
+            gene_type_string    = 'gene_type' for hsa
+                                = 'gene_biotype' for dmel
+        '''
+        with gzip.open(filepath, 'rt') as input:
             for line in input:
                 if line.startswith('#'):
                     continue
@@ -121,7 +219,8 @@ class GencodeGeneAdapter(Adapter):
                                 props = {
                                     # 'gene_id': gene_id, # TODO should this be included?
                                     #'gene_type': info['gene_type'],                        # to test  dmel data
-                                    'gene_type': info['gene_biotype'],
+                                    #'gene_type': info['gene_biotype'],
+                                    'gene_type': info[gene_type_string],
                                     'chr': chr,
                                     'start': start,
                                     'end': end,
