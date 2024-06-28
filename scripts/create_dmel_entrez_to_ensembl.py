@@ -1,9 +1,10 @@
+
 import csv
 import gzip
 import pickle
 
 def extract_gene_dbxrefs(gz_tsv_filename, pickle_filename):
-    gene_dbxrefs = []
+    gene_dbxrefs = {}
 
     with gzip.open(gz_tsv_filename, 'rt') as tsv_file:
         reader = csv.DictReader(tsv_file, delimiter='\t')
@@ -12,7 +13,7 @@ def extract_gene_dbxrefs(gz_tsv_filename, pickle_filename):
             dbxrefs = row['dbXrefs'].split('|')
             flybase_id = next((xref.split(':')[1] for xref in dbxrefs if xref.startswith('FLYBASE')), None)
             if flybase_id:
-                gene_dbxrefs.append((gene_id, flybase_id))
+                gene_dbxrefs[gene_id] = flybase_id
 
     with open(pickle_filename, 'wb') as pickle_file:
         pickle.dump(gene_dbxrefs, pickle_file)
