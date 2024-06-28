@@ -6,11 +6,17 @@ import gzip
 
 # Transcription factor - target gene relationships from TFLink
 
-# UniprotID.TF	UniprotID.Target	NCBI.GeneID.TF	NCBI.GeneID.Target	Name.TF	Name.Target	Detection.method
-# PubmedID	Organism	Source.database	Small-scale.evidence	TF.TFLink.ortho	TF.nonTFLink.ortho	Target.TFLink.ortho	Target.nonTFLink.ortho
+# Human
+# UniprotID.TF	UniprotID.Target	NCBI.GeneID.TF	NCBI.GeneID.Target	Name.TF	Name.Target	Detection.method    PubmedID	Organism	Source.database	Small-scale.evidence	TF.TFLink.ortho	TF.nonTFLink.ortho	Target.TFLink.ortho	Target.nonTFLink.ortho
 # Q9H9S0	O94907	79923	22943	NANOG	DKK1	chromatin immunoprecipitation assay;inferred by curator	19148141;29087512;29126285;27924024	Homo sapiens	GTRD;ReMap;TRRUST	Yes	-	-	Dr:Q9PWH3;Dr:F1RBK0;Mm:O54908	Rn:D3Z9J1
 # P37231	P10826	5468	5915	PPARG	RARB	chromatin immunoprecipitation assay;inferred by curator	17202159;12839938;29087512;27924024	Homo sapiens	GTRD;TRED;TRRUST	Yes	-	-	Mm:P22605;Rn:D3ZFD9	-
 # P10242	P08047	4602	6667	MYB	SP1	chromatin immunoprecipitation assay;inferred by curator	29126285;27924024;17202159	Homo sapiens	GTRD;ReMap;TRED	Yes	Dr:F1QP24;Rn:A0A0G2K2A4	Mm:A0A087WPA7	Dr:F1QW97;Rn:Q01714	Mm:G3X8Q0
+
+# Fly
+# UniprotID.TF	UniprotID.Target	NCBI.GeneID.TF	NCBI.GeneID.Target	Name.TF	Name.Target	Detection.method	PubmedID	Organism    Source.database	Small-scale.evidence	TF.TFLink.ortho	TF.nonTFLink.ortho	Target.TFLink.ortho	Target.nonTFLink.ortho
+# P02836	P02836	36240	36240	en	en	DNase I footprinting;chromatin immunoprecipitation assay;inferred by curator	2895896;26578589;20965965;27924024;2573829	Drosophila melanogaster	GTRD;ORegAnno;REDfly	Yes	-	-	-	-
+# O61735	P49021	38872	33571	Clk	tim	chromatin immunoprecipitation assay;experimental interaction detection	9616122;20965965;27924024	Drosophila melanogaster	GTRD;REDfly	Yes	Dr:Q5RIV1;Rn:F1LRL5	-	-	-
+# Q9VN10	P39770	40549	34569	hkb	salm	DNase I footprinting;inferred by curator	20965965;9376314;26578589	Drosophila melanogaster	ORegAnno;REDfly	Yes	-	-	Hs:Q9BXA9	Dr:A0A1D5NSE4;Mm:A0A5F8MPC9
 
 class TFLinkAdapter(Adapter):
     INDEX = {'NCBI.GeneID.TF': 2, 'NCBI.GeneID.Target': 3, 'Detection.method': 6, 'PubmedID': 7, 'Source.database': 9, 'Small-scale.evidence': 10}
