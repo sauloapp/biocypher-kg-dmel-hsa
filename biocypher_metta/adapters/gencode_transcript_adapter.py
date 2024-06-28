@@ -26,14 +26,15 @@ class GencodeAdapter(Adapter):
 
     INDEX = {'chr': 0, 'type': 2, 'coord_start': 3, 'coord_end': 4, 'info': 8}
 
-    def __init__(self, write_properties, add_provenance, filepath=None, 
+    def __init__(self, write_properties, add_provenance, dmel_filepath=None,  hsa_filepath=None,
                  type='gene', label='gencode_gene',
                  chr=None, start=None, end=None):
         if label not in GencodeAdapter.ALLOWED_LABELS:
             raise ValueError('Invalid labelS. Allowed values: ' +
                              ','.join(GencodeAdapter.ALLOWED_LABELS))
 
-        self.filepath = filepath
+        self.dmel_filepath = dmel_filepath
+        self.hsa_filepath = hsa_filepath
         self.type = 'transcript'            # Should it not be 'transcript'
         self.chr = chr
         self.start = start
@@ -55,7 +56,7 @@ class GencodeAdapter(Adapter):
         return parsed_info
 
     def get_nodes(self):
-        with gzip.open(self.filepath, 'rt') as input:
+        with gzip.open(self.dmel_filepath, 'rt') as input:
             for line in input:
                 if line.startswith('#'):
                     continue
@@ -98,9 +99,50 @@ class GencodeAdapter(Adapter):
                     logger.info(
                         f'fail to process for label to load: {self.label}, type to load: {self.type}, data: {line}')
 
+        with gzip.open(self.hsa_filepath, 'rt') as input:
+            for line in input:
+                if line.startswith('#'):
+                    continue
+
+                data_line = line.strip().split()
+                if data_line[GencodeAdapter.INDEX['type']] != 'transcript':
+                    continue
+
+                data = data_line[:GencodeAdapter.INDEX['info']]
+                info = self.parse_info_metadata(data_line[GencodeAdapter.INDEX['info']:])
+                transcript_key = info['transcript_id'].split('.')[0]
+                if info['transcript_id'].endswith('_PAR_Y'):
+                    transcript_key = transcript_key + '_PAR_Y'
+                gene_key = info['gene_id'].split('.')[0]
+                if info['gene_id'].endswith('_PAR_Y'):
+                    gene_key = gene_key + '_PAR_Y'
+                chr = data[GencodeAdapter.INDEX['chr']]
+                start = int(data[GencodeAdapter.INDEX['coord_start']])
+                end = int(data[GencodeAdapter.INDEX['coord_end']])
+                props = {}
+                try:
+                    if check_genomic_location(self.chr, self.start, self.end, chr, start, end):
+                        if self.type == 'transcript':
+                            if self.write_properties:
+                                props = {
+                                    'transcript_id': info['transcript_id'],
+                                    'transcript_name': info['transcript_name'],
+                                    'transcript_type': info['transcript_type'],
+                                    'chr': chr,
+                                    'start': start,
+                                    'end': end,
+                                    'gene_name': info['gene_name'],
+                                }
+                                if self.add_provenance:
+                                    props['source'] = self.source
+                                    props['source_url'] = self.source_url
+                            yield transcript_key, self.label, props
+                except:
+                    logger.info(
+                        f'fail to process for label to load: {self.label}, type to load: {self.type}, data: {line}')
                     
     def get_edges(self):
-        with gzip.open(self.filepath, 'rt') as input:
+        with gzip.open(self.dmel_filepath, 'rt') as input:
             for line in input:
                 if line.startswith('#'):
                     continue
@@ -122,6 +164,43 @@ class GencodeAdapter(Adapter):
                     _props['source'] = self.source
                     _props['source_url'] = self.source_url
                
+                try:
+                    if self.type == 'transcribed to':
+                        _id = gene_key + '_' + transcript_key
+                        _source = gene_key
+                        _target = transcript_key
+                        yield _source, _target, self.label, _props
+                    elif self.type == 'transcribed from':
+                        _id = transcript_key + '_' + gene_key
+                        _source = transcript_key
+                        _target = gene_key
+                        yield _source, _target, self.label, _props
+                except:
+                    logger.info(
+                        f'fail to process for label to load: {self.label}, type to load: {self.type}, data: {line}')
+
+        with gzip.open(self.hsa_filepath, 'rt') as input:
+            for line in input:
+                if line.startswith('#'):
+                    continue
+
+                data_line = line.strip().split()
+                if data_line[GencodeAdapter.INDEX['type']] != 'transcript':
+                    continue
+
+                info = self.parse_info_metadata(data_line[GencodeAdapter.INDEX['info']:])
+                transcript_key = info['transcript_id'].split('.')[0]
+                if info['transcript_id'].endswith('_PAR_Y'):
+                    transcript_key = transcript_key + '_PAR_Y'
+                gene_key = info['gene_id'].split('.')[0]
+                if info['gene_id'].endswith('_PAR_Y'):
+                    gene_key = gene_key + '_PAR_Y'
+
+                _props = {}
+                if self.write_properties and self.add_provenance:
+                    _props['source'] = self.source
+                    _props['source_url'] = self.source_url
+
                 try:
                     if self.type == 'transcribed to':
                         _id = gene_key + '_' + transcript_key

@@ -20,9 +20,10 @@ class GencodeExonAdapter(Adapter):
                     'exon_number', 'exon_id']
     INDEX = {'chr': 0, 'type': 2, 'coord_start': 3, 'coord_end': 4, 'info': 8}
 
-    def __init__(self, write_properties, add_provenance, filepath=None,
+    def __init__(self, write_properties, add_provenance, dmel_filepath=None, hsa_filepath=None,
                  chr=None, start=None, end=None):
-        self.filepath = filepath
+        self.dmel_filepath = dmel_filepath
+        self.hsa_filepath = hsa_filepath
         self.chr = chr
         self.start = start
         self.end = end
@@ -43,7 +44,7 @@ class GencodeExonAdapter(Adapter):
         return parsed_info
 
     def get_nodes(self):
-        with gzip.open(self.filepath, 'rt') as input:
+        with gzip.open(self.dmel_filepath, 'rt') as input:
             for line in input:
                 if line.startswith('#'):
                     continue
@@ -74,6 +75,42 @@ class GencodeExonAdapter(Adapter):
                                     props['source'] = self.source
                                     props['source_url'] = self.source_url
                                     
+                            yield exon_id, self.label, props
+                    except:
+                        logger.info(
+                            f'fail to process for label to load: {self.label}, type to load: {self.type}, data: {line}')
+
+        with gzip.open(self.hsa_filepath, 'rt') as input:
+            for line in input:
+                if line.startswith('#'):
+                    continue
+                split_line = line.strip().split()
+                if split_line[GencodeExonAdapter.INDEX['type']] == 'exon':
+                    info = self.parse_info_metadata(
+                        split_line[GencodeExonAdapter.INDEX['info']:])
+                    gene_id = info['gene_id'].split('.')[0]
+                    transcript_id = info['transcript_id'].split('.')[0]
+                    exon_id = info['exon_id'].split('.')[0]
+                    chr = split_line[GencodeExonAdapter.INDEX['chr']]
+                    start = int(split_line[GencodeExonAdapter.INDEX['coord_start']])
+                    end = int(split_line[GencodeExonAdapter.INDEX['coord_end']])
+                    props = {}
+                    try:
+                        if check_genomic_location(self.chr, self.start, self.end, chr, start, end):
+                            if self.write_properties:
+                                props = {
+                                    'gene_id': gene_id,
+                                    'transcript_id': transcript_id,
+                                    'chr': chr,
+                                    'start': start,
+                                    'end': end,
+                                    'exon_number': int(info.get('exon_number', -1)),
+                                    'exon_id': exon_id
+                                }
+                                if self.add_provenance:
+                                    props['source'] = self.source
+                                    props['source_url'] = self.source_url
+
                             yield exon_id, self.label, props
                     except:
                         logger.info(

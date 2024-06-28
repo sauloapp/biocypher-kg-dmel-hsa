@@ -3,8 +3,10 @@ gencode_gene:
     module: biocypher_metta.adapters.gencode_gene_adapter
     cls: GencodeGeneAdapter
     args:
-      filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/full/gencode/Drosophila_melanogaster.BDGP6.46.59.gtf.gz
-      gene_alias_file_path: ./aux_files/Drosophila_melanogaster.gene_info.gz
+      dmel_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/full/gencode/Drosophila_melanogaster.BDGP6.46.59.gtf.gz
+      dmel_gene_alias_file_path: ./aux_files/Drosophila_melanogaster.gene_info.gz
+      hsa_filepath: /mnt/hdd_2/abdu/biocypher_data/gencode/gencode.annotation.gtf.gz
+      hsa_gene_alias_file_path: ./aux_files/Homo_sapiens.gene_info.gz
 
   outdir: gencode/gene
   nodes: True
@@ -16,7 +18,8 @@ gencode_transcripts:
     module: biocypher_metta.adapters.gencode_transcript_adapter
     cls: GencodeAdapter
     args:
-      filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/full/gencode/Drosophila_melanogaster.BDGP6.46.59.chr.gtf.gz
+      dmel_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/full/gencode/Drosophila_melanogaster.BDGP6.46.59.chr.gtf.gz
+      hsa_filepath: /mnt/hdd_2/abdu/biocypher_data/gencode/gencode.annotation.gtf.gz
       type: transcript
       label: transcript
 
@@ -30,7 +33,8 @@ gencode_exon:
     module: biocypher_metta.adapters.gencode_exon_adapter
     cls: GencodeExonAdapter
     args:
-      filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/full/gencode/Drosophila_melanogaster.BDGP6.46.59.chr.gtf.gz
+      dmel_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/full/gencode/Drosophila_melanogaster.BDGP6.46.59.chr.gtf.gz
+      hsa_filepath: /mnt/hdd_2/abdu/biocypher_data/gencode/gencode.annotation.gtf.gz
 
   outdir: gencode/exon
   nodes: True
@@ -41,7 +45,8 @@ transcribed_to:
     module: biocypher_metta.adapters.gencode_transcript_adapter
     cls: GencodeAdapter
     args:
-      filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/full/gencode/Drosophila_melanogaster.BDGP6.46.59.chr.gtf.gz
+      dmel_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/full/gencode/Drosophila_melanogaster.BDGP6.46.59.chr.gtf.gz
+      hsa_filepath: /mnt/hdd_2/abdu/biocypher_data/gencode/gencode.annotation.gtf.gz
       type: transcribed to
       label: transcribed_to
 
@@ -54,7 +59,8 @@ transcribed_from:
     module: biocypher_metta.adapters.gencode_transcript_adapter
     cls: GencodeAdapter
     args:
-      filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/full/gencode/Drosophila_melanogaster.BDGP6.46.59.chr.gtf.gz
+      dmel_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/full/gencode/Drosophila_melanogaster.BDGP6.46.59.chr.gtf.gz
+      hsa_filepath: /mnt/hdd_2/abdu/biocypher_data/gencode/gencode.annotation.gtf.gz
       type: transcribed from
       label: transcribed_from
 
@@ -68,8 +74,8 @@ uniprotkb_sprot:
     module: biocypher_metta.adapters.uniprot_protein_adapter
     cls: UniprotProteinAdapter
     args:
-      filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/full/uniprot/uniprot_sprot_invertebrates_DMEL.dat.gz
-
+      dmel_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/full/uniprot/uniprot_sprot_invertebrates_DMEL.dat.gz
+      hsa_filepath: /mnt/hdd_2/abdu/biocypher_data/uniprot/uniprot_sprot_human.dat.gz
   outdir: uniprot
   nodes: True
   edges: False
@@ -79,7 +85,8 @@ uniprotkb_sprot_translates_to:
     module: biocypher_metta.adapters.uniprot_adapter
     cls: UniprotAdapter
     args:
-      filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/full/uniprot/uniprot_sprot_invertebrates_DMEL.dat.gz
+      dmel_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/full/uniprot/uniprot_sprot_invertebrates_DMEL.dat.gz
+      hsa_filepath: /mnt/hdd_2/abdu/biocypher_data/uniprot/uniprot_sprot_human.dat.gz
       type: translates to
       label: translates_to
 
@@ -92,7 +99,8 @@ uniprotkb_sprot_translates_of:
     module: biocypher_metta.adapters.uniprot_adapter
     cls: UniprotAdapter
     args:
-      filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/full/uniprot/uniprot_sprot_invertebrates_DMEL.dat.gz
+      dmel_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/full/uniprot/uniprot_sprot_invertebrates_DMEL.dat.gz
+      hsa_filepath: /mnt/hdd_2/abdu/biocypher_data/uniprot/uniprot_sprot_human.dat.gz
       type: translation of
       label: translation_of
 
