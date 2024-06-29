@@ -15,6 +15,7 @@ import gzip
 # 9606.ENSP00000000233 9606.ENSP00000325266 180
 # 9606.ENSP00000000233 9606.ENSP00000320935 181
 
+
 class StringPPIAdapter(Adapter):
     def __init__(self, filepath, ensembl_to_uniprot_map,
                  write_properties, add_provenance):
