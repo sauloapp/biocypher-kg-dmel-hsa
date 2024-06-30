@@ -164,7 +164,7 @@ tflink:
           dmel_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/full/tflink/TFLink_Drosophila_melanogaster_interactions_All_simpleFormat_v1.0.tsv.gz
           dmel_entrez_to_ensemble_map: ./aux_files/dmel_entrez_to_ensembl.pkl
           hsa_filepath: /mnt/hdd_2/abdu/biocypher_data/tflink/tflink_homo_sapiens_interactions.tsv.gz
-          hsa_entrez_to_ensemble_map: ./aux_files/entrez_to_ensembl.pkl
+          hsa_entrez_to_ensemble_map: ./aux_files/hsa_entrez_to_ensembl.pkl
 
     outdir: tflink
     nodes: False
