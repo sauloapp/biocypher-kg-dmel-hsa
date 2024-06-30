@@ -9,6 +9,7 @@ def create_ensembl_to_uniprot_dict(input_uniprot, ensembl_to_uniprot_output):
         records = SeqIO.parse(input_uniprot, 'swiss')
         for record in records:
             dbxrefs = record.dbxrefs
+
             for item in dbxrefs:
                 if item.startswith('EnsemblMetazoa') and 'FBpp' in item:
                     try:
