@@ -3,6 +3,10 @@ import csv
 import gzip
 import pickle
 
+'''
+    To crete a (pickled) dictionary mapping Entrez ids to Ensembl ids. 
+    Useful for TFLinkAdapter class.
+'''
 def extract_gene_dbxrefs(gz_tsv_filename, pickle_filename):
     gene_dbxrefs = {}
 
