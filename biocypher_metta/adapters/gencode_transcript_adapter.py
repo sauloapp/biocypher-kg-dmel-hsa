@@ -97,7 +97,7 @@ class GencodeAdapter(Adapter):
                             yield transcript_key, self.label, props
                 except:
                     logger.info(
-                        f'fail to process for label to load: {self.label}, type to load: {self.type}, data: {line}')
+                        f'GencodeAdapter::get_nodes-DMEL: failed to process for label to load: {self.label}, type to load: {self.type}, data: {line}')
 
         with gzip.open(self.hsa_filepath, 'rt') as input:
             for line in input:
@@ -139,7 +139,7 @@ class GencodeAdapter(Adapter):
                             yield transcript_key, self.label, props
                 except:
                     logger.info(
-                        f'fail to process for label to load: {self.label}, type to load: {self.type}, data: {line}')
+                        f'GencodeAdapter::get_nodes-HSA: failed to process for label to load: {self.label}, type to load: {self.type}, data: {line}')
                     
     def get_edges(self):
         with gzip.open(self.dmel_filepath, 'rt') as input:
@@ -177,7 +177,7 @@ class GencodeAdapter(Adapter):
                         yield _source, _target, self.label, _props
                 except:
                     logger.info(
-                        f'fail to process for label to load: {self.label}, type to load: {self.type}, data: {line}')
+                        f'GencodeAdapter::get_edges-DMEL: failed to process for label to load: {self.label}, type to load: {self.type}, data: {line}')
 
         with gzip.open(self.hsa_filepath, 'rt') as input:
             for line in input:
@@ -214,4 +214,4 @@ class GencodeAdapter(Adapter):
                         yield _source, _target, self.label, _props
                 except:
                     logger.info(
-                        f'fail to process for label to load: {self.label}, type to load: {self.type}, data: {line}')
+                        f'GencodeAdapter::get_edges-HSA: failed to process for label to load: {self.label}, type to load: {self.type}, data: {line}')
