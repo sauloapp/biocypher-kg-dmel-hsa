@@ -175,7 +175,7 @@ string:
     module: biocypher_metta.adapters.string_ppi_adapter
     cls: StringPPIAdapter
     args:
-      dmel_filepath = /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/full/string/7227.protein.links.v12.0.txt.gz
+      dmel_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/full/string/7227.protein.links.v12.0.txt.gz
       dmel_ensembl_to_uniprot_map: ./aux_files/hsa_string_ensembl_uniprot_map.pkl
       hsa_filepath: /mnt/hdd_2/abdu/biocypher_data/string/string_human_ppi_v12.0.txt.gz
       hsa_ensembl_to_uniprot_map: ./aux_files/hsa_string_ensembl_uniprot_map.pkl
