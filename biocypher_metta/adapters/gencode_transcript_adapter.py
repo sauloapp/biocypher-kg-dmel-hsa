@@ -38,8 +38,6 @@ class GencodeAdapter(Adapter):
         self.dmel_filepath = dmel_filepath
         self.hsa_filepath = hsa_filepath
         self.type = type
-        # print(type)
-        # sys.exit(9)
         self.chr = chr
         self.start = start
         self.end = end
@@ -156,7 +154,6 @@ class GencodeAdapter(Adapter):
                     continue
 
                 info = self.parse_info_metadata(data_line[GencodeAdapter.INDEX['info']:])
-                print(info)
                 transcript_key = info['transcript_id'].split('.')[0]
                 if info['transcript_id'].endswith('_PAR_Y'):
                     transcript_key = transcript_key + '_PAR_Y'
@@ -170,18 +167,15 @@ class GencodeAdapter(Adapter):
                     _props['source_url'] = self.source_url
                
                 try:
-                    print(self.type)
                     if self.type == 'transcribed to':
                         _id = gene_key + '_' + transcript_key
                         _source = gene_key
                         _target = transcript_key
-                        print(f'(Source)  {_source}\t\t-- {self.type} --->\t\t{_target}  (Target)')
                         yield _source, _target, self.label, _props
                     elif self.type == 'transcribed from':
                         _id = transcript_key + '_' + gene_key
                         _source = transcript_key
                         _target = gene_key
-                        print(f'(Source)  {_source}\t\t-- {self.type} --->\t\t{_target}  (Target)')
                         yield _source, _target, self.label, _props
                 except:
                     logger.info(
@@ -193,7 +187,6 @@ class GencodeAdapter(Adapter):
                     continue
 
                 data_line = line.strip().split()
-                print(data_line)
                 if data_line[GencodeAdapter.INDEX['type']] != 'transcript':
                     continue
 
