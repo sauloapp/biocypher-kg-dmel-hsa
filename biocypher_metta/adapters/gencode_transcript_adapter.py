@@ -2,6 +2,7 @@ from biocypher_metta.adapters import Adapter
 import gzip
 from biocypher._logger import logger
 from biocypher_metta.adapters.helpers import check_genomic_location
+import sys
 
 # Example genocde vcf input file:
 # ##description: evidence-based annotation of the human genome (GRCh38), version 42 (Ensembl 108)
@@ -13,6 +14,7 @@ from biocypher_metta.adapters.helpers import check_genomic_location
 # chr1    HAVANA  transcript      11869   14409   .       +       .       gene_id "ENSG00000290825.1"; transcript_id "ENST00000456328.2"; gene_type "lncRNA"; gene_name "DDX11L2"; transcript_type "lncRNA"; transcript_name "DDX11L2-202"; level 2; transcript_support_level "1"; tag "basic"; tag "Ensembl_canonical"; havana_transcript "OTTHUMT00000362751.1";
 # chr1    HAVANA  exon    11869   12227   .       +       .       gene_id "ENSG00000290825.1"; transcript_id "ENST00000456328.2"; gene_type "lncRNA"; gene_name "DDX11L2"; transcript_type "lncRNA"; transcript_name "DDX11L2-202"; exon_number 1; exon_id "ENSE00002234944.1"; level 2; transcript_support_level "1"; tag "basic"; tag "Ensembl_canonical"; havana_transcript "OTTHUMT00000362751.1";
 # chr1    HAVANA  exon    12613   12721   .       +       .       gene_id "ENSG00000290825.1"; transcript_id "ENST00000456328.2"; gene_type "lncRNA"; gene_name "DDX11L2"; transcript_type "lncRNA"; transcript_name "DDX11L2-202"; exon_number 2; exon_id "ENSE00003582793.1"; level 2; transcript_support_level "1"; tag "basic"; tag "Ensembl_canonical"; havana_transcript "OTTHUMT00000362751.1";
+
 
 
 class GencodeAdapter(Adapter):
@@ -35,7 +37,9 @@ class GencodeAdapter(Adapter):
 
         self.dmel_filepath = dmel_filepath
         self.hsa_filepath = hsa_filepath
-        self.type = 'transcript'            # Should it not be 'transcript'
+        self.type = type
+        # print(type)
+        # sys.exit(9)
         self.chr = chr
         self.start = start
         self.end = end
@@ -97,7 +101,7 @@ class GencodeAdapter(Adapter):
                             yield transcript_key, self.label, props
                 except:
                     logger.info(
-                        f'GencodeAdapter::get_nodes-DMEL: failed to process for label to load: {self.label}, type to load: {self.type}, data: {line}')
+                        f'gencode_transcripts_adapter.py::GencodeAdapter::get_nodes-DMEL: failed to process for label to load: {self.label}, type to load: {self.type}, data: {line}')
 
         with gzip.open(self.hsa_filepath, 'rt') as input:
             for line in input:
@@ -139,7 +143,7 @@ class GencodeAdapter(Adapter):
                             yield transcript_key, self.label, props
                 except:
                     logger.info(
-                        f'GencodeAdapter::get_nodes-HSA: failed to process for label to load: {self.label}, type to load: {self.type}, data: {line}')
+                        f'gencode_transcripts_adapter.py::GencodeAdapter::get_nodes-HSA: failed to process for label to load: {self.label}, type to load: {self.type}, data: {line}')
                     
     def get_edges(self):
         with gzip.open(self.dmel_filepath, 'rt') as input:
@@ -152,6 +156,7 @@ class GencodeAdapter(Adapter):
                     continue
 
                 info = self.parse_info_metadata(data_line[GencodeAdapter.INDEX['info']:])
+                print(info)
                 transcript_key = info['transcript_id'].split('.')[0]
                 if info['transcript_id'].endswith('_PAR_Y'):
                     transcript_key = transcript_key + '_PAR_Y'
@@ -165,15 +170,18 @@ class GencodeAdapter(Adapter):
                     _props['source_url'] = self.source_url
                
                 try:
+                    print(self.type)
                     if self.type == 'transcribed to':
                         _id = gene_key + '_' + transcript_key
                         _source = gene_key
                         _target = transcript_key
+                        print(f'(Source)  {_source}\t\t-- {self.type} --->\t\t{_target}  (Target)')
                         yield _source, _target, self.label, _props
                     elif self.type == 'transcribed from':
                         _id = transcript_key + '_' + gene_key
                         _source = transcript_key
                         _target = gene_key
+                        print(f'(Source)  {_source}\t\t-- {self.type} --->\t\t{_target}  (Target)')
                         yield _source, _target, self.label, _props
                 except:
                     logger.info(
@@ -185,6 +193,7 @@ class GencodeAdapter(Adapter):
                     continue
 
                 data_line = line.strip().split()
+                print(data_line)
                 if data_line[GencodeAdapter.INDEX['type']] != 'transcript':
                     continue
 
