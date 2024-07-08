@@ -60,6 +60,7 @@ class UniprotProteinAdapter(Adapter):
                     if self.add_provenance:
                         props['source'] = self.source
                         props['source_url'] = self.source_url
+                props['taxon_id'] = 9606
                 yield id, self.label, props
 
         with gzip.open(self.hsa_filepath, 'rt') as input_file:
@@ -77,4 +78,5 @@ class UniprotProteinAdapter(Adapter):
                     if self.add_provenance:
                         props['source'] = self.source
                         props['source_url'] = self.source_url
+                props['taxon_id'] = 9606
                 yield id, self.label, props

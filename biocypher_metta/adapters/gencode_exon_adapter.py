@@ -69,7 +69,8 @@ class GencodeExonAdapter(Adapter):
                                     'start': start,
                                     'end': end,
                                     'exon_number': int(info.get('exon_number', -1)), 
-                                    'exon_id': exon_id
+                                    'exon_id': exon_id,
+                                    'taxon_id': 7227
                                 }
                                 if self.add_provenance:
                                     props['source'] = self.source
@@ -105,7 +106,8 @@ class GencodeExonAdapter(Adapter):
                                     'start': start,
                                     'end': end,
                                     'exon_number': int(info.get('exon_number', -1)),
-                                    'exon_id': exon_id
+                                    'exon_id': exon_id,
+                                    'taxon_id': 9606
                                 }
                                 if self.add_provenance:
                                     props['source'] = self.source

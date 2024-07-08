@@ -51,6 +51,7 @@ class UniprotAdapter(Adapter):
                                 if self.write_properties and self.add_provenance:
                                     _props['source'] = self.source
                                     _props['source_url'] = self.source_url
+                                _props['taxon_id'] = 7227
                                 yield _source, _target, self.label, _props
 
                             except:
@@ -71,6 +72,7 @@ class UniprotAdapter(Adapter):
                                 if self.write_properties and self.add_provenance:
                                     _props['source'] = self.source
                                     _props['source_url'] = self.source_url
+                                _props['taxon_id'] = 7227
                                 yield  _source, _target, self.label, _props
 
                             except:
@@ -85,7 +87,6 @@ class UniprotAdapter(Adapter):
                     dbxrefs = record.dbxrefs
                     for item in dbxrefs:
                         if item.startswith('Ensembl') and 'ENST' in item:
-                        #if item.startswith('EnsemblMetazoa') and 'FBtr' in item:
                             try:
                                 ensg_id = item.split(':')[-1].split('.')[0]
                                 _id = record.id + '_' + ensg_id
@@ -95,6 +96,7 @@ class UniprotAdapter(Adapter):
                                 if self.write_properties and self.add_provenance:
                                     _props['source'] = self.source
                                     _props['source_url'] = self.source_url
+                                _props['taxon_id'] = 9606
                                 yield _source, _target, self.label, _props
 
                             except:
@@ -115,6 +117,7 @@ class UniprotAdapter(Adapter):
                                 if self.write_properties and self.add_provenance:
                                     _props['source'] = self.source
                                     _props['source_url'] = self.source_url
+                                _props['taxon_id'] = 9606
                                 yield  _source, _target, self.label, _props
 
                             except:
