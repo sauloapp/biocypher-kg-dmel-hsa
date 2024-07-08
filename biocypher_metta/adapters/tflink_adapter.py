@@ -72,6 +72,7 @@ class TFLinkAdapter(Adapter):
                         if self.add_provenance:
                             _props['source'] = self.source
                             _props['source_url'] = self.source_url
+                    _props['taxon_id'] = 7227
 
                     yield _source, _target, self.label, _props
 
@@ -104,5 +105,6 @@ class TFLinkAdapter(Adapter):
                         if self.add_provenance:
                             _props['source'] = self.source
                             _props['source_url'] = self.source_url
+                    _props['taxon_id'] = 9606
 
                     yield _source, _target, self.label, _props

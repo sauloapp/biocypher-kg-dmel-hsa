@@ -53,13 +53,51 @@ class GencodeGeneAdapter(Adapter):
         return parsed_info
 
     # the gene alias dict will use both ensembl id and hgnc id as key
-    def get_gene_alias(self, gene_alias_file_path):
+    def dmel_get_gene_alias(self, gene_alias_file_path):
         alias_dict = {}
         with gzip.open(gene_alias_file_path, 'rt') as input:
             next(input)
             for line in input:
                 (tax_id, gene_id, symbol, locus_tag, synonyms, dbxrefs, chromosome, map_location, description, type_of_gene, symbol_from_nomenclature_authority,
                  full_name_from_nomenclature_authority, Nomenclature_status, Other_designations, Modification_date, Feature_type) = line.split('\t')
+
+                split_dbxrefs = dbxrefs.split('|')
+                hgnc = ''
+                ensembl = ''
+                for ref in split_dbxrefs:
+                    if ref.startswith('FLYBASE:'):
+                        ensembl = ref[8:]
+                if ensembl:
+                    complete_synonyms = []
+                    complete_synonyms.append(symbol)
+                    for i in synonyms.split('|'):
+                        complete_synonyms.append(i)
+                    if hgnc:
+                        complete_synonyms.append(hgnc)
+                    for i in Other_designations.split('|'):
+                        complete_synonyms.append(i)
+                    complete_synonyms.append(
+                        symbol_from_nomenclature_authority)
+                    complete_synonyms.append(
+                        full_name_from_nomenclature_authority)
+                    complete_synonyms = list(set(complete_synonyms))
+                    if '-' in complete_synonyms:
+                        complete_synonyms.remove('-')
+                    if ensembl:
+                        alias_dict[ensembl] = complete_synonyms
+
+        return alias_dict
+
+        # the gene alias dict will use both ensembl id and hgnc id as key
+    def hsa_get_gene_alias(self, gene_alias_file_path):
+        alias_dict = {}
+        with gzip.open(gene_alias_file_path, 'rt') as input:
+            next(input)
+            for line in input:
+                (tax_id, gene_id, symbol, locus_tag, synonyms, dbxrefs, chromosome, map_location, description,
+                 type_of_gene, symbol_from_nomenclature_authority,
+                 full_name_from_nomenclature_authority, Nomenclature_status, Other_designations, Modification_date,
+                 Feature_type) = line.split('\t')
 
                 split_dbxrefs = dbxrefs.split('|')
                 hgnc = ''
@@ -93,8 +131,8 @@ class GencodeGeneAdapter(Adapter):
         return alias_dict
 
     def get_nodes(self):
-        dmel_alias_dict = self.get_gene_alias(self.dmel_gene_alias_file_path)
-        hsa_alias_dict = self.get_gene_alias(self.hsa_gene_alias_file_path)
+        dmel_alias_dict = self.dmel_get_gene_alias(self.dmel_gene_alias_file_path)
+        hsa_alias_dict = self.hsa_get_gene_alias(self.hsa_gene_alias_file_path)
         #self.get_organism_nodes(self.dmel_filepath, dmel_alias_dict, 'gene_biotype')
         with gzip.open(self.dmel_filepath, 'rt') as input:
             for line in input:
@@ -129,7 +167,8 @@ class GencodeGeneAdapter(Adapter):
                                     'start': start,
                                     'end': end,
                                     'gene_name': info['gene_name'],
-                                    'synonyms': alias
+                                    'synonyms': alias,
+                                    'taxon_id': 7227
                                 }
                                 if self.add_provenance:
                                     props['source'] = self.source
@@ -174,7 +213,8 @@ class GencodeGeneAdapter(Adapter):
                                     'start': start,
                                     'end': end,
                                     'gene_name': info['gene_name'],
-                                    'synonyms': alias
+                                    'synonyms': alias,
+                                    'taxon_id': 9606
                                 }
                                 if self.add_provenance:
                                     props['source'] = self.source

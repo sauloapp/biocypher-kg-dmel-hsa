@@ -92,14 +92,17 @@ class GencodeAdapter(Adapter):
                                     'start': start,
                                     'end': end,
                                     'gene_name': info['gene_name'],
+                                    'taxon_id': 7227
                                 }
                                 if self.add_provenance:
                                     props['source'] = self.source
                                     props['source_url'] = self.source_url
                             yield transcript_key, self.label, props
-                except:
+                except Exception as e:
+                    print(e)
                     logger.info(
-                        f'gencode_transcripts_adapter.py::GencodeAdapter::get_nodes-DMEL: failed to process for label to load: {self.label}, type to load: {self.type}, data: {line}')
+                        f'gencode_transcripts_adapter.py::GencodeAdapter::get_nodes-DMEL: failed to process for label to load: {self.label}, type to load: {self.type}:\n'
+                        f'Missing data: {e}\ndata: {line}')
 
         with gzip.open(self.hsa_filepath, 'rt') as input:
             for line in input:
@@ -134,6 +137,7 @@ class GencodeAdapter(Adapter):
                                     'start': start,
                                     'end': end,
                                     'gene_name': info['gene_name'],
+                                    'taxon_id': 9606
                                 }
                                 if self.add_provenance:
                                     props['source'] = self.source
@@ -161,7 +165,9 @@ class GencodeAdapter(Adapter):
                 if info['gene_id'].endswith('_PAR_Y'):
                     gene_key = gene_key + '_PAR_Y'
                
-                _props = {}
+                _props = {
+                    'taxon_id': 7227
+                }
                 if self.write_properties and self.add_provenance:
                     _props['source'] = self.source
                     _props['source_url'] = self.source_url
@@ -198,7 +204,9 @@ class GencodeAdapter(Adapter):
                 if info['gene_id'].endswith('_PAR_Y'):
                     gene_key = gene_key + '_PAR_Y'
 
-                _props = {}
+                _props = {
+                    'taxon_id': 9606
+                }
                 if self.write_properties and self.add_provenance:
                     _props['source'] = self.source
                     _props['source_url'] = self.source_url
