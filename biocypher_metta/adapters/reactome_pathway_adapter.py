@@ -46,7 +46,6 @@ class ReactomePathwayAdapter(Adapter):
                     }
                     if self.write_properties:
                         props['pathway_name'] = name
-                    
                         pubmed_id = self.pubmed_map.get(id, None)
                         if pubmed_id is not None:
                             pubmed_url = f"https://pubmed.ncbi.nlm.nih.gov/{self.pubmed_map[id]}"

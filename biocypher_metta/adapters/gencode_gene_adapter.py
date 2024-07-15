@@ -1,6 +1,6 @@
 import gzip
 from biocypher_metta.adapters import Adapter
-from biocypher_metta.adapters.helpers import check_genomic_location
+from biocypher_metta.adapters.hsa.helpers import check_genomic_location
 from biocypher._logger import logger
 
 
@@ -62,7 +62,7 @@ class GencodeGeneAdapter(Adapter):
                  full_name_from_nomenclature_authority, Nomenclature_status, Other_designations, Modification_date, Feature_type) = line.split('\t')
 
                 split_dbxrefs = dbxrefs.split('|')
-                hgnc = ''
+                #hgnc = ''
                 ensembl = ''
                 for ref in split_dbxrefs:
                     if ref.startswith('FLYBASE:'):
@@ -72,8 +72,8 @@ class GencodeGeneAdapter(Adapter):
                     complete_synonyms.append(symbol)
                     for i in synonyms.split('|'):
                         complete_synonyms.append(i)
-                    if hgnc:
-                        complete_synonyms.append(hgnc)
+                    # if hgnc:
+                    #     complete_synonyms.append(hgnc)
                     for i in Other_designations.split('|'):
                         complete_synonyms.append(i)
                     complete_synonyms.append(
@@ -141,11 +141,10 @@ class GencodeGeneAdapter(Adapter):
                 #print(line)
                 split_line = line.strip().split()
                 if split_line[GencodeGeneAdapter.INDEX['type']] == 'gene':
-                    info = self.parse_info_metadata(
-                        split_line[GencodeGeneAdapter.INDEX['info']:])
+                    info = self.parse_info_metadata(split_line[GencodeGeneAdapter.INDEX['info']:])
                     gene_id = info['gene_id']
-                    id = gene_id.split('.')[0]
-                    alias = dmel_alias_dict.get(id)
+                    #id = gene_id.split('.')[0]
+                    alias = dmel_alias_dict.get(gene_id)
                     if not alias:                           # check this for dmel
                         hgnc_id = info.get('hgnc_id')
                         if hgnc_id:

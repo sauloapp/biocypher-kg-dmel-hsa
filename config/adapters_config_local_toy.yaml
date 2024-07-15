@@ -1,3 +1,39 @@
+
+dmel_gene_group:
+  adapter:
+    module: biocypher_metta.adapters.dmel.gene_group_adapter
+    cls: GeneGroupAdapter
+    args:
+       dmel_filepath: /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/flybase/gene_group_data_fb_2024_02.tsv.gz
+       dmel_groups_hgnc_filepath: /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/flybase/gene_groups_HGNC_fb_2024_02.tsv.gz
+  outdir: flybase/gene_groups
+  nodes: True
+  edges: False
+
+
+dmel_pathway_gene_group:
+  adapter:
+    module: biocypher_metta.adapters.dmel.pathway_gene_group_adapter
+    cls: PathwayGeneGroupAdapter
+    args:
+       dmel_filepath: /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/flybase/pathway_group_data_fb_2024_02.tsv.gz
+       dmel_groups_hgnc_filepath: /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/flybase/gene_groups_HGNC_fb_2024_02.tsv.gz
+  outdir: flybase/pathway_gene_groups
+  nodes: True
+  edges: False
+
+
+dmel_disease_model:
+  adapter:
+    module: biocypher_metta.adapters.dmel.disease_model_adapter
+    cls: DiseaseModelAdapter
+    args:
+       dmel_filepath: /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/flybase/disease_model_annotations_fb_2024_02.tsv.gz
+  outdir: flybase/disease_model
+  nodes: True
+  edges: False
+
+
 gencode_gene:
   adapter:
     module: biocypher_metta.adapters.gencode_gene_adapter

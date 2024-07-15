@@ -1,6 +1,6 @@
 gencode_gene:
   adapter:
-    module: biocypher_metta.adapters.gencode_gene_adapter
+    module: biocypher_metta.adapters.hsa.hsa.gencode_gene_adapter
     cls: GencodeGeneAdapter
     args:
       dmel_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/full/gencode/Drosophila_melanogaster.BDGP6.46.59.gtf.gz
@@ -15,7 +15,7 @@ gencode_gene:
 
 gencode_transcripts:
   adapter:
-    module: biocypher_metta.adapters.gencode_transcript_adapter
+    module: biocypher_metta.adapters.hsa.gencode_transcript_adapter
     cls: GencodeAdapter
     args:
       dmel_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/full/gencode/Drosophila_melanogaster.BDGP6.46.59.chr.gtf.gz
@@ -30,7 +30,7 @@ gencode_transcripts:
 
 gencode_exon:
   adapter:
-    module: biocypher_metta.adapters.gencode_exon_adapter
+    module: biocypher_metta.adapters.hsa.gencode_exon_adapter
     cls: GencodeExonAdapter
     args:
       dmel_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/full/gencode/Drosophila_melanogaster.BDGP6.46.59.chr.gtf.gz
@@ -42,7 +42,7 @@ gencode_exon:
 
 transcribed_to:
   adapter:
-    module: biocypher_metta.adapters.gencode_transcript_adapter
+    module: biocypher_metta.adapters.hsa.gencode_transcript_adapter
     cls: GencodeAdapter
     args:
       dmel_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/full/gencode/Drosophila_melanogaster.BDGP6.46.59.chr.gtf.gz
@@ -56,7 +56,7 @@ transcribed_to:
 
 transcribed_from:
   adapter:
-    module: biocypher_metta.adapters.gencode_transcript_adapter
+    module: biocypher_metta.adapters.hsa.gencode_transcript_adapter
     cls: GencodeAdapter
     args:
       dmel_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/full/gencode/Drosophila_melanogaster.BDGP6.46.59.chr.gtf.gz
@@ -71,7 +71,7 @@ transcribed_from:
 
 uniprotkb_sprot:
   adapter:
-    module: biocypher_metta.adapters.uniprot_protein_adapter
+    module: biocypher_metta.adapters.hsa.uniprot_protein_adapter
     cls: UniprotProteinAdapter
     args:
       dmel_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/full/uniprot/uniprot_sprot_invertebrates_DMEL.dat.gz
@@ -82,7 +82,7 @@ uniprotkb_sprot:
 
 uniprotkb_sprot_translates_to:
   adapter:
-    module: biocypher_metta.adapters.uniprot_adapter
+    module: biocypher_metta.adapters.hsa.uniprot_adapter
     cls: UniprotAdapter
     args:
       dmel_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/full/uniprot/uniprot_sprot_invertebrates_DMEL.dat.gz
@@ -96,7 +96,7 @@ uniprotkb_sprot_translates_to:
 
 uniprotkb_sprot_translates_of:
   adapter:
-    module: biocypher_metta.adapters.uniprot_adapter
+    module: biocypher_metta.adapters.hsa.uniprot_adapter
     cls: UniprotAdapter
     args:
       dmel_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/full/uniprot/uniprot_sprot_invertebrates_DMEL.dat.gz
@@ -110,7 +110,7 @@ uniprotkb_sprot_translates_of:
 
 pathway:
   adapter:
-    module: biocypher_metta.adapters.reactome_pathway_adapter
+    module: biocypher_metta.adapters.hsa.reactome_pathway_adapter
     cls: ReactomePathwayAdapter
     args:
       filepath: /mnt/hdd_2/abdu/biocypher_data/reactome/ReactomePathways.txt
@@ -122,7 +122,7 @@ pathway:
 
 genes_pathways:
   adapter:
-    module: biocypher_metta.adapters.reactome_adapter
+    module: biocypher_metta.adapters.hsa.reactome_adapter
     cls: ReactomeAdapter
     args:
       filepath: /mnt/hdd_2/abdu/biocypher_data/reactome/Ensembl2Reactome_All_Levels.txt
@@ -134,7 +134,7 @@ genes_pathways:
 
 parent_pathway_of:
   adapter:
-    module: biocypher_metta.adapters.reactome_adapter
+    module: biocypher_metta.adapters.hsa.reactome_adapter
     cls: ReactomeAdapter
     args:
       filepath: /mnt/hdd_2/abdu/biocypher_data/reactome/ReactomePathwaysRelation.txt
@@ -146,7 +146,7 @@ parent_pathway_of:
 
 child_pathway_of:
   adapter:
-    module: biocypher_metta.adapters.reactome_adapter
+    module: biocypher_metta.adapters.hsa.reactome_adapter
     cls: ReactomeAdapter
     args:
       filepath: /mnt/hdd_2/abdu/biocypher_data/reactome/ReactomePathwaysRelation.txt
@@ -158,7 +158,7 @@ child_pathway_of:
 
 tflink:
     adapter:
-        module: biocypher_metta.adapters.tflink_adapter
+        module: biocypher_metta.adapters.hsa.tflink_adapter
         cls: TFLinkAdapter
         args:
           dmel_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/full/tflink/TFLink_Drosophila_melanogaster_interactions_All_simpleFormat_v1.0.tsv.gz
@@ -172,7 +172,7 @@ tflink:
 
 string:
   adapter:
-    module: biocypher_metta.adapters.string_ppi_adapter
+    module: biocypher_metta.adapters.hsa.string_ppi_adapter
     cls: StringPPIAdapter
     args:
       dmel_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/full/string/7227.protein.links.v12.0.txt.gz
