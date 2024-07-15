@@ -1,6 +1,6 @@
 import gzip
 from biocypher_metta.adapters import Adapter
-from biocypher_metta.adapters.helpers import check_genomic_location
+from biocypher_metta.adapters.hsa.helpers import check_genomic_location
 from biocypher._logger import logger
 
 # Example genocde vcf input file:

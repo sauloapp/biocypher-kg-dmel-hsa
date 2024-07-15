@@ -54,7 +54,7 @@ class StringPPIAdapter(Adapter):
             table = csv.reader(fp, delimiter=" ", quotechar='"')
             table.__next__() # skip header
             for row in table:
-                print(row)
+                #print(row)
                 protein1 = row[0].split(".")[1]
                 protein2 = row[1].split(".")[1]
                 if protein1 in self.dmel_ensembl_to_uniprot_map and protein2 in self.dmel_ensembl_to_uniprot_map:

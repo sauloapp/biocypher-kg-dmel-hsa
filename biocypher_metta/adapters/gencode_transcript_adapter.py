@@ -1,8 +1,8 @@
 from biocypher_metta.adapters import Adapter
 import gzip
 from biocypher._logger import logger
-from biocypher_metta.adapters.helpers import check_genomic_location
-import sys
+from biocypher_metta.adapters.hsa.helpers import check_genomic_location
+
 
 # Example genocde vcf input file:
 # ##description: evidence-based annotation of the human genome (GRCh38), version 42 (Ensembl 108)

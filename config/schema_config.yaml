@@ -380,7 +380,6 @@ non coding rna:
 
 
 
-
 # —-------------------------------------------------------------------------------------------------------------------------------------
 # Ontologies
 # —-------------------------------------------------------------------------------------------------------------------------------------
@@ -1181,17 +1180,6 @@ located on chain:
 
 
 
-
-
-
-
-
-
-
-
-
-
-
 ####################################   dmel  ##################################
 
 
@@ -1206,22 +1194,36 @@ gene group:
   is_a: biological entity
   #inherit_properties: true
   properties:
-    taxon_id: int                        # 7227 for dmel / 9606 for hsa    (TO BE INHERITED BY ALL TYPES)
-    genes: gene[]
-    group_id: str                # FBgg#
+    taxon_id: int               # 7227 for dmel / 9606 for hsa    (TO BE INHERITED BY ALL TYPES)
+    genes_ids: str[]            # FBgn# list to link the group
     group_symbol: str
     group_name: str
-    parent_group_id: str        # FBgg#
-    parent_group_symbol: str
+    parent_group_id: str[]        # FBgg#
+    parent_group_symbol: str[]
     HGNC_family_ID: str        # https://wiki.flybase.org/wiki/FlyBase:Downloads_Overview#Gene_groups_with_HGNC_IDs_.28gene_groups_HGNC_fb_.2A.tsv.29 
 
 
+# https://wiki.flybase.org/wiki/FlyBase:Downloads_Overview#Pathway_group_data_.28pathway_group_data_fb_.2A.tsv.29
+#
+pathway gene group:
+  represented_as: node
+  preferred_id: group_id
+  input_label: disease_model
+  is_a: biological entity
+  #inherit_properties: true
+  properties:
+    taxon_id: int               # 7227 for dmel / 9606 for hsa    (TO BE INHERITED BY ALL TYPES)
+    genes_ids: str[]            # FBgn# list to link the group
+    group_symbol: str
+    group_name: str
+    parent_group_id: str[]        # FBgg#
+    parent_group_symbol: str[]
+    HGNC_family_ID: str        # https://wiki.flybase.org/wiki/FlyBase:Downloads_Overview#Gene_groups_with_HGNC_IDs_.28gene_groups_HGNC_fb_.2A.tsv.29
 
 
 # FB data: https://wiki.flybase.org/wiki/FlyBase:Downloads_Overview#Human_disease_model_data_.28disease_model_annotations_fb_.2A.tsv.gz.29 
 disease model:
   represented_as: node
-  preferred_id: do_id
   input_label: disease_model
   is_a: biological entity
   #inherit_properties: true
@@ -1229,12 +1231,14 @@ disease model:
     taxon_id: int                        # 7227 for dmel / 9606 for hsa    (TO BE INHERITED BY ALL TYPES)
     gene_id: str        
     do_qualifier: str
-    do_term_id: str                        # only this should be enough
-    do_term_name: str                        # this is in the DO
+    do_term_id: str                        # only this should be enough because DiseaseOntology
+    do_term_name: str
     allele_id: str
     ortholog_hgnc_id: str
-    ortholog_hgnc_symbol: str
-    evidence_code: str
+    #ortholog_hgnc_symbol: str            # this should be linked to in the Gene data type
+    evidence_code: str                    # evidence code and interacting alleles are in the same field (column) in the tsv file
+    interacting_alleles: str[]                  # but they occur both very infrequently
+    ev_code_interact_alleles: str
     reference_FBrf_id: str
   
 # https://wiki.flybase.org/wiki/FlyBase:Downloads_Overview#Phenotypic_data_.28genotype_phenotype_data_.2A.tsv.29 
@@ -1245,7 +1249,7 @@ genotype:
   #inherit_properties: true
   properties:
     taxon_id: int                        # 7227 for dmel / 9606 for hsa    (TO BE INHERITED BY ALL TYPES)
-    id: str                        # string composed of one or more allele id(s) (FBal#)
+    id: str                             # string composed of one or more allele id(s) (FBal#)
     symbol: str                        # string composed of one or more allele symbol(s)
 
 
@@ -1254,11 +1258,11 @@ genotype:
 # https://wiki.flybase.org/wiki/FlyBase:Downloads_Overview#Phenotypic_data_.28genotype_phenotype_data_.2A.tsv.29
 phenotype:
   represented_as: node
+  preferred_id: str                # The Flybase Anatomy id (FBbt#)  or Flybase Controlled Vocabulary id (FBcv#)
   input_label: phenotype
   is_a: annotation
   inherit_properties: true
   properties:
-    id: str                # The Flybase Anatomy id (FBbt#)  or Flybase Controlled Vocabulary id (FBcv#)
     name: str
     qualifier_ids: str[]                # zero or more FBcv# and/or FBdv# to add information to the phenotype
     qualifier_names: str[]
