@@ -149,8 +149,6 @@ class GencodeGeneAdapter(Adapter):
                         hgnc_id = info.get('hgnc_id')
                         if hgnc_id:
                             alias = dmel_alias_dict.get(hgnc_id)
-                    if gene_id.endswith('_PAR_Y'):
-                        id = id + '_PAR_Y'
 
                     chr = split_line[GencodeGeneAdapter.INDEX['chr']]
                     start = int(split_line[GencodeGeneAdapter.INDEX['coord_start']])
@@ -160,7 +158,6 @@ class GencodeGeneAdapter(Adapter):
                         if check_genomic_location(self.chr, self.start, self.end, chr, start, end):
                             if self.write_properties:
                                 props = {
-                                    # 'gene_id': gene_id, # TODO should this be included?
                                     'gene_type': info['gene_biotype'],
                                     'chr': chr,
                                     'start': start,
@@ -173,10 +170,14 @@ class GencodeGeneAdapter(Adapter):
                                     props['source'] = self.source
                                     props['source_url'] = self.source_url
 
-                            yield id, self.label, props
-                    except:
+                            yield gene_id, self.label, props
+                    except Exception as e:
                         logger.info(
-                            f'fail to process for label to load: {self.label}, type to load: {self.type}, data: {line}')
+                            f'gencode_gene_adapter.py::GencodeGeneAdapter::get_nodes-DMEL: failed to process for label to load: {self.label}, type to load: {self.type}:\n'
+                            f'Exception: {e}\n'
+                            f'Missing data:\n {line}'
+                        )
+                            #f'fail to process for label to load: {self.label}, type to load: {self.type}, data: {line}')
 
         # self.get_organism_nodes(self.hsa_filepath, hsa_alias_dict, 'gene_type')
         with gzip.open(self.hsa_filepath, 'rt') as input:
