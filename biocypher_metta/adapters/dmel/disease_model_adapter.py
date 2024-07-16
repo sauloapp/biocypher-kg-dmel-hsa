@@ -53,29 +53,35 @@ class DiseaseModelAdapter(Adapter):
         #header:
         #FBgn ID	Gene symbol	HGNC ID	DO qualifier	DO ID	DO term	Allele used in model (FBal ID)	Allele used in model (symbol)	Based on orthology with (HGNC ID)	Based on orthology with (symbol)	Evidence/interacting alleles	Reference (FBrf ID)FBgn ID	Gene symbol	HGNC ID	DO qualifier	DO ID	DO term	Allele used in model (FBal ID)	Allele used in model (symbol)	Based on orthology with (HGNC ID)	Based on orthology with (symbol)	Evidence/interacting alleles	Reference (FBrf ID)
         rows = fb_gg_table.get_rows()
+        id = -1
         for row in rows:
+            id += 1
             props = {}
             props['taxon_id'] = 7227
             props['gene_id'] = row[0]
-            if row[2] != '':
-                props['gene_hgnc_id'] = row[2]
-            if row[3] != '':
-                props['do_qualifier'] = row[3]
+            #if row[2] != '':
+            props['gene_hgnc_id'] = row[2]
+            #if row[3] != '':
+            props['do_qualifier'] = row[3]
             props['do_term_id'] = row[4]
+            #if row[5] != '':
             props['do_term_name'] = row[5]
+            #if row[6] != '':
             props['allele_id'] = row[6]
-            if row[8] != '':
-                props['ortholog_hgnc_id'] = row[8]
-            if row[10] != '':
-                ev_code, alleles = self.__extract_evcode_alleles(row[10])
-                if ev_code!=None:
-                    props['evidence_code'] = ev_code
-                if alleles != None:
-                    props['interacting_alleles'] = alleles
-                props['ev_code_interact_alleles'] = row[10]
+            #if row[8] != '':
+            props['ortholog_hgnc_id'] = row[8]
+            #if row[9] != '':
+            props['ortholog_hgnc_symbol'] = row[9]
+            #if row[10] != '':
+            ev_code, alleles = self.__extract_evcode_alleles(row[10])
+            if ev_code!=None:
+                props['evidence_code'] = ev_code
+            if alleles != None:
+                props['interacting_alleles'] = alleles
+            props['ev_code_interact_alleles'] = row[10]
             props['reference_id'] = row[11]
             #print(f'{props}')
-            yield row[4], self.label, props
+            yield f'{self.label}_{id}', self.label, props
 
 
 

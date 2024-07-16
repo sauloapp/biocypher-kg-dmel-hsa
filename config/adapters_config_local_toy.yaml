@@ -34,6 +34,17 @@ dmel_disease_model:
   edges: False
 
 
+dmel_genotype_phenotype:
+  adapter:
+    module: biocypher_metta.adapters.dmel.genotype_phenotype_adapter
+    cls: GenotypePhenotypeAdapter
+    args:
+       dmel_filepath: /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/flybase/genotype_phenotype_data_fb_2024_02.tsv.gz
+  outdir: flybase/genotype_phenotype
+  nodes: True
+  edges: False
+
+
 gencode_gene:
   adapter:
     module: biocypher_metta.adapters.gencode_gene_adapter
