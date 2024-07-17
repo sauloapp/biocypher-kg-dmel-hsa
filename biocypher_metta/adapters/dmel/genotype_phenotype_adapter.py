@@ -59,8 +59,10 @@ class GenotypePhenotypeAdapter(Adapter):
             genotype_FBids = row[1]
             props['phenotype_name'] = row[2]
             props['phenotype_id'] = row[3]
-            props['qualifier_names'] = row[4]
-            props['qualifier_ids'] = row[5]
+            if row[4] != '':
+                props['qualifier_names'] = [ name for name in row[4].split('|') ]
+            if row[5] != '':
+                props['qualifier_ids'] = [ name for name in row[5].split('|') ]
             props['reference'] = row[6]
             props['taxon_id'] = 7227
             #print(f'{props}')

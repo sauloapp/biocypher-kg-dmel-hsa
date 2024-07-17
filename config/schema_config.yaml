@@ -473,7 +473,7 @@ expression:
   input_label: expression
   description: >-
     An association between a gene and its expression constituents
-  Properties:
+  properties:
     taxon_id: int                        # 7227 for dmel / 9606 for hsa    (TO BE INHERITED BY ALL TYPES)
     source: str
     source_url: str
@@ -488,7 +488,7 @@ annotation:
   input_label: annotation
   description: >-
     An association between a gene/ontology term and another entity
-  Properties:
+  properties:
     taxon_id: int                        # 7227 for dmel / 9606 for hsa    (TO BE INHERITED BY ALL TYPES)
     source: str
     source_url: str
@@ -503,7 +503,7 @@ regulatory association:
   represented_as: edge
   input_label: regulatory_association
   Source: gene
-  Properties:
+  properties:
     taxon_id: int                        # 7227 for dmel / 9606 for hsa    (TO BE INHERITED BY ALL TYPES)
     source: str
     source_url: str
@@ -604,8 +604,6 @@ post translational interaction:
     score: float
 
 
-
-
 # 7.23)
 # This holds data from TFLink to fly: https://cdn.netbiol.org/tflink/download_files/TFLink_Drosophila_melanogaster_interactions_All_simpleFormat_v1.0.tsv 
 transcription factor to gene association:
@@ -625,10 +623,10 @@ transcription factor to gene association:
     evidence_type: str
 
 
-
-
 # Dmel to hsa data:
-# From FB:  https://wiki.flybase.org/wiki/FlyBase:Downloads_Overview#Human_Orthologs_.28dmel_human_orthologs_disease_fb_.2A.tsv.gz.29 
+# From FB:  https://wiki.flybase.org/wiki/FlyBase:Downloads_Overview#Human_Orthologs_.28dmel_human_orthologs_disease_fb_.2A.tsv.gz.29
+# FB table columns:
+##Dmel_gene_ID	Dmel_gene_symbol	Human_gene_HGNC_ID	Human_gene_OMIM_ID	Human_gene_symbol	DIOPT_score	OMIM_Phenotype_IDs	OMIM_Phenotype_IDs[name]
 orthology association:
   description: >-
   Non-directional association between two genes indicating that there is an orthology relation among them:  “Historical homology that involves genes that diverged after a speciation event (http://purl.obolibrary.org/obo/RO_HOM0000017)"
@@ -639,9 +637,14 @@ orthology association:
   source: gene
   target: gene
   properties:
-    taxon_id: int                        # 7227 for dmel / 9606 for hsa    (TO BE INHERITED BY ALL TYPES)
+    DIOPT_score: int
+    hsa_hgnc_id: str
+    hsa_omim_id: str
+    hsa_omim_phenotype_ids: str
+    hsa_omim_phenotype_ids_names: str
     source_organism: str
     target_organism: str
+    #taxon_id: int                        # 7227 for dmel / 9606 for hsa
 
 
 
@@ -650,7 +653,9 @@ orthology association:
 #
 # Fly:
 #
-# From FB:  https://wiki.flybase.org/wiki/FlyBase:Downloads_Overview#Drosophila_Paralogs_.28dmel_paralogs_fb_.2A.tsv.gz.29  
+# From FB:  https://wiki.flybase.org/wiki/FlyBase:Downloads_Overview#Drosophila_Paralogs_.28dmel_paralogs_fb_.2A.tsv.gz.29
+# FB table columns:
+## FBgn_ID	GeneSymbol	Arm/Scaffold	Location	Strand	Paralog_FBgn_ID	Paralog_GeneSymbol	Paralog_Arm/Scaffold	Paralog_Location	Paralog_Strand	DIOPT_score
 paralogy association:
   description: >-
   Non-directional association between two genes indicating that there is an paralogy relation among them:  “Historical homology that involves genes that diverged after a duplication event (http://purl.obolibrary.org/obo/RO_HOM0000011)"
@@ -661,13 +666,15 @@ paralogy association:
   source: gene
   target: gene
   properties:
+    source_symbol: str
+    target_symbol: str
+    DIOPT_score: int
     taxon_id: int                        # 7227 for dmel / 9606 for hsa    (TO BE INHERITED BY ALL TYPES)
 
 
 
 
 ####################################   hsa   ##################################
-
 
 
 
@@ -1240,7 +1247,8 @@ disease model:
     interacting_alleles: str[]                  # but they occur both very infrequently
     ev_code_interact_alleles: str
     reference_FBrf_id: str
-  
+
+
 # https://wiki.flybase.org/wiki/FlyBase:Downloads_Overview#Phenotypic_data_.28genotype_phenotype_data_.2A.tsv.29 
 genotype phenotype:
   represented_as: node
