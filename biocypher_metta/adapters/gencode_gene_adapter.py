@@ -133,7 +133,7 @@ class GencodeGeneAdapter(Adapter):
     def get_nodes(self):
         dmel_alias_dict = self.dmel_get_gene_alias(self.dmel_gene_alias_file_path)
         hsa_alias_dict = self.hsa_get_gene_alias(self.hsa_gene_alias_file_path)
-        #self.get_organism_nodes(self.dmel_filepath, dmel_alias_dict, 'gene_biotype')
+        #self.get_organism_nodes(self.dmel_data_filepath, dmel_alias_dict, 'gene_biotype')
         with gzip.open(self.dmel_filepath, 'rt') as input:
             for line in input:
                 if line.startswith('#'):

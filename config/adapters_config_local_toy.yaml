@@ -45,6 +45,29 @@ dmel_genotype_phenotype:
   edges: False
 
 
+orthology_adapter:
+    adapter:
+        module: biocypher_metta.adapters.orthology_adapter
+        cls: OrthologyAssociationAdapter
+        args:
+          dmel_data_filepath: /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/flybase/dmel_human_orthologs_disease_fb_2024_02.tsv.gz
+          hsa_hgnc_to_ensemble_map: ./aux_files/hgnc_ensembl_map.pkl
+    outdir: orthologs
+    nodes: False
+    edges: True
+
+
+paralogy_adapter:
+    adapter:
+        module: biocypher_metta.adapters.paralogy_adapter
+        cls: ParalogyAssociationAdapter
+        args:
+          dmel_data_filepath: /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/flybase/dmel_paralogs_fb_2024_02.tsv.gz
+    outdir: paralogs
+    nodes: False
+    edges: True
+
+
 gencode_gene:
   adapter:
     module: biocypher_metta.adapters.gencode_gene_adapter
