@@ -68,6 +68,38 @@ paralogy_adapter:
     edges: True
 
 
+allele:
+  adapter:
+    module: biocypher_metta.adapters.allele_adapter
+    cls: AlleleAdapter
+    args:
+       dmel_filepath: /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/flybase/fbal_to_fbgn_fb_2024_02.tsv.gz
+  outdir: allele
+  nodes: True
+  edges: False
+
+
+dmel_gene_genetic_adapter:
+    adapter:
+        module: biocypher_metta.adapters.dmel.gene_genetic_association_adapter
+        cls: GeneGeneticAssociationAdapter
+        args:
+          dmel_data_filepath: /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/flybase/gene_genetic_interactions_fb_2024_02.tsv.gz
+    outdir: flybase/gene_genetic
+    nodes: False
+    edges: True
+
+dmel_allele_genetic_interaction_adapter:
+    adapter:
+        module: biocypher_metta.adapters.dmel.allele_genetic_interaction_adapter
+        cls: AlleleGeneticInteractionAdapter
+        args:
+          dmel_data_filepath: /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/flybase/allele_genetic_interactions_fb_2024_02.tsv.gz
+    outdir: flybase/allele_genetic
+    nodes: True
+    edges: False
+
+
 gencode_gene:
   adapter:
     module: biocypher_metta.adapters.gencode_gene_adapter
