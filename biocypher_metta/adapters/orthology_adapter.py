@@ -36,7 +36,6 @@ FBgn0031081	Nep3	HGNC:53615		EEF1AKMT4-ECE2	13
 
 '''
 
-
 from biocypher_metta.adapters.dmel.flybase_tsv_reader import FlybasePrecomputedTable
 #from flybase_tsv_reader import FlybasePrecomputedTable
 from biocypher_metta.adapters import Adapter

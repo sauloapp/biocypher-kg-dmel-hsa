@@ -342,6 +342,7 @@ sequence variant:
 
 # Human:  to be defined…
 #
+#
 # Fly:
 # FB https://wiki.flybase.org/wiki/FlyBase:Downloads_Overview#Alleles_.3C.3D.3E_Genes_.28fbal_to_fbgn_fb_.2A.tsv.29 
 allele:
@@ -351,6 +352,8 @@ allele:
   inherit_properties: true
   properties:
       gene_id: str
+      allele_symbol: str
+      taxon_id: int                        # 7227 for dmel / 9606 for hsa
   description: >-
       Different versions of the same variant (in a specific  locus) are called alleles[1, 2]. Most commonly used referring to genes.
 
@@ -624,6 +627,10 @@ transcription factor to gene association:
 
 
 # Dmel to hsa data:
+
+  #                   *** THE TABLE ONLY REPORTS HOMOLOGY WITH DIOPT SCORE GREATER THAN 2 ***
+  #                   https://fgr.hms.harvard.edu/diopt-documentation
+
 # From FB:  https://wiki.flybase.org/wiki/FlyBase:Downloads_Overview#Human_Orthologs_.28dmel_human_orthologs_disease_fb_.2A.tsv.gz.29
 # FB table columns:
 ##Dmel_gene_ID	Dmel_gene_symbol	Human_gene_HGNC_ID	Human_gene_OMIM_ID	Human_gene_symbol	DIOPT_score	OMIM_Phenotype_IDs	OMIM_Phenotype_IDs[name]
@@ -654,6 +661,10 @@ orthology association:
 # Fly:
 #
 # From FB:  https://wiki.flybase.org/wiki/FlyBase:Downloads_Overview#Drosophila_Paralogs_.28dmel_paralogs_fb_.2A.tsv.gz.29
+
+  #                   *** THE TABLE ONLY REPORTS HOMOLOGY WITH DIOPT SCORE GREATER THAN 2 ***
+  #                   https://fgr.hms.harvard.edu/diopt-documentation
+
 # FB table columns:
 ## FBgn_ID	GeneSymbol	Arm/Scaffold	Location	Strand	Paralog_FBgn_ID	Paralog_GeneSymbol	Paralog_Arm/Scaffold	Paralog_Location	Paralog_Strand	DIOPT_score
 paralogy association:
@@ -1294,26 +1305,37 @@ gene genetic association:
   is_a: regulatory association
   inherit_properties: true
   represented_as: edge
-  input_label: gene_genetic
+  input_label: gene_genetic_association
   source: gene
   target: gene
   properties:
+    reference: str              # FBrf#
     type: str                # suppresses (“suppressible”) / enhances (“enhanceable”)
+    taxon_id: int                        # 7227 for dmel / 9606 for hsa
 
 
 
+# https://wiki.flybase.org/wiki/FlyBase:Downloads_Overview#Genetic_interactions_.28allele_genetic_interactions_.2A.tsv.29
 
-# https://wiki.flybase.org/wiki/FlyBase:Downloads_Overview#Genetic_interactions_.28allele_genetic_interactions_.2A.tsv.29 
-allelic interaction annotation:
+  # In this first version, the interaction description ia stored in the node that is identified by a string that works
+  # like a "primary key": "allele_genetic_interaction_0", "allele_genetic_interaction_1", "allele_genetic_interaction_2",...
+  #
+  # TODO:
+  # In the next iteration, this class will extract any allele symbol occuring in an "interaction" text and will br created
+  # an edge from the "source allele" given by this node and the allele corresponding to  any allele symbol in the interaction text.
+allele genetic interaction:
   description: >-
     An allelic interaction is a controlled vocabulary (i.e. not free text) genetic interaction data associated with alleles.
-  is_a: annotation
-  inherit_properties: true
-  represented_as: edge
-  input_label: allelic_interaction
-  source: allele
-  target: annotation                        # FB Controlled Vocabulary (FBcv) ontology
+  #is_a: annotation
+  is_a: biological entity
+  #inherit_properties: true
+  represented_as: node
+  input_label: allele_genetic_interaction
+  #source: allele
+  #target: annotation                        # FB Controlled Vocabulary-based text
   properties:
+    allele_id: str
+    interaction_text: str                    # FB Controlled Vocabulary-based text
     source: str
     source_url: str
 
