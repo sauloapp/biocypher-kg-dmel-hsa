@@ -60,7 +60,7 @@ class AlleleGeneticInteractionAdapter(Adapter):
         fb_gg_table = FlybasePrecomputedTable(self.dmel_data_filepath)
         self.version = fb_gg_table.extract_date_string(self.dmel_data_filepath)
         #header:
-        #genotype_symbols	genotype_FBids	phenotype_name	phenotype_id	qualifier_names	qualifier_ids	reference
+        ##allele_symbol	allele_FBal#	interaction	FBrf#
         rows = fb_gg_table.get_rows()
         id = -1
         for row in rows:

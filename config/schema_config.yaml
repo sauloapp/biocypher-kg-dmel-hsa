@@ -25,7 +25,6 @@ position entity:
 
 
 
-
 # 1.2)
 coding element:
   represented_as: node
@@ -37,7 +36,6 @@ coding element:
   properties:
     source: str
     source_url: str
-
 
 
 
@@ -55,6 +53,24 @@ non coding element:
     source_url: str
 
 
+expression value:
+  is_a: entity
+  represented_as: node
+  inherit_properties: false
+  input_label: expression_value
+  description: >-
+      A single value for a numeric estimation of a gene expression as measured by a given methodology.
+  properties:
+    value: float[]
+    value_description: str[]    # Acronym or term to clarify the expression value: "RPKM", "BIN VALUE", "SPREAD",
+                                # "AFFYMETRIX CALL", "AFFYMETRIX VALUE", etc
+                                # This property is mandatory: value_description[i] refers to value[i] for all i.
+    gene_id: str
+#    library_id: str                # not sure about this here
+#    experiment_description: str    # not sure about this here
+    taxon_id: int                        # 7227 for dmel / 9606 for hsa
+    source: str
+    source_url: str
 
 
 # 1.4)
@@ -68,10 +84,6 @@ genomic variant:
   properties:
     source: str
     source_url: str
-
-
-
-
 
 
 # 1.5)
@@ -89,7 +101,6 @@ epigenomic port:
 ## should also include cell type in hierarchy between epigenetic feature and tissue
 
 
-
 # 1.6)
 3d genome structure:
   represented_as: node
@@ -101,7 +112,6 @@ epigenomic port:
   properties:
     source: str
     source_url: str
-
 
 
 # 1.7)
@@ -476,11 +486,13 @@ expression:
   input_label: expression
   description: >-
     An association between a gene and its expression constituents
+
+  _source: gene
+  _target: transcript, exon, protein
   properties:
-    taxon_id: int                        # 7227 for dmel / 9606 for hsa    (TO BE INHERITED BY ALL TYPES)
     source: str
     source_url: str
-
+    taxon_id: int                        # 7227 for dmel / 9606 for hsa    (TO BE INHERITED BY ALL TYPES)
 
 
 

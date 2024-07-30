@@ -55,8 +55,8 @@ class GenotypePhenotypeAdapter(Adapter):
         rows = fb_gg_table.get_rows()
         for row in rows:
             props = {}
-            props['genotype_symbols'] = row[0]
-            genotype_FBids = row[1]
+            props['genotype_symbols'] = row[0].replace(' ', '@')
+            genotype_FBids = row[1].replace(' ', '@')
             props['phenotype_name'] = row[2]
             props['phenotype_id'] = row[3]
             if row[4] != '':
