@@ -40,26 +40,28 @@ class FlybasePrecomputedTable:
         header = None
         previous = None
         with gzip.open(gziped_file_name, 'rt') as input:
-            next(input)
+            #next(input)
             for row in input:
                 # strip() added to handle "blank" row in TSVs
                 if not row or not row.strip():
                     continue
 
                 if not row.startswith("#"):
-                    if header is None:
-                        header = previous.lstrip("#")
+                    if header is None and previous is not None:
+                        header = previous.lstrip("# ")
                         header = [column_name.strip() for column_name in header.split('\t') ]
                         self._set_header(header)
-                    row_list = [value.strip() for value in row.split('\t')]
-                    self._add_row(row_list)
-                if not row.startswith("#-----"):
+                    else:
+                        row_list = [value.strip() for value in row.split('\t')]
+                        self._add_row(row_list)
+                if not row.startswith("#-----") and not row.startswith("## Finished "):
                     previous = row
             #exit(9)
 
+
     def _process_tsv(self, file_name):
         header = None
-        previous = None
+        # previous = None
         print(file_name)
         with open(file_name) as f:
             rows = csv.reader(f, delimiter="\t", quotechar='"')
@@ -81,6 +83,7 @@ class FlybasePrecomputedTable:
                 # if l == 1:
                 #print(row)
                 # 	return
+
 
     def __process_gziped_tsv_files(self, directory):
         for filename in os.listdir(directory):
@@ -110,6 +113,7 @@ class FlybasePrecomputedTable:
                     self.__rows = []
                 except Exception as e:
                     print(f"Error processing file {file_path}: {e}")
+
 
 
     def test(self):

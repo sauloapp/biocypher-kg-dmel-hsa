@@ -59,11 +59,14 @@ class ParalogyAssociationAdapter(Adapter):
         rows = fb_paralogs_table.get_rows()
         for row in rows:
             props = {}
-            source = row[0]
-            props['source_symbol'] = row[1]
-            target = row[5]
-            props['target_symbol'] = row[6]
-            props['DIOPT_score'] = int(row[10])
-            props['taxon_id'] = 7227
-
+            try:
+                source = row[0]
+                props['source_symbol'] = row[1]
+                target = row[5]
+                props['target_symbol'] = row[6]
+                props['DIOPT_score'] = int(row[10])
+                props['taxon_id'] = 7227
+            except Exception as e:
+                print(f'\nDeffective ROW:\n{row}\nException: {e}')
+                continue
             yield source, target, self.label, props
