@@ -258,6 +258,7 @@ child_pathway_of:
   nodes: False
   edges: True
 
+
 tflink:
     adapter:
         module: biocypher_metta.adapters.tflink_adapter
