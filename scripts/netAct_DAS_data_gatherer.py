@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 import gzip
-from biocypher_metta.adapters.dmel.flybase_tsv_reader import FlybasePrecomputedTable
+#from biocypher_metta.adapters.dmel.flybase_tsv_reader import FlybasePrecomputedTable
 
 expanded_genes_list = ["Su(var)205", "FBgn0003607", "Top3beta", "FBgn0026015", "Mef2", "FBgn0011656", "Clk", "FBgn0023076",
                        "Dref", "FBgn0015664", "TfIIB", "FBgn0004915", "Myc", "FBgn0262656", "AGO2", "FBgn0087035",
@@ -169,6 +169,7 @@ def _process_gziped_tsv(gziped_file_name, __header, __rows):
                 previous = row
         # exit(9)
 
+        
 def process_gzip_files(input_directory, string_list):
     new_directory = input_directory + "_net_act"
     os.makedirs(new_directory, exist_ok=True)
@@ -208,7 +209,7 @@ def process_gzip_files(input_directory, string_list):
                 output_file.write('\t'.join(map(str, line)) + '\n')
 
 
-
+'''
 def process_tsv_tables(input_directory, expanded_genes_list):
     new_directory = input_directory + "_net_act"
     os.makedirs(new_directory, exist_ok=True)
@@ -243,7 +244,7 @@ def process_tsv_tables(input_directory, expanded_genes_list):
             output_file.write('\t'.join(map(str, header)) + '\n')
             for line in relevant_lines:
                 output_file.write('\t'.join(map(str, line)) + '\n')
-
+'''
 ########################################################################################################################
 
 def netact_extract_dmel_data_from_uniprot_invertebrate_dat(input_file_name, output_file_name):
@@ -322,22 +323,22 @@ def netact_extract_dmel_data_for_first_row_header(input_file_name, output_file_n
     #print(f"File:::::::::::::-->  {input_file_name}")
 
     header = None
-    relevant_rows = []
-    with gzip.open(input_file_name, 'rt') as file:
-        with open(output_file_name, 'w') as output_file:
-            output_file.write( file.readline() )
-            while True:
-                row = file.readline()
-                if not row:
-                    break
-                # strip() added to handle "blank" rows in some TSVs
-                if not row.strip():
-                    continue
-                for gene_symbol in expanded_genes_list:
-                    if gene_symbol in row:
-                        output_file.write(row)
-        output_file.close()
-        #print(f'Finished for {output_file_name}')
+    if input_file_name.endswith(".gz"):
+        file = gzip.open(input_file_name, 'rt')
+    else:
+        file = open(input_file_name, 'r')
+    with open(output_file_name, 'w') as output_file:
+        output_file.write( file.readline() )
+        while True:
+            row = file.readline()
+            if not row:
+                break
+            # strip() added to handle "blank" rows in some TSVs
+            if not row.strip():
+                continue
+            for gene_symbol in expanded_genes_list:
+                if gene_symbol in row:
+                    output_file.write(row)
     file.close()
 
 
@@ -370,25 +371,27 @@ def process_netact_input_files(input_directories: list[str], output_directory, e
         if output_directory.endswith('/'):
             output_path = output_directory + input_path.split('/')[-1].replace(".gz", '')
         else:
-            output_path = output_directory + '/' + input_path.split('/')[-1].replace(".gz", '')  # input_path.replace(input_directory, output_directory) # os.path.join(new_directory, input_file)
+            output_path = output_directory + '/' + input_path.split('/')[-1].replace(".gz", '')  
         ensure_directory_exists(output_path)
 
-        if "ReactionP" in input_file or "ReactomePath" in input_file:
+        not_input_files_marks = ["ReactionP", "ReactomePath", ".tar", ".zip", ".sample", "gtex.forgedb.csv.gz"]
+        if any(substring in input_file for substring in not_input_files_marks):
+        #if "ReactionP" in input_file or "ReactomePath" in input_file or ".tar" in input_file or ".zip" in input_file or "sample" in input_file:
             print("Not an input file...")
             continue
-        if "_sprot_" in input_file:
+        elif "_sprot_" in input_file:
             netact_extract_dmel_data_from_uniprot_invertebrate_dat(input_path, output_path)
             print(f'Finished for UNIPROT {output_path}')
             continue
-        if "Reactome" in input_file or "Drosophila_melanogaster.BDGP6.46.59.gtf.gz" in input_file or ".fb.gz" in input_file:
+        elif "Reactome" in input_file or "Drosophila_melanogaster.BDGP6.46.59.gtf.gz" in input_file or ".fb.gz" in input_file:
             netact_extract_dmel_data_from_gz_txt_noheader(input_path, output_path)
             print(f'Finished for REACTOME or gencode GTF no header gz {output_path}')
             continue
-        if "TFLink" in input_file or "tflink" in input_file or "string" in input_file:
+        elif "TFLink" in input_file or "tflink" in input_file or "string" in input_file:
             netact_extract_dmel_data_for_first_row_header(input_path, output_path)
             print(f'Finished for TFLink or String {output_path}')
             continue
-        if "gtex" in input_file:
+        elif "gtex" in input_file:
             netact_extract_dmel_data_for_first_row_header(input_path, output_path)
             print(f'Finished for gtex gzipped {output_path}')
             continue
@@ -515,7 +518,8 @@ genes_list = ["Su(var)205", "Top3beta", "Mef2", "Clk", "Dref", "TfIIB", "Myc", "
                "Trl", "ash1", "Raf", "Abd-B", "Orc2", "Rbf", "mof", "msl-1", "Hmr"]
 
 #/home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/full/fbgn_fbtr_fbpp_expanded_fb_2024_03.tsv.gz
-expanded_genes_list = expand_gene_list_data(genes_list, "/home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/full/fbgn_fbtr_fbpp_expanded_fb_2024_03.tsv.gz")
+expanded_genes_list = expand_gene_list_data(genes_list, "/mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/full/flybase/fbgn_fbtr_fbpp_expanded_fb_2024_03.tsv.gz")
+
 print(expanded_genes_list)
 
 # expanded_genes_list = ["Su(var)205", "FBgn0003607", "Top3beta", "FBgn0026015", "Mef2", "FBgn0011656", "Clk", "FBgn0023076",
@@ -527,7 +531,7 @@ print(expanded_genes_list)
 
 # Bizon's paths:
 input_dirs = [
-    "/mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/to_netact", "/mnt/hdd_2/abdu/biocypher_data/gtex/"
+    "/mnt/hdd_2/abdu/biocypher_data/gencode/" #"/mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/tmp_to_netact", #"/mnt/hdd_2/abdu/biocypher_data/gtex/"
 ]
 output_dir = "/mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/net_act"
 process_netact_input_files(input_dirs, output_dir,expanded_genes_list)
