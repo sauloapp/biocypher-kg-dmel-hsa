@@ -61,7 +61,7 @@ class MeTTaWriter:
                 target_type = v.get("target", None)
                 if source_type is not None and target_type is not None:
                     # ## TODO fix this in the scheme config
-                    if isinstance(v["input_label"], list):
+                    if isinstance(v["input_label"], list):      # I think this is never taken...
                         label = self.convert_input_labels(v["input_label"][0])
                         source_type = self.convert_input_labels(source_type[0])
                         target_type = self.convert_input_labels(target_type[0])
@@ -71,10 +71,27 @@ class MeTTaWriter:
                         target_type = self.convert_input_labels(target_type)
 
                     output_label = v.get("output_label", None)
-                    out_str = edge_data_constructor(edge_type, source_type, target_type, label)
-                    file.write(out_str + "\n")
-                    self.edge_node_types[label.lower()] = {"source": source_type.lower(), "target":
-                        target_type.lower(), "output_label": output_label.lower() if output_label is not None else None}
+                    # saulo 2024/07/31
+                    # if isinstance(source_type, list):
+                    #     out_str = ''
+                    #     for a_source_type in source_type:
+                    #         out_str += edge_data_constructor(edge_type, a_source_type, target_type, label) + '\n'
+                    # else:
+                    try:
+                        out_str = edge_data_constructor(edge_type, source_type, target_type, label) + '\n'
+                        file.write(out_str)
+                    except:
+                        print(f'{k}\n{v}')
+                        #exit(9)
+                    # saulo 2024/07/31: handle "source type" being a list of types
+                    if isinstance(source_type, list):
+                        self.edge_node_types[label.lower()] = []
+                        for a_source_type in source_type:
+                            self.edge_node_types[label.lower()].append( {"source": a_source_type.lower(), "target":target_type.lower(),
+                                                                         "output_label": output_label.lower() if output_label is not None else None} )
+                    else:
+                        self.edge_node_types[label.lower()] = {"source": source_type.lower(), "target":
+                            target_type.lower(), "output_label": output_label.lower() if output_label is not None else None}
 
             elif v["represented_as"] == "node":
                 label = v["input_label"]
@@ -135,12 +152,22 @@ class MeTTaWriter:
     def write_edge(self, edge):
         source_id, target_id, label, properties = edge
         label = label.lower()
-        source_type = self.edge_node_types[label]["source"]
+        if isinstance(source_id, tuple):
+            source_type = source_id[0]
+            source_id = source_id[1]
+        else:
+            source_type = self.edge_node_types[label]["source"]
         target_type = self.edge_node_types[label]["target"]
         output_label = self.edge_node_types[label]["output_label"]
         if output_label is not None:
             label = output_label
-        def_out = f"({label} ({source_type} {source_id}) ({target_type} {target_id}))"
+        if isinstance(source_type, list):
+            def_out = ""
+            for a_source_type in source_type:
+                def_out += f"({label} ({source_type} {source_id}) ({target_type} {target_id}))" + "\n"
+            def_out = def_out.rstrip('\n')
+        else:
+            def_out = f"({label} ({source_type} {source_id}) ({target_type} {target_id}))"
         return self.write_property(def_out, properties)
 
 
@@ -180,6 +207,12 @@ class MeTTaWriter:
         :param replace_char: the character to replace spaces with
         :return:
         """
+        # saulo
+        if isinstance(label, list):
+            labels = []
+            for aLabel in label:
+                labels.append(aLabel.replace(" ", replace_char))
+            return labels
         return label.replace(" ", replace_char)
 
     def get_parent(self, G, node):
