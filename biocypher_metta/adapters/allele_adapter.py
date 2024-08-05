@@ -49,6 +49,7 @@ class AlleleAdapter(Adapter):
         #header:
         #AlleleID	AlleleSymbol	GeneID	GeneSymbol
         rows = fb_gg_table.get_rows()
+        rows = rows[1:]
         for row in rows:
             props = {}
             allele_id = row[0]
