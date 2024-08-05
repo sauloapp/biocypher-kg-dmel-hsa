@@ -871,7 +871,8 @@ gene to pathway association:
   inherit_properties: true
   represented_as: edge
   input_label: genes_pathways
-  source: gene
+  source: [gene, protein, transcript]
+  #source: gene
   target: pathway
 
 
