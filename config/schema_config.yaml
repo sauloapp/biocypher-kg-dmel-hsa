@@ -52,6 +52,15 @@ non coding element:
     source: str
     source_url: str
 
+fb scRNASeq library:
+  is_a: entity
+  represented_as: node
+  inherit_properties: false
+  input_label: fb_scrnaseq_library
+  description: >-
+      An experiment that is a set of genes and their expression values.
+  properties:
+    value: expression value
 
 expression value:
   is_a: entity
@@ -252,7 +261,6 @@ transcript:
     - dcid:RNATranscript
   in_subset:
     - model_organism_database
-
 
 
 
@@ -486,9 +494,8 @@ expression:
   input_label: expression
   description: >-
     An association between a gene and its expression constituents
-
   _source: gene
-  _target: transcript, exon, protein
+  _target: [transcript, exon, protein]
   properties:
     source: str
     source_url: str
@@ -523,9 +530,6 @@ regulatory association:
     source: str
     source_url: str
 
-
-# ---
-# expression
 
 
 # 7.4)

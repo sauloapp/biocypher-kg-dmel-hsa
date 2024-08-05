@@ -84,14 +84,26 @@ class MeTTaWriter:
                         print(f'{k}\n{v}')
                         #exit(9)
                     # saulo 2024/07/31: handle "source type" being a list of types
-                    if isinstance(source_type, list):
+                    if isinstance(source_type, str) and isinstance(target_type, str): # most frequent case: source_type, target_type are strings
+                        self.edge_node_types[label.lower()] = {"source": source_type.lower(), "target":target_type.lower(),
+                                                               "output_label": output_label.lower() if output_label is not None else None}
+                    elif isinstance(source_type, list) and isinstance(target_type, str):  # gene to pathway edge schema
                         self.edge_node_types[label.lower()] = []
                         for a_source_type in source_type:
                             self.edge_node_types[label.lower()].append( {"source": a_source_type.lower(), "target":target_type.lower(),
                                                                          "output_label": output_label.lower() if output_label is not None else None} )
-                    else:
-                        self.edge_node_types[label.lower()] = {"source": source_type.lower(), "target":
-                            target_type.lower(), "output_label": output_label.lower() if output_label is not None else None}
+                    elif isinstance(source_type, str) and isinstance(target_type, list):  # expression edge schema
+                        self.edge_node_types[label.lower()] = []
+                        for a_target_type in target_type:
+                            self.edge_node_types[label.lower()].append(
+                                {"source": source_type.lower(), "target": a_target_type.lower(),
+                                 "output_label": output_label.lower() if output_label is not None else None})
+                    elif isinstance(source_type, list) and isinstance(target_type, list):   # no existing schema
+                        self.edge_node_types[label.lower()] = []
+                        for a_source_type in source_type:
+                            for a_target_type in target_type:
+                                self.edge_node_types[label.lower()].append( {"source": a_source_type.lower(), "target":a_target_type.lower(),
+                                                                             "output_label": output_label.lower() if output_label is not None else None} )
 
             elif v["represented_as"] == "node":
                 label = v["input_label"]
