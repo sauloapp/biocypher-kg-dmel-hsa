@@ -53,10 +53,30 @@ class UniprotProteinAdapter(Adapter):
                 props = {}
                 if self.write_properties:
                     props = {
-                        'accessions': record.accessions[1:] if len(record.accessions) > 1 else record.accessions[0],
+                        #'accessions': record.accessions[1:] if len(record.accessions) > 1 else record.accessions[0],
                         'protein_name': record.entry_name.split('_')[0],
-                        'synonyms': dbxrefs
+                        #'synonyms': dbxrefs
                     }
+                    # DAS length limitation on expressions is 120 nowadays (2024/08/07)
+                    limited_accessions = record.accessions[1:] if (len(record.accessions) > 1 and len(record.accessions) < 120) else record.accessions[0],
+                    if len(record.accessions) > 1 and len(record.accessions) < 120:
+                        limited_accessions = record.accessions[1:]
+                    elif len(record.accessions[1:]) == 1:
+                        limited_accessions = record.accessions[0]
+                    elif len(record.accessions[1:]) >= 120:
+                        limited_accessions = record.accessions[1:119]
+                    props['accessions'] = limited_accessions
+
+                    # DAS length limitation on expressions is 120 nowadays (2024/08/07)
+                    limited_synonyms = dbxrefs[1:] if (
+                                len(dbxrefs) > 1 and len(dbxrefs) < 120) else dbxrefs[0],
+                    if len(dbxrefs) > 1 and len(dbxrefs) < 120:
+                        limited_synonyms = dbxrefs[1:]
+                    elif len(dbxrefs[1:]) == 1:
+                        limited_synonyms = dbxrefs[0]
+                    elif len(dbxrefs[1:]) >= 120:
+                        limited_synonyms = dbxrefs[1:119]
+                    props['synonyms'] = limited_synonyms
                     if self.add_provenance:
                         props['source'] = self.source
                         props['source_url'] = self.source_url
