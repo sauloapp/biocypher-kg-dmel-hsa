@@ -188,12 +188,16 @@ class MeTTaWriter:
         for k, v in property.items():
             if k in self.excluded_properties or v is None or v == "": continue
             if isinstance(v, list):
+                # saulo
+                # DAS length limitation on expressions is 100, currently (2024/08/07)
+                # So, I've changed this loop to build pairs expressions like: (k def_out v[i]) instead of
+                # (k def_out v[0] v[1] v[2]... v[n])
                 prop = "("
                 for i, e in enumerate(v):
-                    prop += f'{self.check_property(e)}'
-                    if i != len(v) - 1: prop += " "
-                prop += ")"
-                out_str.append(f'({k} {def_out} {prop})')
+                    prop = f'{self.check_property(e)}'
+                    #if i != len(v) - 1: prop += " "
+                    #prop += ")"
+                    out_str.append(f'({k} {def_out} {prop})')
             elif isinstance(v, dict):
                 prop = f"({k} {def_out})"
                 out_str.extend(self.write_property(prop, v))
