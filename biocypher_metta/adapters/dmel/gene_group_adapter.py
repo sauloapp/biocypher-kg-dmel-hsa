@@ -78,7 +78,7 @@ class GeneGroupAdapter(Adapter):
             group_id = rows[i][0]
             group_symbol = rows[i][1]
             group_name = rows[i][2]
-            if rows[i][3] not in parents:
+            if rows[i][3] not in parents:       # holds only group id
                 parents.append(rows[i][3])
             if rows[i][5] != '':
                 genes_ids.append(rows[i][5])

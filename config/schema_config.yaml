@@ -54,11 +54,11 @@ non coding element:
 
 
 # The unique ID for a library at Flybase is its FBlc#
-fb scRNASeq library:
+scRNASeq library:
   is_a: entity
   represented_as: node
   inherit_properties: false
-  input_label: fb_scrnaseq_library
+  input_label: scrnaseq_library
   description: >-
       An experiment that is a set of genes and their expression values.
   properties:
@@ -74,7 +74,7 @@ expression value:
   inherit_properties: false
   input_label: expression_value
   _source: gene
-  _target: fb scRNASeq library
+  _target: scRNASeq library
   description: >-
     A single value for a numeric estimation of a gene expression as measured by a given methodology (represented by the library).
   properties:
@@ -177,6 +177,14 @@ chromosome chain:
 #
 # or:  https://ftp.ebi.ac.uk/ensemblgenomes/pub/metazoa/current/gtf/drosophila_melanogaster/ 
 #
+
+# FB summaries come from:
+  # https://wiki.flybase.org/wiki/FlyBase:Downloads_Overview#Best_gene_summaries_.28best_gene_summary.2A.tsv.29
+
+# Human summaries come from NCBI:
+  #
+#
+#
 # Adapter: gencode_gene_adapter
 #
 # 2.2)
@@ -189,7 +197,11 @@ gene:
   properties:
     gene_name: str        # In FB this is the gene symbol (eg “Clk”) whereas the gene name is “Clock”.
     gene_type: str
+    sequence: str         # nucleotide sequence
     synonyms:  str[]
+    summary: str          # best available summary of information about a gene
+    summary_source: str
+    taxon_id: int                        # 7227 for dmel / 9606 for hsa
 
 
 # Human: 
