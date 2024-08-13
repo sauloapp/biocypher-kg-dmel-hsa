@@ -31,7 +31,7 @@ from biocypher_metta.adapters import Adapter
 from biocypher._logger import logger
 
 
-class ScRNASeqExpressionAdapter(Adapter):
+class ExpressionValueAdapter(Adapter):
 
     def __init__(self, write_properties, add_provenance, dmel_data_filepath):
         self.dmel_data_filepath = dmel_data_filepath
@@ -39,15 +39,15 @@ class ScRNASeqExpressionAdapter(Adapter):
         self.source = 'FLYBASE'
         self.source_url = 'https://flybase.org/'
 
-        super(ScRNASeqExpressionAdapter, self).__init__(write_properties, add_provenance)
+        super(ExpressionValueAdapter, self).__init__(write_properties, add_provenance)
 
 
     def get_edges(self):
-        expression_table= FlybasePrecomputedTable(self.dmel_data_filepath)
-        self.version = expression_table.extract_date_string(self.dmel_data_filepath)
+        gene_genetic_table= FlybasePrecomputedTable(self.dmel_data_filepath)
+        self.version = gene_genetic_table.extract_date_string(self.dmel_data_filepath)
         # header:
         #Starting_gene(s)_symbol	Starting_gene(s)_FBgn	Interacting_gene(s)_symbol	Interacting_gene(s)_FBgn	Interaction_type	Publication_FBrf
-        rows = expression_table.get_rows()
+        rows = gene_genetic_table.get_rows()
         for row in rows:
             if "Starting_gene(s)_FBgn" in row[1]:     # to skip header (columns' names)
                 continue

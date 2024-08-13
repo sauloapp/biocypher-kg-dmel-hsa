@@ -107,8 +107,10 @@ gencode_gene:
     args:
       dmel_filepath: /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/gencode/Drosophila_melanogaster.BDGP6.46.59.gtf.gz
       dmel_gene_alias_file_path: ./aux_files/Drosophila_melanogaster.gene_info.gz
+      dmel_summaries_filepath: /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/full/flybase/best_gene_summary_fb_2024_03.tsv.gz
       hsa_filepath: /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/gencode/gencode.annotation.gtf.gz
       hsa_gene_alias_file_path: ./aux_files/Homo_sapiens.gene_info.gz
+      hsa_summaries_filepath: /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/
 
   outdir: gencode/gene
   nodes: True
@@ -142,6 +144,7 @@ gencode_exon:
   nodes: True
   edges: False
 
+
 transcribed_to:
   adapter:
     module: biocypher_metta.adapters.gencode_transcript_adapter
@@ -167,6 +170,36 @@ transcribed_from:
       label: transcribed_from
 
   outdir: gencode
+  nodes: False
+  edges: True
+
+
+scRNASeq_library:
+  adapter:
+    module: biocypher_metta.adapters.dmel.scRNASeq_expression_adapter
+    cls: ScRNASeqExpressionAdapter
+    args:
+      dmel_data_filepath: /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/flybase/scRNA-Seq_gene_expression_fb_2024_03.tsv.gz
+      #hsa_filepath: /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/uniprot/uniprot_sprot_human.dat.gz
+      type: scRNASeq library
+      label: scrnaseq_library
+
+  outdir: rnaseq
+  nodes: True
+  edges: False
+
+
+expression_value:
+  adapter:
+    module: biocypher_metta.adapters.expression_value_adapter
+    cls: ExpressionValueAdapter
+    args:
+      dmel_data_filepath: /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/flybase/scRNA-Seq_gene_expression_fb_2024_03.tsv.gz
+      #hsa_filepath: /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/uniprot/uniprot_sprot_human.dat.gz
+      type: expression value
+      label: expression_value
+
+  outdir: rnaseq
   nodes: False
   edges: True
 
