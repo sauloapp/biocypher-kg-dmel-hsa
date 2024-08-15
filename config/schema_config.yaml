@@ -63,9 +63,12 @@ scRNASeq library:
       An experiment that is a set of genes and their expression values.
   properties:
     name: str
-    experiment_info: str
-    tissue: str
-    cell_type: str
+    experiment_info: str[]
+    tissue_info: str[]
+    cell_type_id: str
+    taxon_id: int                        # 7227 for dmel / 9606 for hsa
+    source: str
+    source_url: str
 
 
 expression value:
@@ -73,13 +76,14 @@ expression value:
   represented_as: edge
   inherit_properties: false
   input_label: expression_value
-  _source: gene
-  _target: scRNASeq library
+  source: gene
+  target: scRNASeq library
   description: >-
     A single value for a numeric estimation of a gene expression as measured by a given methodology (represented by the library).
   properties:
-    value: float[]
-    value_description: str[]    # Acronym or term to clarify the expression value: "RPKM", "BIN VALUE", "SPREAD",
+    value_and_description: list[tuple]]
+    #float[]
+    #value_description: str[]    # Acronym or term to clarify the expression value: "RPKM", "BIN VALUE", "SPREAD",
                                 # "AFFYMETRIX CALL", "AFFYMETRIX p_VALUE", etc
                                 # This property is mandatory: value_description[i] refers to value[i] for all i.
     taxon_id: int                        # 7227 for dmel / 9606 for hsa

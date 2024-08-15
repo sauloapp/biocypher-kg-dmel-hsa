@@ -36,40 +36,6 @@ class FlybasePrecomputedTable:
             self.__rows.append(row)
 
 
-
-    # def _proces_input_tsv(self, input_file_name: str):
-    #     header = None
-    #     previous: str = ""
-    #     if input_file_name.endswith(".gz"):
-    #         input = gzip.open(input_file_name, 'rt')
-    #     elif input_file_name.endswith(".tsv"):
-    #         input = open(input_file_name, 'r')
-    #     else:
-    #         print(f'Invalid input file type. Only gzipped (.gz) or .tsv are allowed...')
-    #         return
-    #     while True:
-    #         row = input.readline()
-    #         if not row:
-    #             break
-    #
-    #         # strip() added to handle "blank" rows in some TSVs
-    #         if not row.strip():
-    #             continue
-    #
-    #         if not row.startswith("#"):
-    #             if header is None:
-    #                 header = previous.lstrip("# \t")
-    #                 header = [column_name.strip() for column_name in header.split('\t')]
-    #                 self._set_header(header)
-    #                 print(header)
-    #             #else:
-    #             row_list = [value.strip() for value in row.split('\t')]
-    #             self._add_row(row_list)
-    #         if not row.startswith("#-----"): # and not row.startswith("## Finished "):
-    #             previous = row
-    #         if  not row.startswith("## Finished "):
-    #             previous = row
-
     def _proces_input_tsv(self, input_file_name: str):
 
         header = None
@@ -128,7 +94,7 @@ class FlybasePrecomputedTable:
                     header = previous.lstrip("#\t ")
                     header = [column_name.strip() for column_name in header.split('\t') ]
                     self._set_header(header)
-                    print(header)
+                    #print(header)
                 else:
                     row_list = [value.strip() for value in row.split('\t')]
                     self._add_row(row_list)
@@ -198,6 +164,15 @@ class FlybasePrecomputedTable:
 
 
     def test(self):
+        dir_path = "/home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/full/flybase"
+        dir_path = "/home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/flybase"
+        file_names = [os.path.join(dir_path, file) for file in os.listdir(dir_path) if
+                      os.path.isfile(os.path.join(dir_path, file))]
+
+        for file in file_names:
+            print(file)
+            FlybasePrecomputedTable(file)
+
         # Set the directory containing the .tsv files
         #directory = '/home/saulo/snet/hyperon/das/das/flybase2metta/fb_data/2023_05'
         directory = '/home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/flybase'
@@ -212,10 +187,3 @@ class FlybasePrecomputedTable:
 
 
 
-dir_path = "/home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/full/flybase"
-#dir_path = "/home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/flybase"
-file_names = [os.path.join(dir_path, file) for file in os.listdir(dir_path) if os.path.isfile(os.path.join(dir_path, file))]
-
-for file in file_names:
-    print(file)
-    FlybasePrecomputedTable(file)

@@ -179,10 +179,13 @@ scRNASeq_library:
     module: biocypher_metta.adapters.dmel.scRNASeq_expression_adapter
     cls: ScRNASeqExpressionAdapter
     args:
-      dmel_data_filepath: /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/flybase/scRNA-Seq_gene_expression_fb_2024_03.tsv.gz
+      dmel_data_filepaths: [
+                             /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/flybase/scRNA-Seq_gene_expression_fb_2024_02.tsv.gz,
+                             /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/flybase/high-throughput_gene_expression_fb_2024_02.tsv.gz,
+      ]
       #hsa_filepath: /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/uniprot/uniprot_sprot_human.dat.gz
-      type: scRNASeq library
-      label: scrnaseq_library
+      #type: scRNASeq library
+      #label: scrnaseq_library
 
   outdir: rnaseq
   nodes: True
@@ -194,10 +197,10 @@ expression_value:
     module: biocypher_metta.adapters.expression_value_adapter
     cls: ExpressionValueAdapter
     args:
-      dmel_data_filepath: /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/flybase/scRNA-Seq_gene_expression_fb_2024_03.tsv.gz
+      dmel_data_filepath: /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/flybase/scRNA-Seq_gene_expression_fb_2024_02.tsv.gz
       #hsa_filepath: /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/uniprot/uniprot_sprot_human.dat.gz
-      type: expression value
-      label: expression_value
+      #type: expression value
+      #label: expression_value
 
   outdir: rnaseq
   nodes: False
