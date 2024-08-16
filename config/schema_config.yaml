@@ -53,14 +53,22 @@ non coding element:
     source_url: str
 
 
-# The unique ID for a library at Flybase is its FBlc#
-scRNASeq library:
+# The unique ID for a library (or cluster) at Flybase is its FBlc#
+# this schema culd be used to reppresent a library or  a cluster. Flybase uses FBlc# ids for:
+#
+#                         cluster               single cell
+#                         cluster_analysis      single cell
+#                         sample                high-throughput expression data
+#                         dataset               high-throughput expression data
+#                         RNASource library     RNA-seq RPKM
+#                         parent library
+RNASeq library:
   is_a: entity
   represented_as: node
   inherit_properties: false
-  input_label: scrnaseq_library
+  input_label: rnaseq_library
   description: >-
-      An experiment that is a set of genes and their expression values.
+      A library/cluster/sample that is a set of genes and their expression values.
   properties:
     name: str
     experiment_info: str[]
@@ -76,19 +84,21 @@ expression value:
   represented_as: edge
   inherit_properties: false
   input_label: expression_value
-  source: gene
-  target: scRNASeq library
+  source: [gene, transcript, exon]
+  target: RNASeq library
   description: >-
-    A single value for a numeric estimation of a gene expression as measured by a given methodology (represented by the library).
+    A set of values for numeric estimation of single gene/transcript expression as measured by a given methodology (represented by the library).
   properties:
     value_and_description: list[tuple]]
+    taxon_id: int                        # 7227 for dmel / 9606 for hsa
+    source: str
+    source_url: str
+
     #float[]
     #value_description: str[]    # Acronym or term to clarify the expression value: "RPKM", "BIN VALUE", "SPREAD",
                                 # "AFFYMETRIX CALL", "AFFYMETRIX p_VALUE", etc
                                 # This property is mandatory: value_description[i] refers to value[i] for all i.
-    taxon_id: int                        # 7227 for dmel / 9606 for hsa
-    source: str
-    source_url: str
+
 
 
 # 1.4)
