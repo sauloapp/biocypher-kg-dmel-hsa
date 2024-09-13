@@ -57,6 +57,8 @@ Dmel_R6.58	FBgn0000003	7SLRNA:CR32864	FBlc0000085	modENCODE_mRNA-Seq_development
 
 '''
 
+import psycopg2
+import csv
 from biocypher_metta.adapters.dmel.flybase_tsv_reader import FlybasePrecomputedTable
 from biocypher_metta.adapters import Adapter
 from biocypher._logger import logger
@@ -74,25 +76,25 @@ class ExpressionValueAdapter(Adapter):
 
     def get_edges(self):
         for dmel_data_filepath in self.dmel_data_filepaths:
-            if "scRNA-Seq_gene_expression_fb" in dmel_data_filepath:
-                rna_table= FlybasePrecomputedTable(dmel_data_filepath)
-                self.version = rna_table.extract_date_string(dmel_data_filepath)
+            rnaseq_table = FlybasePrecomputedTable(dmel_data_filepath)
+            self.version = rnaseq_table.extract_date_string(dmel_data_filepath)
+            if "scRNA-Seq_gene_expression_fb" in dmel_data_filepath:                
                 # header:
                 # Pub_ID	Pub_miniref	Clustering_Analysis_ID	Clustering_Analysis_Name	Source_Tissue_Sex	Source_Tissue_Stage
                 # Source_Tissue_Anatomy	Cluster_ID	Cluster_Name	Cluster_Cell_Type_ID	Cluster_Cell_Type_Name	Gene_ID	Gene_Symbol	Mean_Expression	Spread
-                rows = rna_table.get_rows()
+                rows = rnaseq_table.get_rows()
                 for row in rows:
                     props = {}
                     #source_ids = row[1].split('|')
-                    _source = row[11]    # gene FBgn#
+                    _source = ('gene', row[11])    # gene FBgn#
                     _target = row[7]     # library FBlc = Cluster ID#
 
                     props['value_and_description'] = [
-                        ( float(row[13]),        # Mean_Expression
+                        ( row[13],        # Mean_Expression
                           "Mean_Expression: is the average level of expression of the gene across all "
                                                   "cells of the cluster in which the gene is detected at all"
                         ),
-                        ( float(row[14]),    # Spread
+                        ( row[14],    # Spread
                           "Spread: is the proportion of cells in the cluster in which the gene is detected"
                         )
                     ]
@@ -102,20 +104,18 @@ class ExpressionValueAdapter(Adapter):
                         props['source_url'] = self.source_url
                     yield _source, _target, self.label, props
             elif "high-throughput_gene_expression_fb" in dmel_data_filepath:
-                rna_table = FlybasePrecomputedTable(dmel_data_filepath)
-                self.version = rna_table.extract_date_string(dmel_data_filepath)
                 # header:
                 # High_Throughput_Expression_Section	Dataset_ID	Dataset_Name	Sample_ID	Sample_Name	Gene_ID
                 # Gene_Symbol	Expression_Unit	Expression_Value
-                rows = rna_table.get_rows()
+                rows = rnaseq_table.get_rows()
                 for row in rows:
                     props = {}
                     # source_ids = row[1].split('|')
-                    _source = row[4]  # Gene_ID   FBgn#
-                    _target = row[3]  # Sample_ID  FBlc#
+                    _source = ('gene', row[5])  # Gene_ID   FBgn#
+                    _target = row[3]    # Sample_ID  FBlc#
 
                     props['value_and_description'] = [
-                        (float(row[8]), # Expression_Value
+                        (row[8],        # Expression_Value
                          row[7]         # Expression_Unit
                          ),
                     ]
@@ -125,15 +125,13 @@ class ExpressionValueAdapter(Adapter):
                         props['source_url'] = self.source_url
                     yield _source, _target, self.label, props
             elif "gene_rpkm_report_fb" in dmel_data_filepath:
-                rna_table = FlybasePrecomputedTable(dmel_data_filepath)
-                self.version = rna_table.extract_date_string(dmel_data_filepath)
                 # header:
                 # Release_ID	FBgn#	GeneSymbol	Parent_library_FBlc#	Parent_library_name	RNASource_FBlc#
                 # RNASource_name	RPKM_value	Bin_value	Unique_exon_base_count	Total_exon_base_count	Count_used
-                rows = rna_table.get_rows()
+                rows = rnaseq_table.get_rows()
                 for row in rows:
                     props = {}
-                    _source = row[1]  # FBgn#
+                    _source = ('gene', row[1]) # FBgn#
                     _target = row[5]  # RNASource_FBlc#
 
                     props['value_and_description'] = [
@@ -158,5 +156,241 @@ class ExpressionValueAdapter(Adapter):
                         props['source'] = self.source
                         props['source_url'] = self.source_url
                     yield _source, _target, self.label, props
+
+            # FCA2 gene expression:
+            # The fca2 file contents were generated in the "scripts/get_flyatlas2_gene_data.py" script by method
+            # convert_gene_files()
+            #elif "fca2_fbgn_gene" in dmel_data_filepath or "fca2_fbgn_transcriptGene" in dmel_data_filepath:
+            elif "fca2" in dmel_data_filepath:
+                fca2_tissues_file_path = 'aux_files/fca2_to_fb_tissues.tsv'                    
+                if "transcript" in dmel_data_filepath:
+                    _, tissue_library_dict = self.build_fca2_fb_tissues_libraries_ids_dicts(fca2_tissues_file_path)
+                else:
+                    tissue_library_dict, _ = self.build_fca2_fb_tissues_libraries_ids_dicts(fca2_tissues_file_path)
+                self.version = rnaseq_table.extract_date_string(dmel_data_filepath)
+                self.source = 'FlyCellAtlas2'
+                self.source_url = 'https://flyatlas.gla.ac.uk/FlyAtlas2/index.html?page=help'
+                rows = rnaseq_table.get_rows()
+                
+                # fca2_fbgn_gene header:
+                # FBgene ID	      Tissue stage and sex	    Tissue	    FPKM	SD	Enrichment                
+                if 'fbgn_gene' in dmel_data_filepath:
+                    for row in rows:
+                        try:
+                            # Tissue stage and sex']}_{row['_gene file tissue']}"
+                            library_data = tissue_library_dict[ f'{row[1]}_{row[2]}' ]
+                        except KeyError:
+                            print(f"No library data for key: {f'{row[1]}_{row[2]}'}. Gene: {row[0]}")
+                            if f'{row[1]}_{row[2]}' == "Larval_Garland cells":
+                                library_data = ("Garland Organ", "FBlc0006089", "RNA-Seq_Profile_FlyAtlas2_L3_Garland_Organ") 
+                        # target
+                        library_id = library_data[1]
+                        source = row[0]
+                        props['value_and_description'] = [
+                            ('FPKM',        # Expression_Unit
+                                row[3]         # Expression_Value
+                            ),
+                            ('SD',          # Expression_Unit
+                                row[4]         # Expression_Value
+                            ),
+                            ('Enrichment',  # Expression_Unit
+                                row[5]         # Expression_Value
+                            ),
+                        ]                        
+                        props['taxon_id'] = 7227
+                        if self.add_provenance:
+                            props['source'] = self.source
+                            props['source_url'] = self.source_url
+                        
+                        yield source, library_id, self.label, props
+
+                # fca2_fbgn_Mir_gene header:
+                # FBgene ID	      Tissue stage and sex	    Tissue	    TPM 	SD	Enrichment                
+                elif 'Mir_gene' in dmel_data_filepath:
+                    for row in rows:
+                        try:
+                            # Tissue stage and sex']}_{row['_gene file tissue']}"
+                            library_data = tissue_library_dict[ f'microRNA_{row[1]}_{row[2]}' ]
+                        except KeyError:
+                            print(f"No library data for key: {f'{row[1]}_{row[2]}'}. MicroRNA gene: {row[0]}")
+                            if f'{row[1]}_{row[2]}' == "Adult Male_Whole body":
+                                library_data = ("Whole", "FBlc0005729", "microRNA-Seq_TPM_FlyAtlas2_Adult_Male")
+                            elif f'{row[1]}_{row[2]}' == "Adult Female_Whole body":
+                                library_data = ("Whole", "FBlc0005730", "microRNA-Seq_TPM_FlyAtlas2_Adult_Female")                            
+                        source = row[0]
+                        # target
+                        library_id = library_data[1]
+                        props['value_and_description'] = [
+                            ('TPM',         # Expression_Unit
+                                row[3]         # Expression_Value
+                            ),
+                            ('SD',          # Expression_Unit
+                                row[4]         # Expression_Value
+                            ),
+                            ('Enrichment',  # Expression_Unit
+                                row[5]         # Expression_Value
+                            ),
+                        ]
+                        props['taxon_id'] = 7227
+                        if self.add_provenance:
+                            props['source'] = self.source
+                            props['source_url'] = self.source_url
+                        
+                        yield source, library_id, self.label, props
+
+                # fca2_fbgn_transcriptGene header:
+                # FBgene ID     Tissue stage and sex	Tissue    FBtranscript ID	    FPKM	SD
+                elif "transcriptGene" in dmel_data_filepath:
+                    for row in rows:
+                        # try:
+                        #     # Tissue stage and sex']}_{row['_gene file tissue']}"
+                        #     library_data = tissue_library_dict[ f'{row[1]}_{row[2]}' ]
+                        # except KeyError:
+                        #     print(f"No library data for key: {f'{row[1]}_{row[2]}'}. transcriptGene: {row[0]}")
+                        #     if f'{row[1]}_{row[2]}' == "Larval_Garland cells":
+                        #         library_data = ("Garland Organ", "FBlc0006089", "RNA-Seq_Profile_FlyAtlas2_L3_Garland_Organ")                            
+                        
+                        library_data = tissue_library_dict[ f'{row[1]}_{row[2]}' ]
+                        # target
+                        library_id = library_data[1]                        
+                        source = row[3].split('/')[-1]
+                        props['value_and_description'] = [
+                            ('FPKM',        # Expression_Unit
+                                row[4]         # Expression_Value
+                            ),
+                            ('SD',          # Expression_Unit
+                                row[5]         # Expression_Value
+                            ),
+                        ]
+                        props['taxon_id'] = 7227
+                        if self.add_provenance:
+                            props['source'] = self.source
+                            props['source_url'] = self.source_url
+                        
+                        yield source, library_id, self.label, props
+
+                # fca2_fbgn_Mir_transcript header:
+                # FBgene ID     Tissue stage and sex	Tissue    FBtranscript ID	    TPM 	SD              
+                elif 'Mir_transcript' in dmel_data_filepath:
+                    for row in rows:
+                        try:
+                            # Tissue stage and sex']}_{row['_gene file tissue']}"
+                            library_data = tissue_library_dict[ f'microRNA_{row[1]}_{row[2]}' ]
+                        except KeyError:
+                            print(f"No library data for key: {f'{row[1]}_{row[2]}'}. transcriptMicroRNA gene: {row[0]}")
+                            if f'{row[1]}_{row[2]}' == "Adult Male_Whole body":
+                                library_data = ("Whole", "FBlc0005729", "microRNA-Seq_TPM_FlyAtlas2_Adult_Male")
+                            elif f'{row[1]}_{row[2]}' == "Adult Female_Whole body":
+                                library_data = ("Whole", "FBlc0005730", "microRNA-Seq_TPM_FlyAtlas2_Adult_Female")
+
+                        # target
+                        library_id = library_data[1]
+                        source = row[3].split('/')[-1]
+                        props['value_and_description'] = [
+                            ('TPM',        # Expression_Unit
+                                row[4]         # Expression_Value
+                            ),
+                            ('SD',          # Expression_Unit
+                                row[5]         # Expression_Value
+                            ),
+                        ]   
+                        props['taxon_id'] = 7227
+                        if self.add_provenance:
+                            props['source'] = self.source
+                            props['source_url'] = self.source_url
+                        
+                        yield source, library_id, self.label, props
+
+
+
+    def build_fca2_fb_tissues_libraries_ids_dicts(self, file_path):
+        gene_tissue_library_dict = {}
+        transcript_tissue_library_dict = {} 
+            
+        # Establish a connection to the FlyBase database
+        conn = psycopg2.connect(
+            host="chado.flybase.org",
+            database="flybase",
+            user="flybase"
+        )    
+        cur = conn.cursor()
+        cur.execute("SELECT uniquename, name FROM library WHERE library.name LIKE 'RNA-Seq_Profile_FlyAtlas2_%';") #RNA-Seq_Profile_FlyAtlas2_
+        results = cur.fetchall() 
+        mir_cur = conn.cursor()
+        mir_cur.execute("SELECT uniquename, name FROM library WHERE library.name LIKE 'microRNA-Seq_TPM_FlyAtlas2_%';")
+        #mir_cur.execute("SELECT uniquename, name FROM library WHERE library.name LIKE 'microRNA-Seq%';")
+        mir_results = mir_cur.fetchall()
+        # print(mir_results)
+        # print(len(mir_results))
+        
+        with open(file_path, mode='r', encoding='utf-8') as file:
+            reader = csv.DictReader(file, delimiter='\t')
+            # row:
+            # Tissue stage and sex	    _gene file tissue	    _transcriptGene file tissue	    FB_tissue
+            for row in reader:
+                for result in results:
+                    # print(f'reg: {result[-1]}')
+                    # print(f"tiss: {row['FB_tissue'].replace(' ', '_')}")
+                    if row['Tissue stage and sex'] == 'Larval':
+                        tss = "L3"
+                    else:
+                        tss = row['Tissue stage and sex']
+                    # print(f"prob_: {tss}_{row['_gene file tissue']}")
+                    # print(f"ends: {tss.replace(' ', '_')}_{row['FB_tissue'].replace(' ', '_')}")
+                    if result[-1].endswith(f"{tss.replace(' ', '_')}_{row['FB_tissue'].replace(' ', '_')}"):
+                        library_name = result[-1] if result else None
+                        library_uniquename = result[0] if result else None
+                        gene_key = f"{row['Tissue stage and sex']}_{row['_gene file tissue']}"                        
+                        gene_value = (row['FB_tissue'], library_uniquename, library_name)
+                        #print(f"gk: {gene_key}|||{gene_value}")
+                        # Add the value to the tissue_library_dict
+                        if gene_key not in gene_tissue_library_dict:
+                            gene_tissue_library_dict[gene_key] = gene_value
+
+                        transcript_key = f"{row['Tissue stage and sex']}_{row['_transcriptGene file tissue']}"
+                        transcript_value = (row['FB_tissue'], library_uniquename, library_name)
+
+                        # Add the value to the transcript_dict
+                        if transcript_key not in transcript_tissue_library_dict:
+                            transcript_tissue_library_dict[transcript_key] = transcript_value
+                        break
+                for result in mir_results:
+                    # print(f'mir: {result[-1]}')
+                    # print(f"tiss: {row['FB_tissue'].replace(' ', '_')}")
+                    if row['Tissue stage and sex'] == 'Larval':
+                        tss = "L3"
+                    else:
+                        tss = row['Tissue stage and sex']
+                    # print(f"prob_: {tss}_{row['_gene file tissue']}")
+                    # print(f"ends: {tss.replace(' ', '_')}_{row['FB_tissue'].replace(' ', '_')}")
+                    if result[-1].endswith(f"{tss.replace(' ', '_')}_{row['FB_tissue'].replace(' ', '_')}"):
+                        library_name = result[-1] if result else None
+                        library_uniquename = result[0] if result else None
+                        gene_key = f"microRNA_{row['Tissue stage and sex']}_{row['_gene file tissue']}"
+                        # print(f"gk: {gene_key}")#microRNA_Larval_Garland cells
+                        gene_value = (row['FB_tissue'], library_uniquename, library_name)
+                        #print(f"gk: {gene_key}///{gene_value}")
+
+                        # Add the value to the tissue_library_dict
+                        if gene_key not in gene_tissue_library_dict:
+                            gene_tissue_library_dict[gene_key] = gene_value
+
+                        transcript_key = f"microRNA_{row['Tissue stage and sex']}_{row['_transcriptGene file tissue']}"
+                        transcript_value = (row['FB_tissue'], library_uniquename, library_name)
+
+                        # Add the value to the transcript_dict
+                        if transcript_key not in transcript_tissue_library_dict:
+                            transcript_tissue_library_dict[transcript_key] = transcript_value
+                        break
+                
+        cur.close()
+        mir_cur.close()
+        conn.close()
+
+        return gene_tissue_library_dict, transcript_tissue_library_dict
+
+
+
+
 
 

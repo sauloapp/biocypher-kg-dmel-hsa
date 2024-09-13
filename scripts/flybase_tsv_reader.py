@@ -32,8 +32,6 @@ class FlybasePrecomputedTable:
         self.__header = header
 
     def _add_row(self, row):
-        if row[0] == self.__header[0]:
-            return
         if row not in self.__rows:
             self.__rows.append(row)
 
@@ -83,7 +81,7 @@ class FlybasePrecomputedTable:
 
 ##########################################################################################################
         lines = input.readlines()
-        #print(f'Lines to read: {len(lines)}')
+        print(f'Lines to read: {len(lines)}')
         for i in range(0, len(lines)):
         #for row in input:
             row = lines[i]
@@ -96,7 +94,7 @@ class FlybasePrecomputedTable:
                     header = previous.lstrip("#\t ")
                     header = [column_name.strip() for column_name in header.split('\t') ]
                     self._set_header(header)
-                    # print(f'header: {header}')
+                    #print(header)
                 else:
                     row_list = [value.strip() for value in row.split('\t')]
                     self._add_row(row_list)
@@ -156,8 +154,8 @@ class FlybasePrecomputedTable:
                 try:
                     self._process_tsv(file_path)
                     print(f"File: {filename}")
-                    # print("Header:\n", self.__header)
-                    # print("Rows:\n", self.__rows)
+                    print("Header:\n", self.__header)
+                    print("Rows:\n", self.__rows)
                     print()
                     self.__rows = []
                 except Exception as e:

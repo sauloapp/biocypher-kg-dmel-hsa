@@ -3,11 +3,11 @@ import pandas as pd
 import gzip
 #from biocypher_metta.adapters.dmel.flybase_tsv_reader import FlybasePrecomputedTable
 
-expanded_genes_list = ["Su(var)205", "FBgn0003607", "Top3beta", "FBgn0026015", "Mef2", "FBgn0011656", "Clk", "FBgn0023076",
-                       "Dref", "FBgn0015664", "TfIIB", "FBgn0004915", "Myc", "FBgn0262656", "AGO2", "FBgn0087035",
-                       "Nipped-B", "FBgn0026401", "Cp190", "FBgn0000283", "TfIIA-L", "FBgn0011289", "Trl", "FBgn0013263",
-                       "ash1", "FBgn0005386", "Raf", "FBgn0003079", "Abd-B", "FBgn0000015", "Orc2", "FBgn0286788",
-                       "Rbf", "FBgn0015799", "mof", "FBgn0014340", "msl-1", "FBgn0005617", "Hmr", "FBgn0001206"]
+# expanded_genes_list = ["Su(var)205", "FBgn0003607", "Top3beta", "FBgn0026015", "Mef2", "FBgn0011656", "Clk", "FBgn0023076",
+#                        "Dref", "FBgn0015664", "TfIIB", "FBgn0004915", "Myc", "FBgn0262656", "AGO2", "FBgn0087035",
+#                        "Nipped-B", "FBgn0026401", "Cp190", "FBgn0000283", "TfIIA-L", "FBgn0011289", "Trl", "FBgn0013263",
+#                        "ash1", "FBgn0005386", "Raf", "FBgn0003079", "Abd-B", "FBgn0000015", "Orc2", "FBgn0286788",
+#                        "Rbf", "FBgn0015799", "mof", "FBgn0014340", "msl-1", "FBgn0005617", "Hmr", "FBgn0001206"]
 
 def search_dataframe(target_string, df):
     # Obtém o número de linhas e colunas no DataFrame
@@ -517,11 +517,12 @@ def expand_gene_list_data(genes_list, fb_fbgn_to_fbtr_fbpp_file):
 genes_list = ["Su(var)205", "Top3beta", "Mef2", "Clk", "Dref", "TfIIB", "Myc", "AGO2", "Nipped-B", "Cp190", "TfIIA-L",
                "Trl", "ash1", "Raf", "Abd-B", "Orc2", "Rbf", "mof", "msl-1", "Hmr"]
 
-#/home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/full/fbgn_fbtr_fbpp_expanded_fb_2024_03.tsv.gz
-expanded_genes_list = expand_gene_list_data(genes_list, "/mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/full/flybase/fbgn_fbtr_fbpp_expanded_fb_2024_03.tsv.gz")
+tr_pp_file = "/home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/full/flybase/fbgn_fbtr_fbpp_expanded_fb_2024_03.tsv.gz"
+#tr_pp_file = "/mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/full/flybase/fbgn_fbtr_fbpp_expanded_fb_2024_03.tsv.gz"
+expanded_genes_list = expand_gene_list_data(genes_list, tr_pp_file)
 
 print(expanded_genes_list)
-
+exit(9)
 # expanded_genes_list = ["Su(var)205", "FBgn0003607", "Top3beta", "FBgn0026015", "Mef2", "FBgn0011656", "Clk", "FBgn0023076",
 #                        "Dref", "FBgn0015664", "TfIIB", "FBgn0004915", "Myc", "FBgn0262656", "AGO2", "FBgn0087035",
 #                        "Nipped-B", "FBgn0026401", "Cp190", "FBgn0000283", "TfIIA-L", "FBgn0011289", "Trl", "FBgn0013263",

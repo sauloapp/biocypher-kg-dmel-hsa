@@ -86,19 +86,19 @@ class GeneGroupAdapter(Adapter):
                 continue
             else:
                 props = {}
-                props['taxon_id'] = 7227
                 if genes_ids != []:
-                    props['genes_ids'] = genes_ids
+                    props['genes'] = genes_ids
                 props['group_symbol'] = group_symbol
                 props['group_name'] = group_name
                 if parents != []:
-                    props['parent_group_id'] = parents
+                    props['parent_groups'] = parents
                 try:
                     hgnc_id = hgnc_dict[group_id]
                 except KeyError as k:
                     hgnc_id= None
                 if hgnc_id != None:
                     props['HGNC_family_ID'] = hgnc_id
+                props['taxon_id'] = 7227
                 if self.add_provenance:
                     props['source'] = self.source
                     props['source_url'] = self.source_url

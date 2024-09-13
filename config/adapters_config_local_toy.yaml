@@ -176,15 +176,22 @@ transcribed_from:
 
 RNASeq_library:
   adapter:
-    module: biocypher_metta.adapters.dmel.RNASeq_expression_adapter
-    cls: RNASeqExpressionAdapter
+    module: biocypher_metta.adapters.dmel.RNASeq_library_adapter
+    cls: RnaseqLibraryAdapter
     args:
       dmel_data_filepaths: [
                              /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/flybase/scRNA-Seq_gene_expression_fb_2024_02.tsv.gz,
                              /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/flybase/high-throughput_gene_expression_fb_2024_02.tsv.gz,
                              /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/flybase/gene_rpkm_report_fb_2024_02.tsv.gz,
+                             /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/fca2/fca2_fbgn_gene_output.tsv.gz,
+                             /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/fca2/fca2_fbgn_transcriptGene_output.tsv.gz,
+                             /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/fca2/fca2_fbgn_Mir_gene_output.tsv.gz,
+                             /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/fca2/fca2_fbgn_Mir_transcript_output.tsv.gz,
+                             /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/afca/afca_group_by_mean.tsv
       ]
-      #hsa_filepath: /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/uniprot/uniprot_sprot_human.dat.gz
+      hsa_filepaths: [
+
+      ]
       #type: scRNASeq library
       #label: scrnaseq_library
 
@@ -202,6 +209,11 @@ expression_value:
                              /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/flybase/scRNA-Seq_gene_expression_fb_2024_02.tsv.gz,
                              /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/flybase/high-throughput_gene_expression_fb_2024_02.tsv.gz,
                              /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/flybase/gene_rpkm_report_fb_2024_02.tsv.gz,
+                             /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/fca2/fca2_fbgn_gene_output.tsv.gz,
+                             /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/fca2/fca2_fbgn_transcriptGene_output.tsv.gz,
+                             /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/fca2/fca2_fbgn_Mir_gene_output.tsv.gz,
+                             /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/fca2/fca2_fbgn_Mir_transcript_output.tsv.gz,
+                             /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/afca/afca_group_by_mean.tsv
       ]
       #hsa_filepath: /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/uniprot/uniprot_sprot_human.dat.gz
       #type: expression value
