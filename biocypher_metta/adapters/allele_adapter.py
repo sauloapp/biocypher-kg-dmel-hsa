@@ -54,7 +54,7 @@ class AlleleAdapter(Adapter):
             props = {}
             allele_id = row[0]
             props['allele_symbol'] = row[1]
-            props['gene_id'] = row[2]
+            props['gene'] = row[2]
             props['taxon_id'] = 7227
 
             yield allele_id, self.label, props

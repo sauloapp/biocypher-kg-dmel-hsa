@@ -60,7 +60,7 @@ class MeTTaWriter:
                 source_type = v.get("source", None)
                 target_type = v.get("target", None)
                 if source_type is not None and target_type is not None:
-                    # ## TODO fix this in the scheme config
+                    # ## TODO fix this in the schema config
                     if isinstance(v["input_label"], list):      # I think this is never taken...
                         label = self.convert_input_labels(v["input_label"][0])
                         source_type = self.convert_input_labels(source_type[0])
@@ -68,6 +68,9 @@ class MeTTaWriter:
                     else:
                         label = self.convert_input_labels(v["input_label"])
                         source_type = self.convert_input_labels(source_type)
+                        # if label == 'expression_value':
+                        #     print(f'{source_type}')
+                        #     exit(9)
                         target_type = self.convert_input_labels(target_type)
 
                     output_label = v.get("output_label", None)
@@ -80,30 +83,49 @@ class MeTTaWriter:
                     try:
                         out_str = edge_data_constructor(edge_type, source_type, target_type, label) + '\n'
                         file.write(out_str)
-                    except:
-                        print(f'{k}\n{v}')
+                    except Exception as excep:
+                        print(f'MettaWriter.edge_data_constructor: schema itens: {k}\n{v}\n{out_str}')
+                        import sys
+                        import traceback
+                        exc_type, exc_value, exc_tb = sys.exc_info()
+                        print(f"Exception type: {exc_type.__name__}")
+                        traceback.print_exc()
                         #exit(9)
                     # saulo 2024/07/31: handle "source type" being a list of types
                     if isinstance(source_type, str) and isinstance(target_type, str): # most frequent case: source_type, target_type are strings
                         self.edge_node_types[label.lower()] = {"source": source_type.lower(), "target":target_type.lower(),
                                                                "output_label": output_label.lower() if output_label is not None else None}
                     elif isinstance(source_type, list) and isinstance(target_type, str):  # gene to pathway edge schema
-                        self.edge_node_types[label.lower()] = []
-                        for a_source_type in source_type:
-                            self.edge_node_types[label.lower()].append( {"source": a_source_type.lower(), "target":target_type.lower(),
-                                                                         "output_label": output_label.lower() if output_label is not None else None} )
+                        for i in range(len(source_type)):
+                            source_type[i] = source_type[i].lower()
+                        self.edge_node_types[label.lower()] = {"source": source_type,
+                                                               "target": target_type.lower(),
+                                                               "output_label": output_label.lower() if output_label is not None else None}
+                        # self.edge_node_types[label.lower()] = []
+                        # for a_source_type in source_type:
+                        #     self.edge_node_types[label.lower()].append( {"source": a_source_type.lower(), "target":target_type.lower(),
+                        # # #                                                  "output_label": output_label.lower() if output_label is not None else None} )
+                        if label == 'expression_value':
+                            print(f'{source_type}:\n{self.edge_node_types[label]["source"]}')
+                        #    exit(9)
                     elif isinstance(source_type, str) and isinstance(target_type, list):  # expression edge schema
                         self.edge_node_types[label.lower()] = []
                         for a_target_type in target_type:
                             self.edge_node_types[label.lower()].append(
                                 {"source": source_type.lower(), "target": a_target_type.lower(),
                                  "output_label": output_label.lower() if output_label is not None else None})
-                    elif isinstance(source_type, list) and isinstance(target_type, list):   # no existing schema
+                    elif isinstance(source_type, list) and isinstance(target_type, list):   # non existing schema
+                        print("Should not be here...")
+                        exit(9)
                         self.edge_node_types[label.lower()] = []
                         for a_source_type in source_type:
                             for a_target_type in target_type:
                                 self.edge_node_types[label.lower()].append( {"source": a_source_type.lower(), "target":a_target_type.lower(),
                                                                              "output_label": output_label.lower() if output_label is not None else None} )
+
+                if label == 'expression_value':
+                    print(f'{source_type}:\n{self.edge_node_types[label]["source"]}')
+                    #exit(9)
 
             elif v["represented_as"] == "node":
                 label = v["input_label"]
@@ -169,15 +191,21 @@ class MeTTaWriter:
             source_id = source_id[1]
         else:
             source_type = self.edge_node_types[label]["source"]
+
         target_type = self.edge_node_types[label]["target"]
+        
         output_label = self.edge_node_types[label]["output_label"]
+        
         if output_label is not None:
             label = output_label
         if isinstance(source_type, list):
             def_out = ""
             for a_source_type in source_type:
-                def_out += f"({label} ({source_type} {source_id}) ({target_type} {target_id}))" + "\n"
+                def_out += f"({label} ({a_source_type} {source_id}) ({target_type} {target_id}))" + "\n"
+            print(def_out)
             def_out = def_out.rstrip('\n')
+            # print(def_out)
+            # exit(9)
         else:
             def_out = f"({label} ({source_type} {source_id}) ({target_type} {target_id}))"
         return self.write_property(def_out, properties)
@@ -236,6 +264,7 @@ class MeTTaWriter:
             labels = []
             for aLabel in label:
                 labels.append(aLabel.replace(" ", replace_char))
+            #print(f'source_types: {labels}')
             return labels
         return label.replace(" ", replace_char)
 

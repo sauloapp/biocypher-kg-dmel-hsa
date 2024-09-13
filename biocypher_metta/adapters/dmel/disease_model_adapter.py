@@ -60,7 +60,7 @@ class DiseaseModelAdapter(Adapter):
             id += 1
             props = {}
             props['taxon_id'] = 7227
-            props['gene_id'] = row[0]
+            props['gene'] = row[0]
             #if row[2] != '':
             props['gene_hgnc_id'] = row[2]
             #if row[3] != '':
@@ -69,14 +69,14 @@ class DiseaseModelAdapter(Adapter):
             #if row[5] != '':
             props['do_term_name'] = row[5]
             #if row[6] != '':
-            props['allele_id'] = row[6]
+            props['allele'] = row[6]
             #if row[8] != '':
             props['ortholog_hgnc_id'] = row[8]
             #if row[9] != '':
             props['ortholog_hgnc_symbol'] = row[9]
             #if row[10] != '':
             ev_code, alleles = self.__extract_evcode_alleles(row[10])
-            if ev_code!=None:
+            if ev_code != None:
                 props['evidence_code'] = ev_code
             if alleles != None:
                 props['interacting_alleles'] = alleles
