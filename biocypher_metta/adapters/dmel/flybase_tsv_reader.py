@@ -47,7 +47,7 @@ class FlybasePrecomputedTable:
         elif input_file_name.endswith(".tsv"):
             input = open(input_file_name, 'r')
         else:
-            print(f'Invalid input file type. Only gzipped (.gz) or .tsv are allowed...')
+            print(f'Invalid input file type. Only gzipped (.gz) or .tsv are allowed: {input_file_name}')
             return
         #while True:
 
@@ -97,9 +97,9 @@ class FlybasePrecomputedTable:
                     header = [column_name.strip() for column_name in header.split('\t') ]
                     self._set_header(header)
                     # print(f'header: {header}')
-                else:
-                    row_list = [value.strip() for value in row.split('\t')]
-                    self._add_row(row_list)
+                # else:
+                row_list = [value.strip() for value in row.split('\t')]
+                self._add_row(row_list)
             if not row.startswith("#-----") and not row.startswith("## Finished "):
                 previous = row
 
