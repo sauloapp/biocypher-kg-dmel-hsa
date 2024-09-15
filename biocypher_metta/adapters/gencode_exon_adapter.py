@@ -100,8 +100,8 @@ class GencodeExonAdapter(Adapter):
                         if check_genomic_location(self.chr, self.start, self.end, chr, start, end):
                             if self.write_properties:
                                 props = {
-                                    'gene_id': gene_id,
-                                    'transcript_id': transcript_id,
+                                    'gene': gene_id,
+                                    'transcript': transcript_id,
                                     'chr': chr,
                                     'start': start,
                                     'end': end,

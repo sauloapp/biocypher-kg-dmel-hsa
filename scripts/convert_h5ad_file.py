@@ -162,8 +162,10 @@ def expand_gene_list_data(genes_list, fb_fbgn_to_fbtr_fbpp_file):
 
 import pandas as pd
 import numpy as np
+import anndata as ad
 
-def group_obs_mean(adata, group_key, layer=None, gene_symbols=None):
+
+def group_cell_type_mean(adata, group_key, layer=None, gene_symbols=None):
     if layer is not None:
         getX = lambda x: x.layers[layer]
     else:
@@ -171,9 +173,14 @@ def group_obs_mean(adata, group_key, layer=None, gene_symbols=None):
     if gene_symbols is not None:
         new_idx = adata.var[idx]
     else:
-        new_idx = adata.var_names
-
+        new_idx = adata.var_names    
+  
+    
     grouped = adata.obs.groupby(group_key, observed=False)
+    print(adata.shape)
+    print(len(grouped))
+    #print(adata.obs)
+    #exit(9)    
     out = pd.DataFrame(
         np.zeros((adata.shape[1], len(grouped)), dtype=np.float64),
         columns=list(grouped.groups.keys()),
@@ -182,42 +189,104 @@ def group_obs_mean(adata, group_key, layer=None, gene_symbols=None):
 
     for group, idx in grouped.indices.items():
         X = getX(adata[idx])
-        # print(X)
+        # print(f'group:\n{out}')
+        # print(f'idx:\n{idx}')
         out[group] = np.ravel(X.mean(axis=0, dtype=np.float64)).tolist()
-        # print(out[group])
-        # exit(9)
+        # print(f'group[out]:\n{out[group]}')
+                
     return out
+
+
+def group_time_cell_type_mean(adata, group_key, layer=None, gene_symbols=None):
+    if layer is not None:
+        getX = lambda x: x.layers[layer]
+    else:
+        getX = lambda x: x.X
+    if gene_symbols is not None:
+        new_idx = adata.var[idx]
+    else:
+        new_idx = adata.var_names    
+    
+    # List of ages to filter
+    ages = ['5', '30', '50', '70']
+
+    # Final DataFrame to accumulate all results
+    full_out = pd.DataFrame(index=adata.var_names)
+
+    # Iterate over each cell type and age
+    for cell_type in adata.obs.afca_annotation.cat.categories:
+        for age in ages:
+            column = f'{cell_type}_{age}'
+            print(f"Processing: {column}")
+
+            # Filter data based on cell type and age
+            tmp_data = adata[ (adata.obs.age == age) & (adata.obs.afca_annotation == cell_type) ]
+            # Check if there are any rows after filtering
+            if tmp_data.shape[0] == 0:
+                print(f"No data found for {column}")
+                continue
+            
+            grouped = tmp_data.obs.groupby(group_key, observed=False)
+
+            # print(f'coluns: {list(grouped.groups.keys())}')
+            # print(f'coluns: {[column]}')
+            # exit(9)
+            # Initialize DataFrame for grouped data of this cell type and age
+            out = pd.DataFrame(
+                np.zeros((tmp_data.shape[1], len(grouped)), dtype=np.float64),
+                columns=list(grouped.groups.keys()),
+                index=adata.var_names
+            )
+
+            for group, idx in grouped.indices.items():
+                X = getX(tmp_data[idx])
+                out[group] = np.ravel(X.mean(axis=0, dtype=np.float64)).tolist()
+
+            out.columns = [column]
+            # Add the results of this iteration to the final DataFrame
+            full_out = pd.concat([full_out, out], axis=1)
+    
+    #  Add the index as a column and rename it to "#FB gene symbol"
+    full_out.reset_index(inplace=True)
+    full_out.rename(columns={'index': '#FB gene symbol'}, inplace=True)
+
+    return full_out
 
 
 print("Reading h5ad file..")
 adata = ad.read_h5ad('/home/saulo/Downloads/adata_headBody_S_v1.0.h5ad')
 print(adata)
 
-# for t in adata.obs.columns:
-#     print(adata.obs[t])
-# exit(9)
-print(adata.obs["afca_annotation"])
-print(adata.obs["age"])
-print(adata.obs["sex_age"])
-print(adata.obs["tissue"])
-print(adata.obs["total_counts"])
-print(adata.obs["total_counts_mt"])
-#exit(9)
-print(adata.obs["afca_annotation"])
-
 group_key = 'afca_annotation'  
-group_key = 'sex_age'  
-group_key = 'tissue'
-group_key = 'total_counts'  
-group_key = 'total_counts_mt'  
+group_key = 'sex_age' # :(
+group_key = 'fca_annotation'  
+group_key = 'afca_annotation'  
 layer = None 
 gene_symbols = None  
-grouped_means = group_obs_mean(adata, group_key, layer=layer, gene_symbols=gene_symbols)
-grouped_means.to_csv(f"/home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/afca_{group_key}_group_by_mean.tsv", sep='\t')
+
+# Call the function to group the data and save the result to a TSV file
+grouped_means = group_time_cell_type_mean(adata, group_key, layer=layer, gene_symbols=gene_symbols)
+grouped_means.to_csv(f"/home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/afca_{group_key}_group_by_mean.tsv", sep='\t', index=False)
+
 
 exit(9)
 
 
+# for t in adata.obs.columns:
+#     print(adata.obs[t])
+# exit(9)
+# print(adata.obs["afca_annotation"])
+# print(adata.obs["age"])
+# print(adata.obs["sex_age"])
+# print(adata.obs["tissue"])
+# print(adata.obs["total_counts"])
+# print(adata.obs["total_counts_mt"])
+# #exit(9)
+# print(adata.obs["afca_annotation"])
+# group_key = 'sex_age'  
+# group_key = 'tissue'
+# group_key = 'total_counts'  
+# group_key = 'total_counts_mt'  
 
 
 

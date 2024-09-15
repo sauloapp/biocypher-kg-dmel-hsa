@@ -76,13 +76,13 @@ class ExpressionValueAdapter(Adapter):
 
     def get_edges(self):
         for dmel_data_filepath in self.dmel_data_filepaths:
-            rnaseq_table = FlybasePrecomputedTable(dmel_data_filepath)
-            self.version = rnaseq_table.extract_date_string(dmel_data_filepath)
+            expression_table = FlybasePrecomputedTable(dmel_data_filepath)
+            self.version = expression_table.extract_date_string(dmel_data_filepath)
             if "scRNA-Seq_gene_expression_fb" in dmel_data_filepath:                
                 # header:
                 # Pub_ID	Pub_miniref	Clustering_Analysis_ID	Clustering_Analysis_Name	Source_Tissue_Sex	Source_Tissue_Stage
                 # Source_Tissue_Anatomy	Cluster_ID	Cluster_Name	Cluster_Cell_Type_ID	Cluster_Cell_Type_Name	Gene_ID	Gene_Symbol	Mean_Expression	Spread
-                rows = rnaseq_table.get_rows()
+                rows = expression_table.get_rows()
                 for row in rows:
                     props = {}
                     #source_ids = row[1].split('|')
@@ -107,7 +107,7 @@ class ExpressionValueAdapter(Adapter):
                 # header:
                 # High_Throughput_Expression_Section	Dataset_ID	Dataset_Name	Sample_ID	Sample_Name	Gene_ID
                 # Gene_Symbol	Expression_Unit	Expression_Value
-                rows = rnaseq_table.get_rows()
+                rows = expression_table.get_rows()
                 for row in rows:
                     props = {}
                     # source_ids = row[1].split('|')
@@ -128,7 +128,7 @@ class ExpressionValueAdapter(Adapter):
                 # header:
                 # Release_ID	FBgn#	GeneSymbol	Parent_library_FBlc#	Parent_library_name	RNASource_FBlc#
                 # RNASource_name	RPKM_value	Bin_value	Unique_exon_base_count	Total_exon_base_count	Count_used
-                rows = rnaseq_table.get_rows()
+                rows = expression_table.get_rows()
                 for row in rows:
                     props = {}
                     _source = ('gene', row[1]) # FBgn#
@@ -167,10 +167,14 @@ class ExpressionValueAdapter(Adapter):
                     _, tissue_library_dict = self.build_fca2_fb_tissues_libraries_ids_dicts(fca2_tissues_file_path)
                 else:
                     tissue_library_dict, _ = self.build_fca2_fb_tissues_libraries_ids_dicts(fca2_tissues_file_path)
-                self.version = rnaseq_table.extract_date_string(dmel_data_filepath)
+                # Flybase naming inconsistency does not append "Whole" to these libraries' names:
+                tissue_library_dict["microRNA_Adult Male_Whole body"] = ("Whole", "FBlc0005729", "microRNA-Seq_TPM_FlyAtlas2_Adult_Male")
+                tissue_library_dict["microRNA_Adult Female_Whole body"] = ("Whole", "FBlc0005730", "microRNA-Seq_TPM_FlyAtlas2_Adult_Female")  
+
+                self.version = expression_table.extract_date_string(dmel_data_filepath)
                 self.source = 'FlyCellAtlas2'
                 self.source_url = 'https://flyatlas.gla.ac.uk/FlyAtlas2/index.html?page=help'
-                rows = rnaseq_table.get_rows()
+                rows = expression_table.get_rows()
                 
                 # fca2_fbgn_gene header:
                 # FBgene ID	      Tissue stage and sex	    Tissue	    FPKM	SD	Enrichment                
@@ -185,16 +189,19 @@ class ExpressionValueAdapter(Adapter):
                                 library_data = ("Garland Organ", "FBlc0006089", "RNA-Seq_Profile_FlyAtlas2_L3_Garland_Organ") 
                         # target
                         library_id = library_data[1]
-                        source = row[0]
+                        source = ('gene',row[0])
                         props['value_and_description'] = [
-                            ('FPKM',        # Expression_Unit
-                                row[3]         # Expression_Value
+                            (
+                                row[3],         # Expression_Value,
+                                'FPKM',        # Expression_Unit
                             ),
-                            ('SD',          # Expression_Unit
-                                row[4]         # Expression_Value
+                            (
+                                row[4],         # Expression_Value
+                                'SD',          # Expression_Unit
                             ),
-                            ('Enrichment',  # Expression_Unit
-                                row[5]         # Expression_Value
+                            (
+                                row[5],         # Expression_Value
+                                'Enrichment',  # Expression_Unit
                             ),
                         ]                        
                         props['taxon_id'] = 7227
@@ -217,18 +224,21 @@ class ExpressionValueAdapter(Adapter):
                                 library_data = ("Whole", "FBlc0005729", "microRNA-Seq_TPM_FlyAtlas2_Adult_Male")
                             elif f'{row[1]}_{row[2]}' == "Adult Female_Whole body":
                                 library_data = ("Whole", "FBlc0005730", "microRNA-Seq_TPM_FlyAtlas2_Adult_Female")                            
-                        source = row[0]
+                        source = ('gene',row[0])
                         # target
                         library_id = library_data[1]
                         props['value_and_description'] = [
-                            ('TPM',         # Expression_Unit
-                                row[3]         # Expression_Value
+                            (
+                                row[3],         # Expression_Value
+                                'TPM',         # Expression_Unit
                             ),
-                            ('SD',          # Expression_Unit
-                                row[4]         # Expression_Value
+                            (
+                                row[4],         # Expression_Value
+                                'SD',          # Expression_Unit
                             ),
-                            ('Enrichment',  # Expression_Unit
-                                row[5]         # Expression_Value
+                            (
+                                row[5],         # Expression_Value
+                                'Enrichment',  # Expression_Unit
                             ),
                         ]
                         props['taxon_id'] = 7227
@@ -242,24 +252,26 @@ class ExpressionValueAdapter(Adapter):
                 # FBgene ID     Tissue stage and sex	Tissue    FBtranscript ID	    FPKM	SD
                 elif "transcriptGene" in dmel_data_filepath:
                     for row in rows:
-                        # try:
-                        #     # Tissue stage and sex']}_{row['_gene file tissue']}"
-                        #     library_data = tissue_library_dict[ f'{row[1]}_{row[2]}' ]
-                        # except KeyError:
-                        #     print(f"No library data for key: {f'{row[1]}_{row[2]}'}. transcriptGene: {row[0]}")
-                        #     if f'{row[1]}_{row[2]}' == "Larval_Garland cells":
-                        #         library_data = ("Garland Organ", "FBlc0006089", "RNA-Seq_Profile_FlyAtlas2_L3_Garland_Organ")                            
+                        try:
+                            # Tissue stage and sex']}_{row['_gene file tissue']}"
+                            library_data = tissue_library_dict[ f'{row[1]}_{row[2]}' ]
+                        except KeyError:
+                            print(f"No library data for key: {f'{row[1]}_{row[2]}'}. transcriptGene: {row[0]}")
+                            if f'{row[1]}_{row[2]}' == "Larval_Garland cells":
+                                library_data = ("Garland Organ", "FBlc0006089", "RNA-Seq_Profile_FlyAtlas2_L3_Garland_Organ")                            
                         
                         library_data = tissue_library_dict[ f'{row[1]}_{row[2]}' ]
                         # target
                         library_id = library_data[1]                        
-                        source = row[3].split('/')[-1]
+                        source = ('transcript', row[3].split('/')[-1])
                         props['value_and_description'] = [
-                            ('FPKM',        # Expression_Unit
-                                row[4]         # Expression_Value
+                            (
+                                row[4],         # Expression_Value
+                                'FPKM',        # Expression_Unit
                             ),
-                            ('SD',          # Expression_Unit
-                                row[5]         # Expression_Value
+                            (
+                                row[5],         # Expression_Value
+                                'SD',          # Expression_Unit
                             ),
                         ]
                         props['taxon_id'] = 7227
@@ -277,7 +289,6 @@ class ExpressionValueAdapter(Adapter):
                             # Tissue stage and sex']}_{row['_gene file tissue']}"
                             library_data = tissue_library_dict[ f'microRNA_{row[1]}_{row[2]}' ]
                         except KeyError:
-                            print(f"No library data for key: {f'{row[1]}_{row[2]}'}. transcriptMicroRNA gene: {row[0]}")
                             if f'{row[1]}_{row[2]}' == "Adult Male_Whole body":
                                 library_data = ("Whole", "FBlc0005729", "microRNA-Seq_TPM_FlyAtlas2_Adult_Male")
                             elif f'{row[1]}_{row[2]}' == "Adult Female_Whole body":
@@ -285,13 +296,15 @@ class ExpressionValueAdapter(Adapter):
 
                         # target
                         library_id = library_data[1]
-                        source = row[3].split('/')[-1]
+                        source = ('transcript', row[3].split('/')[-1])
                         props['value_and_description'] = [
-                            ('TPM',        # Expression_Unit
-                                row[4]         # Expression_Value
+                            (
+                                row[4],         # Expression_Value
+                                'TPM',        # Expression_Unit
                             ),
-                            ('SD',          # Expression_Unit
-                                row[5]         # Expression_Value
+                            (
+                                row[5],         # Expression_Value
+                                'SD',          # Expression_Unit
                             ),
                         ]   
                         props['taxon_id'] = 7227
@@ -300,6 +313,42 @@ class ExpressionValueAdapter(Adapter):
                             props['source_url'] = self.source_url
                         
                         yield source, library_id, self.label, props
+
+            #afca_afca_annotation_group_by_mean header FORMAT:
+            #FB gene symbol	cell_type1_5	cell_type1_30	cell_type1_50	cell_type1_70	cell_type2_5	cell_type2_30...
+            elif 'afca' in dmel_data_filepath:
+                gene_symbol_to_fbgn = self.build_gene_symbol_to_fbgn_dict()
+                libraries = expression_table.get_header()
+                rows = expression_table.get_rows()
+                for row in rows:
+                    source = ( 'gene', gene_symbol_to_fbgn.get(row[0]) )
+                    for exp_value, library_id in zip(row[1:], libraries[1:]):
+                        props['value_and_description'] = [
+                            (
+                                exp_value,         # Expression_Value
+                                'Log of FPKM',         # Expression_Unit
+                            ),                            
+                        ]
+                        props['taxon_id'] = 7227
+                        if self.add_provenance:
+                            props['source'] = self.source
+                            props['source_url'] = self.source_url
+                        
+                        yield source, library_id, self.label, props
+                        
+
+
+    def build_gene_symbol_to_fbgn_dict(self):
+        symbols_to_fbgn_file = "/mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/full/flybase/fbgn_fbtr_fbpp_expanded_fb_2024_03.tsv.gz"
+        symbols_to_fbgn_file = "/home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/full/flybase/fbgn_fbtr_fbpp_expanded_fb_2024_03.tsv.gz"
+
+        symbols_to_fbgn_table = FlybasePrecomputedTable(symbols_to_fbgn_file)
+        symbols_to_fbgn_dict = {}
+        for row in symbols_to_fbgn_table.get_rows():
+            if row[3] not in symbols_to_fbgn_dict:
+                symbols_to_fbgn_dict[row[3]] = row[2]
+        return symbols_to_fbgn_dict
+    
 
 
 

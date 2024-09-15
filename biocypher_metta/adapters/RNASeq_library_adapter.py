@@ -160,8 +160,8 @@ class RnaseqLibraryAdapter(Adapter):
                 self.source_url = 'https://flyatlas.gla.ac.uk/FlyAtlas2/index.html?page=help'
 
                 # Flybase naming inconsistency does not append "Whole" to these libraries' names:
-                tissue_library_dict["Adult Male_Whole body"] = ("Whole", "FBlc0005729", "microRNA-Seq_TPM_FlyAtlas2_Adult_Male")
-                tissue_library_dict["Adult Female_Whole body"] = ("Whole", "FBlc0005730", "microRNA-Seq_TPM_FlyAtlas2_Adult_Female")  
+                tissue_library_dict["microRNA_Adult Male_Whole body"] = ("Whole", "FBlc0005729", "microRNA-Seq_TPM_FlyAtlas2_Adult_Male")
+                tissue_library_dict["microRNA_Adult Female_Whole body"] = ("Whole", "FBlc0005730", "microRNA-Seq_TPM_FlyAtlas2_Adult_Female")  
                 
                 # library_data: (FB Tissue, FB library ID (FBlc#), FB library name)
                 for tissue_key, library_data in tissue_library_dict.items():
@@ -177,22 +177,23 @@ class RnaseqLibraryAdapter(Adapter):
 
             elif "afca" in dmel_data_filepath:
                 self.version = expression_table.extract_date_string(dmel_data_filepath)
-                self.source = 'FlyCellAtlas2'
-                self.source_url = 'https://flyatlas.gla.ac.uk/FlyAtlas2/index.html?page=help'
+                self.source = 'AgingFlyCellAtlas'
+                self.source_url = 'https://hongjielilab.shinyapps.io/AFCA/'
+                #self.source_url = 'https://bcmedu-my.sharepoint.com/:u:/g/personal/u239500_bcm_edu/EXgUmzr6BFJJhAHJ106pd1sBU8ksAMg4VHxkyqncy3J7Qw?e=mY8Jce'
                 libs_names = expression_table.get_header()
                 id = -1
                 for lib_name in libs_names[1:]:
-                    print(lib_name)
                     id += 1
-                    library_id = f"AFCA_{self.label}_{id}"
+                    library_id = f"AFCA_{self.label}_{lib_name.replace(' ', '_')}"
                     props = {
                         "name": lib_name,
-                        "experiment_info": ["Expression is the averaged log values in each cluster (cell type)."],
+                        "experiment_info": ["Expression is the averaged log values in each cluster (cell type). Appended to the cell type is the time point (5, 30, 50 or 70 days)."],
                         "taxon_id": 7227,
                         "source": self.source,
                         "source_url": self.source_url
                     }
                     yield library_id, self.label, props
+
 
 
     def build_fca2_fb_tissues_libraries_ids_dicts(self,file_path):
@@ -201,9 +202,9 @@ class RnaseqLibraryAdapter(Adapter):
             
         # Establish a connection to the FlyBase database
         conn = psycopg2.connect(
-            host="chado.flybase.org",
-            database="flybase",
-            user="flybase"
+            host = "chado.flybase.org",
+            database = "flybase",
+            user = "flybase"
         )    
         cur = conn.cursor()
         cur.execute("SELECT uniquename, name FROM library WHERE library.name LIKE 'RNA-Seq_Profile_FlyAtlas2_%';")
