@@ -72,19 +72,7 @@ def process_flybase_tsv_files(input_directory, expanded_genes_list):
             output_file.close()
             print(f'Finished for {input_path}')
         file.close()
-        # with open(output_path, 'w') as output_file:
-        #     output_file.write(str(header))
-        #     #output_file.write(''.join(relevant_rows))
-        #     for aRow in relevant_rows:
-        #         output_file.write(aRow)
-        #     # for i in range(len(relevant_rows)):
-        #     #     #output_file.write('\t'.join(map(str, line)) + '\n')
-        #     #     aRow = relevant_rows[i]
-        #     #     if i != (len(relevant_rows - 1)):
-        #     #         output_file.write(aRow + '\n')
-        #     #     else:
-        #     #         output_file.write(aRow)
-        # output_file.close()
+
 
 def process_texttsv_files(input_directory, expanded_genes_list):
     new_directory = input_directory + "_net_act"
@@ -247,7 +235,7 @@ def process_tsv_tables(input_directory, expanded_genes_list):
 '''
 ########################################################################################################################
 
-def netact_extract_dmel_data_from_uniprot_invertebrate_dat(input_file_name, output_file_name):
+def netact_extract_dmel_data_from_uniprot_invertebrate_data(input_file_name, output_file_name, expanded_genes_list):
     with gzip.open(input_file_name, 'rt') as input_file, open(output_file_name, 'w') as output_file:
         next_line = input_file.readline()
         data_lines = []
@@ -280,7 +268,7 @@ def netact_extract_dmel_data_from_uniprot_invertebrate_dat(input_file_name, outp
 
 
 
-def netact_extract_dmel_data_from_gz_txt_noheader(input_file_name, output_file_name):
+def netact_extract_dmel_data_from_gz_txt_noheader(input_file_name, output_file_name, expanded_genes_list):
     #print(f"File:::::::::::::-->  {input_file_name}")
 
     if input_file_name.endswith("gz"):
@@ -301,25 +289,10 @@ def netact_extract_dmel_data_from_gz_txt_noheader(input_file_name, output_file_n
                     output_file.write(row)
     output_file.close()
     file.close()
-            #print(f'Finished for {output_file_name}')
-    # else:
-    #     with open(input_file_name, 'r') as file:
-    #         with open(output_file_name, 'w') as output_file:
-    #             while True:
-    #                 row = file.readline()
-    #                 if not row:
-    #                     break
-    #                 # strip() added to handle "blank" rows in some TSVs
-    #                 if not row.strip():
-    #                     continue
-    #                 for gene_symbol in expanded_genes_list:
-    #                     if gene_symbol in row:
-    #                         output_file.write(row)
-    #         output_file.close()
-    #         #print(f'Finished for {output_file_name}')
 
 
-def netact_extract_dmel_data_for_first_row_header(input_file_name, output_file_name):
+
+def netact_extract_dmel_data_for_first_row_header(input_file_name, output_file_name, expanded_genes_list):
     #print(f"File:::::::::::::-->  {input_file_name}")
 
     header = None
@@ -380,19 +353,19 @@ def process_netact_input_files(input_directories: list[str], output_directory, e
             print("Not an input file...")
             continue
         elif "_sprot_" in input_file:
-            netact_extract_dmel_data_from_uniprot_invertebrate_dat(input_path, output_path)
+            netact_extract_dmel_data_from_uniprot_invertebrate_data(input_path, output_path, expanded_genes_list)
             print(f'Finished for UNIPROT {output_path}')
             continue
         elif "Reactome" in input_file or "Drosophila_melanogaster.BDGP6.46.59.gtf.gz" in input_file or ".fb.gz" in input_file:
-            netact_extract_dmel_data_from_gz_txt_noheader(input_path, output_path)
+            netact_extract_dmel_data_from_gz_txt_noheader(input_path, output_path, expanded_genes_list=)
             print(f'Finished for REACTOME or gencode GTF no header gz {output_path}')
             continue
         elif "TFLink" in input_file or "tflink" in input_file or "string" in input_file:
-            netact_extract_dmel_data_for_first_row_header(input_path, output_path)
+            netact_extract_dmel_data_for_first_row_header(input_path, output_path, expanded_genes_list)
             print(f'Finished for TFLink or String {output_path}')
             continue
         elif "gtex" in input_file:
-            netact_extract_dmel_data_for_first_row_header(input_path, output_path)
+            netact_extract_dmel_data_for_first_row_header(input_path, output_path, expanded_genes_list)
             print(f'Finished for gtex gzipped {output_path}')
             continue
         if input_file.endswith(".gz"):

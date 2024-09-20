@@ -45,6 +45,35 @@ dmel_genotype_phenotype:
   edges: False
 
 
+
+gaf:
+  adapter:
+    module: biocypher_metta.adapters.hsa.gaf_adapter
+    cls: GAFAdapter
+    args:
+      filepath: /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/flybase/gene_association.fb.gz
+      gaf_type: 'dmel'
+      label: go_gene
+
+  outdir: gaf
+  nodes: False
+  edges: True
+
+
+go_ontology_terms:
+  adapter:
+    module: biocypher_metta.adapters.gene_ontology_adapter
+    cls: GeneOntologyAdapter
+    args:
+      ontology: "go"
+      type: node
+      dry_run: False
+
+  outdir: gene_ontology
+  nodes: True
+  edges: False
+
+
 orthology_adapter:
     adapter:
         module: biocypher_metta.adapters.orthology_adapter
@@ -222,6 +251,7 @@ expression_value:
   outdir: rnaseq
   nodes: False
   edges: True
+
 
 
 uniprotkb_sprot:

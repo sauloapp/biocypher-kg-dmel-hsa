@@ -45,21 +45,57 @@ def download_rnaseq_data(fbgn_id, out_dir="./"):
 # exit(9 )
 
 
+'''
+    USE THIS ONLY ONCE!
+'''
 def download_all_fbgn_data():
+    query_reg = "SELECT uniquename FROM feature WHERE uniquename ~ '^FBgn[0-9]{7}$' AND is_obsolete = 'f';"
+    query_irreg = "SELECT uniquename FROM feature WHERE uniquename ~ '^FBgn[0-9]{7}:1$' AND is_obsolete = 'f';"
+
+    # Establish a connection to the FlyBase database
+    conn = psycopg2.connect(
+        host="chado.flybase.org",
+        database="flybase",
+        user="flybase"
+    )    
+    cur = conn.cursor()
+    cur.execute(query_reg)
+    results = cur.fetchall() 
+    print(len(results))
+    fbgn_set = set()
+    for gene_data in results:
+        fbgn_set.add(gene_data[0])
+
+    cur.execute(query_irreg)
+    results = cur.fetchall() 
+    print(len(results))
+    print(len(fbgn_set))
+    for gene_data in results:
+        fbgn_set.add(gene_data[0].split(':')[0])  # gets the FBgn# without ':1'
+    # exit(9)
+    cur.close()
+    conn.close()
+    #print(f'Trying to get {len(fbgn_set)} files from FCA2\n{fbgn_set}\n{len(fbgn_set)}')
+    # exit(9)
+
+            
     symbols_to_fbgn_table = FlybasePrecomputedTable(symbols_to_fbgn_file)
     dframe = symbols_to_fbgn_table.to_pandas_dataframe()
     fbgn_list = dframe['gene_ID'].tolist()
     print(len(fbgn_list))
     fbgn_list = dframe['gene_ID'].unique().tolist()
     print(len(fbgn_list))
-    print(f'{fbgn_list[0]} {fbgn_list[-1]}')
-    #exit(9)
+    fbgn_set.update(fbgn_list)
+    print(len(fbgn_set))
+    for fbgn in fbgn_set:
+        download_rnaseq_data(fbgn)
+    # #for gene in net_act_expanded_genes_list:
+    # for gene in fbgn_list:
+    #     if gene.startswith("FBgn"):
+    #         download_rnaseq_data(gene)
 
-    #for gene in net_act_expanded_genes_list:
-    for gene in fbgn_list:
-        if gene.startswith("FBgn"):
-            download_rnaseq_data(gene)
-
+download_all_fbgn_data()
+exit(9)
 
 def convert_transcriptGene_files(file_list, output_file, transcript_type='regularRNA'):
     # Initialize an empty list to store dataframes
