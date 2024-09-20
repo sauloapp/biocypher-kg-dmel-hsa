@@ -41,7 +41,25 @@ class ReactomePathwayAdapter(Adapter):
             for line in input:
                 id, name, species = line.strip().split('\t')
                 if species == 'Homo sapiens':
-                    props = {}
+                    props = {
+                        'taxon_id': 9606
+                    }
+                    if self.write_properties:
+                        props['pathway_name'] = name
+                        pubmed_id = self.pubmed_map.get(id, None)
+                        if pubmed_id is not None:
+                            pubmed_url = f"https://pubmed.ncbi.nlm.nih.gov/{self.pubmed_map[id]}"
+                            props['evidence'] = pubmed_url,
+                        
+                        if self.add_provenance:
+                            props['source'] = self.source
+                            props['source_url'] = self.source_url
+
+                    yield id, self.label, props
+                if species == 'Drosophila melanogaster':                 #  comparable to 'R-DME' as well
+                    props = {
+                        'taxon_id': 7227
+                    }
                     if self.write_properties:
                         props['pathway_name'] = name
                     
