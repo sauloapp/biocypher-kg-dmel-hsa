@@ -257,6 +257,9 @@ print("Reading h5ad file..")
 adata = ad.read_h5ad('/home/saulo/Downloads/adata_headBody_S_v1.0.h5ad')
 print(adata)
 
+print(adata.obs["afca_annotation"])
+exit(9)
+
 group_key = 'afca_annotation'  
 group_key = 'sex_age' # :(
 group_key = 'fca_annotation'  

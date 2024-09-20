@@ -109,7 +109,7 @@ expression value:
     value_and_description: list[tuple]]   # this list of tuples is to keep semantics in the DAS context.
                                           # it is (value, description), (value, description),...
                                           # where value is a gene (or transcript) expression value and description is
-                                          # an acronym or term to clarify the expression value: "RPKM", "BIN VALUE", "SPREAD", etc.
+                                          # an acronym or a term or a text to clarify the expression value: "RPKM", "BIN VALUE", "SPREAD", etc.
 
     taxon_id: int                        # 7227 for dmel / 9606 for hsa
     source: str
@@ -967,12 +967,14 @@ go subtype of:
 
 
 # 7.14)
+# saulo
+# Used in the GAFAdapter for human data
 go gene product:
   is_a: annotation
   inherit_properties: true
   represented_as: edge
   input_label: go_gene_product
-  source: gene ontology
+  source: go
   target: protein
   properties:
     qualifier: obj
@@ -983,6 +985,8 @@ go gene product:
 
 
 # 7.15)
+# saulo
+# Used in the GAFAdapter  for dmel data
 go gene:
   is_a: annotation
   inherit_properties: true

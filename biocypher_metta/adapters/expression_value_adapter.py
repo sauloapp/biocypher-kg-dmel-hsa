@@ -140,15 +140,15 @@ class ExpressionValueAdapter(Adapter):
                          row[11]        #	Count_used in the RPKM (Total or Unique)
                          ),
                         (row[8],  # Bin_value
-                         "The expression bin classification of this gene in this RNA-Seq experiment, "
+                         "Bin_value: The expression bin classification of this gene in this RNA-Seq experiment, "
                          "based on RPKM value. Bins range from 1 (no/extremely low expression) to 8 (extremely high expression)"
                          ),
                         (row[9],  # Unique_exon_base_count
-                         "The number of exonic bases unique to the gene (not overlapping exons of other genes). Field "
+                         "Unique_exon_base_count: The number of exonic bases unique to the gene (not overlapping exons of other genes). Field "
                          "will be blank for genes derived from dicistronic/polycistronic transcripts"
                          ),
                         (row[10],  # Total_exon_base_count
-                         "The number of bases in all exons of this gene"
+                         "Total_exon_base_count: The number of bases in all exons of this gene"
                          ),
                     ]
                     props['taxon_id'] = 7227
@@ -159,17 +159,13 @@ class ExpressionValueAdapter(Adapter):
 
             # FCA2 gene expression:
             # The fca2 file contents were generated in the "scripts/get_flyatlas2_gene_data.py" script by method
-            # convert_gene_files()
-            #elif "fca2_fbgn_gene" in dmel_data_filepath or "fca2_fbgn_transcriptGene" in dmel_data_filepath:
+            # convert_gene_files()            
             elif "fca2" in dmel_data_filepath:
                 fca2_tissues_file_path = 'aux_files/fca2_to_fb_tissues.tsv'                    
                 if "transcript" in dmel_data_filepath:
                     _, tissue_library_dict = self.build_fca2_fb_tissues_libraries_ids_dicts(fca2_tissues_file_path)
                 else:
-                    tissue_library_dict, _ = self.build_fca2_fb_tissues_libraries_ids_dicts(fca2_tissues_file_path)
-                # Flybase naming inconsistency does not append "Whole" to these libraries' names:
-                tissue_library_dict["microRNA_Adult Male_Whole body"] = ("Whole", "FBlc0005729", "microRNA-Seq_TPM_FlyAtlas2_Adult_Male")
-                tissue_library_dict["microRNA_Adult Female_Whole body"] = ("Whole", "FBlc0005730", "microRNA-Seq_TPM_FlyAtlas2_Adult_Female")  
+                    tissue_library_dict, _ = self.build_fca2_fb_tissues_libraries_ids_dicts(fca2_tissues_file_path)                
 
                 self.version = expression_table.extract_date_string(dmel_data_filepath)
                 self.source = 'FlyCellAtlas2'
@@ -321,7 +317,13 @@ class ExpressionValueAdapter(Adapter):
                 libraries = expression_table.get_header()
                 rows = expression_table.get_rows()
                 for row in rows:
-                    source = ( 'gene', gene_symbol_to_fbgn.get(row[0]) )
+                    fbgn = gene_symbol_to_fbgn.get(row[0])
+                    if fbgn is None:            # genes that have not been localized to the reference genome assembly for a given Drosophila species.
+                        fbgn = self.get_fbgn_from_flybase(row[0])
+                        if fbgn is None:
+                            print(f'Gene {row[0]} is not in Flybase or is not a fresh Flybase record: EXCLUDED FROM ATOM SPACE...')
+                            continue                        
+                    source = ('gene', fbgn)                    
                     for exp_value, library_id in zip(row[1:], libraries[1:]):
                         props['value_and_description'] = [
                             (
@@ -339,8 +341,13 @@ class ExpressionValueAdapter(Adapter):
 
 
     def build_gene_symbol_to_fbgn_dict(self):
-        symbols_to_fbgn_file = "/mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/full/flybase/fbgn_fbtr_fbpp_expanded_fb_2024_03.tsv.gz"
-        symbols_to_fbgn_file = "/home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/full/flybase/fbgn_fbtr_fbpp_expanded_fb_2024_03.tsv.gz"
+        '''
+            From Flybase downloads overview web page one can learn that fbgn_fbtr_fbpp_expanded_fb_ files exclude:                
+                genes that have not been localized to the reference genome assembly for a given (Drosophila) species.
+
+        '''
+        symbols_to_fbgn_file = "/mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/full/flybase/fbgn_fbtr_fbpp_expanded_fb_2024_04.tsv.gz"
+        symbols_to_fbgn_file = "/home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/full/flybase/fbgn_fbtr_fbpp_expanded_fb_2024_04.tsv.gz"
 
         symbols_to_fbgn_table = FlybasePrecomputedTable(symbols_to_fbgn_file)
         symbols_to_fbgn_dict = {}
@@ -350,6 +357,49 @@ class ExpressionValueAdapter(Adapter):
         return symbols_to_fbgn_dict
     
 
+    def get_fbgn_from_flybase(self, gene_symbol: str):
+        # Establish a connection to the FlyBase database
+        conn = psycopg2.connect(
+            host="chado.flybase.org",
+            database="flybase",
+            user="flybase"
+        )    
+        cur = conn.cursor()
+        cur.execute(f"SELECT uniquename, name, is_obsolete FROM feature WHERE feature.name LIKE '{gene_symbol}';")
+        results = cur.fetchall() 
+        for gene_data in results:
+            if gene_data[-1] == False:    # is uniquename obsolete???
+                return gene_data[0]
+        '''
+            if nothing is returned try an alternative query: Flybase appends :1, :2,... to symbols and FBgns
+        '''
+        cur.execute(f"SELECT uniquename, name, is_obsolete FROM feature WHERE feature.name LIKE '{gene_symbol}:1';")
+        results = cur.fetchall() 
+        #print(f'results for {gene_symbol}:\n{results}')
+        for gene_data in results:
+            if gene_data[-1] == False:    # uniquename is not obsolete
+                return gene_data[0].split(':')[0]
+            
+        '''
+            if nothing is returned try to get gene_symbol as a synonym...
+        '''
+        cur.execute(f"SELECT synonym.synonym_id FROM synonym WHERE synonym.name LIKE '{gene_symbol}';")
+        results = cur.fetchall() 
+        results = list(set(results))
+        for res in results:
+            cur.execute(f"SELECT feature_id FROM feature_synonym WHERE synonym_id={res[0]};")
+            results = cur.fetchall() 
+            results = list(set(results))
+            for result in results:
+                cur.execute(f"SELECT uniquename, is_obsolete FROM feature WHERE feature_id={result[0]};")
+                feature_results = cur.fetchall() 
+                for feature in feature_results:
+                    if feature[-1] == False:
+                        return feature[0]
+        cur.close()
+        conn.close()
+        
+        return None
 
 
     def build_fca2_fb_tissues_libraries_ids_dicts(self, file_path):
@@ -431,15 +481,13 @@ class ExpressionValueAdapter(Adapter):
                         if transcript_key not in transcript_tissue_library_dict:
                             transcript_tissue_library_dict[transcript_key] = transcript_value
                         break
-                
+        # Flybase naming inconsistency does not append "Whole" to these libraries' names:
+        gene_tissue_library_dict["microRNA_Adult Male_Whole body"] = ("Whole", "FBlc0005729", "microRNA-Seq_TPM_FlyAtlas2_Adult_Male")
+        gene_tissue_library_dict["microRNA_Adult Female_Whole body"] = ("Whole", "FBlc0005730", "microRNA-Seq_TPM_FlyAtlas2_Adult_Female")  
+        transcript_tissue_library_dict["microRNA_Adult Male_Whole body"] = ("Whole", "FBlc0005729", "microRNA-Seq_TPM_FlyAtlas2_Adult_Male")
+        transcript_tissue_library_dict["microRNA_Adult Female_Whole body"] = ("Whole", "FBlc0005730", "microRNA-Seq_TPM_FlyAtlas2_Adult_Female")  
         cur.close()
         mir_cur.close()
         conn.close()
 
         return gene_tissue_library_dict, transcript_tissue_library_dict
-
-
-
-
-
-

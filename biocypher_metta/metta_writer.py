@@ -28,6 +28,7 @@ class MeTTaWriter:
         #self.excluded_properties = ["licence", "version", "source"]
         self.excluded_properties = []
 
+
     def create_type_hierarchy(self):
         G = self.ontology._nx_graph
         file_path = f"{self.output_path}/type_defs.metta"
@@ -48,15 +49,6 @@ class MeTTaWriter:
         logger.info("Type hierarchy created successfully.")
 
 
-    def __raise_schema_error(self):
-        current_trace = traceback.extract_stack()[-2]  
-        line_number = current_trace.lineno
-        file_name = current_trace.filename
-
-        raise NotImplementedError(
-            f"Should not be here: if you define a schema with source AND target lists of types, "
-            f"you should handle this here. Please write the necessary code in {file_name} at line {line_number}."
-        )
 
     def create_data_constructors(self, file):
         schema = self.bcy._get_ontology_mapping()._extend_schema()

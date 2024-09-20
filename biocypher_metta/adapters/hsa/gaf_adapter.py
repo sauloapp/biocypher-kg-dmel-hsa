@@ -48,10 +48,12 @@ class GAFAdapter(Adapter):
         'human': 'http://geneontology.org/gene-associations/goa_human.gaf.gz',
         'human_isoform': 'http://geneontology.org/gene-associations/goa_human_isoform.gaf.gz',
         'rna': 'http://geneontology.org/gene-associations/goa_human_rna.gaf.gz',
-        'rnacentral': 'https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/id_mapping/database_mappings/ensembl_gencode.tsv'
+        'rnacentral': 'https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/id_mapping/database_mappings/ensembl_gencode.tsv',
+
+        'dmel': 'https://ftp.flybase.net/releases/current/precomputed_files/go/gene_association.fb.gz'
     }
 
-    def __init__(self, filepath, write_properties, add_provenance, gaf_type='human'):
+    def __init__(self, filepath, write_properties, add_provenance, gaf_type='human', label='go_gene_product'):
         if gaf_type not in GAFAdapter.SOURCES.keys():
             raise ValueError('Invalid type. Allowed values: ' +
                              ', '.join(GAFAdapter.SOURCES.keys()))
@@ -59,8 +61,8 @@ class GAFAdapter(Adapter):
         self.filepath = filepath
         self.dataset = GAFAdapter.DATASET
         self.type = gaf_type
-        self.label = "go_gene_product"
-        self.source = "GO"
+        self.label = label
+        self.source = "GO"                  # should be specific for each species
         self.source_url = GAFAdapter.SOURCES[gaf_type]
 
         super(GAFAdapter, self).__init__(write_properties, add_provenance)
@@ -79,7 +81,7 @@ class GAFAdapter(Adapter):
             self.load_rnacentral_mapping()
 
         with gzip.open(self.filepath, 'rt') as input_file:
-            for annotation in gafiterator(input_file):
+            for annotation in gafiterator(input_file):                
                 source = annotation['GO_ID']
                 target = annotation['DB_Object_ID']
 
@@ -93,8 +95,9 @@ class GAFAdapter(Adapter):
                 if self.write_properties:
                     props = {
                         'qualifier': annotation['Qualifier'],
-                        'db_reference': annotation['DB:Reference'],
-                        'evidence': annotation['Evidence']
+                        'db_reference': annotation['DB:Reference'], # This can be a list of reference ids instead of only one @todo
+                        'evidence': annotation['Evidence'],
+                        'taxon': annotation['Taxon_ID'][0].split(':')[-1],
                     }
                     if self.add_provenance:
                         props['source'] = self.source
