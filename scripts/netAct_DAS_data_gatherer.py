@@ -357,7 +357,7 @@ def process_netact_input_files(input_directories: list[str], output_directory, e
             print(f'Finished for UNIPROT {output_path}')
             continue
         elif "Reactome" in input_file or "Drosophila_melanogaster.BDGP6.46.59.gtf.gz" in input_file or ".fb.gz" in input_file:
-            netact_extract_dmel_data_from_gz_txt_noheader(input_path, output_path, expanded_genes_list=)
+            netact_extract_dmel_data_from_gz_txt_noheader(input_path, output_path, expanded_genes_list)
             print(f'Finished for REACTOME or gencode GTF no header gz {output_path}')
             continue
         elif "TFLink" in input_file or "tflink" in input_file or "string" in input_file:
@@ -374,30 +374,59 @@ def process_netact_input_files(input_directories: list[str], output_directory, e
             file = gzip.open(input_path, 'rt')
         else:
             file = open(input_path, 'r')
+
+
         with open(output_path, 'w') as output_file:
             header = None
             previous = None
-            while True:
-                row = file.readline()
-                if not row:
-                    break
-
-                # strip() added to handle "blank" rows in some TSVs
-                if not row.strip():
+            lines = file.readlines()
+            #print(f'Lines to read: {len(lines)}')
+            for i in range(0, len(lines)):
+            #for row in input:
+                row = lines[i]
+                # strip() added to handle "blank" row in TSVs
+                if not row or not row.strip():
                     continue
 
                 if not row.startswith("#"):
-                    if header is None:
-                        header = previous.lstrip("#")
+                    if header is None and previous is not None:
+                        header = previous.lstrip("#\t ")
+                        #header = [column_name.strip() for column_name in header.split('\t') ]
+                        #self._set_header(header)
                         output_file.write(header)
-                        print(header)
-
+                        # print(f'header: {header}')                    
                     for gene_symbol in expanded_genes_list:
                         if gene_symbol in row:
                             output_file.write(row)
-                # if not row.startswith("#-----"):
+
                 if not row.startswith("#-----") and not row.startswith("## Finished "):
                     previous = row
+
+
+        # with open(output_path, 'w') as output_file:
+        #     header = None
+        #     previous = None
+        #     while True:
+        #         row = file.readline()
+        #         if not row:
+        #             break
+
+        #         # strip() added to handle "blank" rows in some TSVs
+        #         if not row.strip():
+        #             continue
+
+        #         if not row.startswith("#"):
+        #             if header is None:
+        #                 header = previous.lstrip("#")
+        #                 output_file.write(header)
+        #                 print(header)
+
+        #             for gene_symbol in expanded_genes_list:
+        #                 if gene_symbol in row:
+        #                     output_file.write(row)
+        #         # if not row.startswith("#-----"):
+        #         if not row.startswith("#-----") and not row.startswith("## Finished "):
+        #             previous = row
             output_file.close()
             print(f'Finished for gzipped {output_path}')
         file.close()
@@ -490,12 +519,12 @@ def expand_gene_list_data(genes_list, fb_fbgn_to_fbtr_fbpp_file):
 genes_list = ["Su(var)205", "Top3beta", "Mef2", "Clk", "Dref", "TfIIB", "Myc", "AGO2", "Nipped-B", "Cp190", "TfIIA-L",
                "Trl", "ash1", "Raf", "Abd-B", "Orc2", "Rbf", "mof", "msl-1", "Hmr"]
 
-tr_pp_file = "/home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/full/flybase/fbgn_fbtr_fbpp_expanded_fb_2024_03.tsv.gz"
-#tr_pp_file = "/mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/full/flybase/fbgn_fbtr_fbpp_expanded_fb_2024_03.tsv.gz"
+tr_pp_file = "/home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/full/flybase/fbgn_fbtr_fbpp_expanded_fb_2024_04.tsv.gz"
+#tr_pp_file = "/mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/full/flybase/fbgn_fbtr_fbpp_expanded_fb_2024_04.tsv.gz"
 expanded_genes_list = expand_gene_list_data(genes_list, tr_pp_file)
 
 print(expanded_genes_list)
-exit(9)
+#exit(9)
 # expanded_genes_list = ["Su(var)205", "FBgn0003607", "Top3beta", "FBgn0026015", "Mef2", "FBgn0011656", "Clk", "FBgn0023076",
 #                        "Dref", "FBgn0015664", "TfIIB", "FBgn0004915", "Myc", "FBgn0262656", "AGO2", "FBgn0087035",
 #                        "Nipped-B", "FBgn0026401", "Cp190", "FBgn0000283", "TfIIA-L", "FBgn0011289", "Trl", "FBgn0013263",
@@ -505,8 +534,10 @@ exit(9)
 
 # Bizon's paths:
 input_dirs = [
-    "/mnt/hdd_2/abdu/biocypher_data/gencode/" #"/mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/tmp_to_netact", #"/mnt/hdd_2/abdu/biocypher_data/gtex/"
+    "/mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/to_net_act/"
+    #"/home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy"
 ]
+output_dir = "/home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy_net_act"# "/mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/net_act"
 output_dir = "/mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/net_act"
 process_netact_input_files(input_dirs, output_dir,expanded_genes_list)
 
