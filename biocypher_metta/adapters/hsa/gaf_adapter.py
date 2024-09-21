@@ -49,7 +49,7 @@ class GAFAdapter(Adapter):
         'human_isoform': 'http://geneontology.org/gene-associations/goa_human_isoform.gaf.gz',
         'rna': 'http://geneontology.org/gene-associations/goa_human_rna.gaf.gz',
         'rnacentral': 'https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/id_mapping/database_mappings/ensembl_gencode.tsv',
-
+        # saulo: dmel GAF file for GO annotations:
         'dmel': 'https://ftp.flybase.net/releases/current/precomputed_files/go/gene_association.fb.gz'
     }
 
