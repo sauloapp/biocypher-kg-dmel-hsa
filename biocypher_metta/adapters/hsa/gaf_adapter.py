@@ -81,9 +81,14 @@ class GAFAdapter(Adapter):
             self.load_rnacentral_mapping()
 
         with gzip.open(self.filepath, 'rt') as input_file:
-            for annotation in gafiterator(input_file):                
-                source = annotation['GO_ID']
-                target = annotation['DB_Object_ID']
+            for annotation in gafiterator(input_file):    
+                # @TODO: inverte source and target in one of the adapters to be consistent and to avoid this conditional  :-D
+                # if self.type == 'dmel':                 # go gene adapter for dmel data
+                source = annotation['DB_Object_ID']
+                target = annotation['GO_ID']
+                # else:                                   # go gene product adapter for hsa data
+                #     source = annotation['GO_ID']
+                #     target = annotation['DB_Object_ID']
 
                 if self.type == 'rna':
                     transcript_id = self.rnacentral_mapping.get(

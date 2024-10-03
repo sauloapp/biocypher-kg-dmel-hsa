@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import pandas as pd
 import glob
 import requests
@@ -11,6 +12,36 @@ out_dir = "/mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/full/fca2/
 out_dir = "/home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/fca2"
 symbols_to_fbgn_file = "/mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/full/flybase/fbgn_fbtr_fbpp_expanded_fb_2024_03.tsv.gz"
 symbols_to_fbgn_file = "/home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/full/flybase/fbgn_fbtr_fbpp_expanded_fb_2024_03.tsv.gz"
+
+# def download_rnaseq_data(fbgn_id, out_dir="./"):
+#     if not (fbgn_id.startswith("FBgn") or fbgn_id.startswith("FBtr")):
+#         raise ValueError("FBgn_id must start with 'FBgn' or 'FBtr'")
+
+#     for gene_type in ['gene', 'transcriptGene', 'mir', 'transcriptMir']:
+#         url = f"https://motif.mvls.gla.ac.uk/FA2Direct/index.html?fbgn={fbgn_id}&tableOut={gene_type}"
+
+#         # Define the file name
+#         file_name = f"{out_dir}{fbgn_id}_{gene_type}.tsv"
+
+#         # Check if the file already exists
+#         if os.path.exists(file_name):
+#             print(f"File {file_name} already exists. Skipping download.")
+#             continue
+
+#         # Make a request to download the data
+#         response = requests.get(url)
+
+#         if response.status_code == 200:
+#             if "An error has occurred" in response.text:
+#                 print(f'No data for {fbgn_id}, type {gene_type}')
+#                 continue
+#             # Save the content to a file if it doesn't already exist
+#             with open(file_name, 'w') as file:
+#                 file.write(response.text)
+#             print(f"Data saved to {file_name}")
+#         else:
+#             print(f"Failed to download data: {response.status_code}")            
+
 
 def download_rnaseq_data(fbgn_id, out_dir="./"):
     if not (fbgn_id.startswith("FBgn") or fbgn_id.startswith("FBtr")):
@@ -33,6 +64,11 @@ def download_rnaseq_data(fbgn_id, out_dir="./"):
         if response.status_code == 200:
             if "An error has occurred" in response.text:
                 print(f'No data for {fbgn_id}, type {gene_type}')
+                
+                # Append the fbgn_id and gene_type to the log file
+                with open(log_file_path, 'a') as log_file:
+                    log_file.write(f"{fbgn_id}\t{gene_type}\n")
+                    
                 continue
             # Save the content to a file if it doesn't already exist
             with open(file_name, 'w') as file:
@@ -41,9 +77,52 @@ def download_rnaseq_data(fbgn_id, out_dir="./"):
         else:
             print(f"Failed to download data: {response.status_code}")
 
-# download_rnaseq_data("FBgn0262455", out_dir)  # mirna different output format
-# exit(9 )
 
+# Path to the log file for no data entries: same as this script.
+log_file_path = os.path.join(os.path.dirname(__file__), 'no_data_from_fca2.txt')
+
+
+def missing_gene_files(directory, gene_ids):
+    files_in_dir = os.listdir(directory)
+    present_ids = set()
+    
+    for file_name in files_in_dir:
+        if file_name.startswith("FBgn") and file_name.endswith(".tsv"):
+            gene_id = file_name.split('_')[0]  # Extract the identifier
+            present_ids.add(gene_id)
+    
+    missing_ids = [gene_id for gene_id in gene_ids if gene_id not in present_ids]
+    
+    return missing_ids
+
+
+
+def filter_fbgn_list_by_log(fbgn_list, log_file):
+    """
+    Remove FBgns from fbgn_list if they occur in the log_file for all gene_type.
+    """
+    # Initialize a dictionary to count the occurrences of each fbgn for each gene_type
+    fbgn_gene_type_count = {fbgn: set() for fbgn in fbgn_list}
+    
+    # Open the log_file and check the occurrences of each fbgn for each gene_type
+    with open(log_file, 'r') as f:
+        for line in f:
+            # Each line of the log_file should have the format 'fbgn_id gene_type'
+            parts = line.strip().split()
+            if len(parts) != 2:
+                continue
+            fbgn_id, gene_type = parts
+            if fbgn_id in fbgn_gene_type_count:
+                fbgn_gene_type_count[fbgn_id].add(gene_type)
+
+    # Keep only the fbgns that do not have all gene types ('gene', 'transcriptGene', 'mir', 'transcriptMir')
+    fbgn_list_filtered = [
+        fbgn for fbgn in fbgn_list
+        if fbgn_gene_type_count[fbgn] != {'gene', 'transcriptGene', 'mir', 'transcriptMir'}
+    ]
+    
+
+    return fbgn_list_filtered
 
 '''
     USE THIS ONLY ONCE!
@@ -66,12 +145,12 @@ def download_all_fbgn_data():
     for gene_data in results:
         fbgn_set.add(gene_data[0])
 
-    cur.execute(query_irreg)
-    results = cur.fetchall() 
-    print(len(results))
-    print(len(fbgn_set))
-    for gene_data in results:
-        fbgn_set.add(gene_data[0].split(':')[0])  # gets the FBgn# without ':1'
+    # cur.execute(query_irreg)
+    # results = cur.fetchall() 
+    # print(len(results))
+    # print(len(fbgn_set))
+    # for gene_data in results:
+    #     fbgn_set.add(gene_data[0].split(':')[0])  # gets the FBgn# without ':1'
     # exit(9)
     cur.close()
     conn.close()
@@ -87,8 +166,19 @@ def download_all_fbgn_data():
     print(len(fbgn_list))
     fbgn_set.update(fbgn_list)
     print(len(fbgn_set))
-    for fbgn in fbgn_set:
-        download_rnaseq_data(fbgn)
+    fbgn_list = list(fbgn_set)
+
+    # Call the function that checks the log_file and filters the fbgn_list
+    fbgn_list = filter_fbgn_list_by_log(fbgn_list, log_file)
+
+    fbgn_list = missing_gene_files(out_dir, fbgn_list)
+    last = len(fbgn_list)
+    i = last - 1
+    for _ in fbgn_list:
+        download_rnaseq_data(fbgn_list[i])
+        print(f'{i} files to download...')
+        i -= 1
+
     # #for gene in net_act_expanded_genes_list:
     # for gene in fbgn_list:
     #     if gene.startswith("FBgn"):
@@ -281,95 +371,4 @@ def build_fca2_fb_tissues_libraries_ids_dicts(file_path):
 #file_path = '/home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/bizon/biocypher-kg-dmel-hsa/aux_files/fca2_to_fb_tissues.tsv'
 file_path = 'aux_files/fca2_to_fb_tissues.tsv'
 gene_dict, transcript_dict = build_fca2_fb_tissues_libraries_ids_dicts(file_path)
-#fca2_lib_to_fb_tissue_lib_id
-# Display the resulting dictionaries
-print("Gene Dictionary:")
-print(gene_dict)
-print("\nTranscript Dictionary:")
-print(transcript_dict)
-exit(9)
-
-def convert_gene_files(file_list, output_file, gene_type='regular_gene'):
-    # List to store individual DataFrames
-    data_frames = []
-
-    # Iterate over each file in the list
-    for file in file_list:
-        # Read the TSV file, ignoring the first lines of metadata
-        df = pd.read_csv(file, sep='\t', skiprows=6)
-
-        # Name the columns correctly
-        columns = ['Tissue', 'FPKM_Male_Adult', 'SD_Male_Adult', 'Enrichment_Male_Adult',
-                   'FPKM_Female_Adult', 'SD_Female_Adult', 'Enrichment_Female_Adult',
-                   'M/F', 'p_value', 'FPKM_Larval', 'SD_Larval', 'Enrichment_Larval']
-        df.columns = columns
-
-        # Extract metadata information from the ignored lines
-        with open(file) as f:
-            metadata = [next(f).strip().split('\t')[1] for _ in range(4)]
-
-        flybase_id, annotation_symbol, symbol, name = metadata
-
-        # Process each row of the DataFrame
-        for index, row in df.iterrows():
-            if row['Tissue'] != '-':
-                if gene_type == 'regular_gene':
-                    metrics = 'FPKM'
-                elif gene_type == 'microRNA':
-                    metrics = 'TPM'
-                # Add data for "Male Adult"
-                if row['FPKM_Male_Adult'] != '-':
-                    data_frames.append({
-                        '#FBgene ID': flybase_id,
-                        #'Annotation Symbol': annotation_symbol,
-                        #'Symbol': symbol,                        
-                        'Tissue stage and sex': 'Adult Male',
-                        'Tissue': row['Tissue'],
-                        metrics: row['FPKM_Male_Adult'],
-                        'SD': row['SD_Male_Adult'],
-                        'Enrichment': row['Enrichment_Male_Adult']
-                    })
-
-                # Add data for "Female Adult"
-                if row['FPKM_Female_Adult'] != '-':
-                    data_frames.append({
-                        '#FBgene ID': flybase_id,
-                        #'Annotation Symbol': annotation_symbol,
-                        #'Symbol': symbol,                        
-                        'Tissue stage and sex': 'Adult Female',                        
-                        'Tissue': row['Tissue'],
-                        metrics: row['FPKM_Female_Adult'],
-                        'SD': row['SD_Female_Adult'],
-                        'Enrichment': row['Enrichment_Female_Adult']
-                    })
-
-                # Add data for "Larval"
-                if row['FPKM_Larval'] != '-':
-                    data_frames.append({
-                        '#FBgene ID': flybase_id,
-                        #'Annotation Symbol': annotation_symbol,
-                        #'Symbol': symbol,                        
-                        'Tissue stage and sex': 'Larval',                        
-                        'Tissue': row['Tissue'],
-                        metrics: row['FPKM_Larval'],
-                        'SD': row['SD_Larval'],
-                        'Enrichment': row['Enrichment_Larval']
-                    })
-
-    # Create a final DataFrame with all consolidated data
-    final_df = pd.DataFrame(data_frames)
-
-    # Save the final DataFrame to a gzipped TSV file
-    with gzip.open(output_file, 'wt') as f:
-        final_df.to_csv(f, sep='\t', index=False)
-
-
-file_list = glob.glob("/home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/fca2/genes/*.tsv")
-output_file = "/home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/fca2/fca2_fbgn_gene_output.tsv.gz"
-convert_gene_files(file_list, output_file, gene_type='regular_gene')
-
-file_list = glob.glob("/home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/fca2/micro_rna_genes/*.tsv")
-output_file = "/home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/fca2/fca2_fbgn_Mir_gene_output.tsv.gz"
-convert_gene_files(file_list, output_file, gene_type='microRNA')
-
-# download_rnaseq_data("FBgn0262177", "gene")  # mirna different output format
+#fca2_lib

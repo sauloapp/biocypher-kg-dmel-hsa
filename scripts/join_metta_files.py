@@ -9,8 +9,15 @@ def concatenate_files(input_directory, output_file):
                     with open(file_path, 'r') as infile:
                         outfile.write(infile.read() + '\n')
 
-input_dir = "/mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/output/net_act"
-out_file = "/mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/output/net_act.metta"
+# NET ACT:
+# input_dir = "/mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/output/net_act"
+# out_file = "/mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/output/net_act.metta"
+
+# TOY:
+input_dir = "/mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/output/"
+# out_file = "/mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/output/net_act.metta"
+out_file = "/mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/output/4tfs_net_act.metta"
+
 
 concatenate_files(input_dir, out_file)
 # Usage example:
