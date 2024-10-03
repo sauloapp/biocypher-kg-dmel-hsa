@@ -236,7 +236,8 @@ def process_tsv_tables(input_directory, expanded_genes_list):
 ########################################################################################################################
 
 def netact_extract_dmel_data_from_uniprot_invertebrate_data(input_file_name, output_file_name, expanded_genes_list):
-    with gzip.open(input_file_name, 'rt') as input_file, open(output_file_name, 'w') as output_file:
+    #with gzip.open(input_file_name, 'rt') as input_file, open(output_file_name, 'w') as output_file:
+    with gzip.open(input_file_name, 'rt') as input_file, gzip.open(output_file_name, 'wt') as output_file:
         next_line = input_file.readline()
         data_lines = []
         netact = False
@@ -273,21 +274,32 @@ def netact_extract_dmel_data_from_gz_txt_noheader(input_file_name, output_file_n
 
     if input_file_name.endswith("gz"):
         file = gzip.open(input_file_name, 'rt')
+        with gzip.open(output_file_name, 'wt') as output_file: #with gzip.open(input_file_name, 'rt') as input_file, gzip.open(output_file_name, 'wt') as output_file:
+            while True:
+                row = file.readline()
+                if not row:
+                    break
+                # strip() added to handle "blank" rows in some TSVs
+                if not row.strip():
+                    continue
+                for gene_symbol in expanded_genes_list:
+                    if gene_symbol in row:
+                        output_file.write(row)
+            output_file.close()
     else:
         file = open(input_file_name, 'r')
-
-    with open(output_file_name, 'w') as output_file:
-        while True:
-            row = file.readline()
-            if not row:
-                break
-            # strip() added to handle "blank" rows in some TSVs
-            if not row.strip():
-                continue
-            for gene_symbol in expanded_genes_list:
-                if gene_symbol in row:
-                    output_file.write(row)
-    output_file.close()
+        with open(output_file_name, 'w') as output_file: #with gzip.open(input_file_name, 'rt') as input_file, gzip.open(output_file_name, 'wt') as output_file:
+            while True:
+                row = file.readline()
+                if not row:
+                    break
+                # strip() added to handle "blank" rows in some TSVs
+                if not row.strip():
+                    continue
+                for gene_symbol in expanded_genes_list:
+                    if gene_symbol in row:
+                        output_file.write(row)
+        output_file.close()
     file.close()
 
 
@@ -298,20 +310,32 @@ def netact_extract_dmel_data_for_first_row_header(input_file_name, output_file_n
     header = None
     if input_file_name.endswith(".gz"):
         file = gzip.open(input_file_name, 'rt')
+        with gzip.open(output_file_name, 'wt') as output_file:
+            output_file.write( file.readline() )
+            while True:
+                row = file.readline()
+                if not row:
+                    break
+                # strip() added to handle "blank" rows in some TSVs
+                if not row.strip():
+                    continue
+                for gene_symbol in expanded_genes_list:
+                    if gene_symbol in row:
+                        output_file.write(row)
     else:
         file = open(input_file_name, 'r')
-    with open(output_file_name, 'w') as output_file:
-        output_file.write( file.readline() )
-        while True:
-            row = file.readline()
-            if not row:
-                break
-            # strip() added to handle "blank" rows in some TSVs
-            if not row.strip():
-                continue
-            for gene_symbol in expanded_genes_list:
-                if gene_symbol in row:
-                    output_file.write(row)
+        with open(output_file_name, 'w') as output_file:
+            output_file.write( file.readline() )
+            while True:
+                row = file.readline()
+                if not row:
+                    break
+                # strip() added to handle "blank" rows in some TSVs
+                if not row.strip():
+                    continue
+                for gene_symbol in expanded_genes_list:
+                    if gene_symbol in row:
+                        output_file.write(row)
     file.close()
 
 
@@ -342,12 +366,12 @@ def process_netact_input_files(input_directories: list[str], output_directory, e
         print(f"File:::::::::::::-->  {input_file}")
         input_path = input_file  # os.path.join(input_directory, input_file)
         if output_directory.endswith('/'):
-            output_path = output_directory + input_path.split('/')[-1].replace(".gz", '')
+            output_path = output_directory + input_path.split('/')[-1]  #.replace(".gz", '')
         else:
-            output_path = output_directory + '/' + input_path.split('/')[-1].replace(".gz", '')  
+            output_path = output_directory + '/' + input_path.split('/')[-1]    #.replace(".gz", '')  
         ensure_directory_exists(output_path)
 
-        not_input_files_marks = ["ReactionP", "ReactomePath", ".tar", ".zip", ".sample", "gtex.forgedb.csv.gz"]
+        not_input_files_marks = ["ReactionP", ".tar", ".zip", ".sample", "gtex.forgedb.csv.gz"]
         if any(substring in input_file for substring in not_input_files_marks):
         #if "ReactionP" in input_file or "ReactomePath" in input_file or ".tar" in input_file or ".zip" in input_file or "sample" in input_file:
             print("Not an input file...")
@@ -372,63 +396,62 @@ def process_netact_input_files(input_directories: list[str], output_directory, e
             # with gzip.open(input_path, 'rt') as file:
             #     with open(output_path, 'w') as output_file:
             file = gzip.open(input_path, 'rt')
+            with gzip.open(output_path, 'wt') as output_file:
+                header = None
+                previous = None
+                lines = file.readlines()
+                #print(f'Lines to read: {len(lines)}')
+                for i in range(0, len(lines)):
+                #for row in input:
+                    row = lines[i]
+                    # strip() added to handle "blank" row in TSVs
+                    if not row or not row.strip():
+                        continue
+
+                    if not row.startswith("#"):
+                        if header is None and previous is not None:
+                            header = previous.lstrip("\t ")
+                            #header = [column_name.strip() for column_name in header.split('\t') ]
+                            #self._set_header(header)
+                            output_file.write(header)
+                            # print(f'header: {header}')                    
+                        for gene_symbol in expanded_genes_list:
+                            if gene_symbol in row:
+                                output_file.write(row)
+
+                    if not row.startswith("#-----") and not row.startswith("## Finished "):
+                        previous = row
+
         else:
             file = open(input_path, 'r')
+            with open(output_path, 'w') as output_file:
+                header = None
+                previous = None
+                lines = file.readlines()
+                #print(f'Lines to read: {len(lines)}')
+                for i in range(0, len(lines)):
+                #for row in input:
+                    row = lines[i]
+                    # strip() added to handle "blank" row in TSVs
+                    if not row or not row.strip():
+                        continue
 
+                    if not row.startswith("#"):
+                        if header is None and previous is not None:
+                            header = previous.lstrip("\t ")
+                            #header = [column_name.strip() for column_name in header.split('\t') ]
+                            #self._set_header(header)
+                            output_file.write(header)
+                            # print(f'header: {header}')                    
+                        for gene_symbol in expanded_genes_list:
+                            if gene_symbol in row:
+                                output_file.write(row)
 
-        with open(output_path, 'w') as output_file:
-            header = None
-            previous = None
-            lines = file.readlines()
-            #print(f'Lines to read: {len(lines)}')
-            for i in range(0, len(lines)):
-            #for row in input:
-                row = lines[i]
-                # strip() added to handle "blank" row in TSVs
-                if not row or not row.strip():
-                    continue
+                    if not row.startswith("#-----") and not row.startswith("## Finished "):
+                        previous = row
 
-                if not row.startswith("#"):
-                    if header is None and previous is not None:
-                        header = previous.lstrip("#\t ")
-                        #header = [column_name.strip() for column_name in header.split('\t') ]
-                        #self._set_header(header)
-                        output_file.write(header)
-                        # print(f'header: {header}')                    
-                    for gene_symbol in expanded_genes_list:
-                        if gene_symbol in row:
-                            output_file.write(row)
-
-                if not row.startswith("#-----") and not row.startswith("## Finished "):
-                    previous = row
-
-
-        # with open(output_path, 'w') as output_file:
-        #     header = None
-        #     previous = None
-        #     while True:
-        #         row = file.readline()
-        #         if not row:
-        #             break
-
-        #         # strip() added to handle "blank" rows in some TSVs
-        #         if not row.strip():
-        #             continue
-
-        #         if not row.startswith("#"):
-        #             if header is None:
-        #                 header = previous.lstrip("#")
-        #                 output_file.write(header)
-        #                 print(header)
-
-        #             for gene_symbol in expanded_genes_list:
-        #                 if gene_symbol in row:
-        #                     output_file.write(row)
-        #         # if not row.startswith("#-----"):
-        #         if not row.startswith("#-----") and not row.startswith("## Finished "):
-        #             previous = row
-            output_file.close()
-            print(f'Finished for gzipped {output_path}')
+        output_file.close()
+        print(f'Finished for gzipped {output_path}')
         file.close()
         #     continue
         # # tsv, txt,...
@@ -519,9 +542,12 @@ def expand_gene_list_data(genes_list, fb_fbgn_to_fbtr_fbpp_file):
 genes_list = ["Su(var)205", "Top3beta", "Mef2", "Clk", "Dref", "TfIIB", "Myc", "AGO2", "Nipped-B", "Cp190", "TfIIA-L",
                "Trl", "ash1", "Raf", "Abd-B", "Orc2", "Rbf", "mof", "msl-1", "Hmr"]
 
+four_tf_gene_list = ["Abd-B", "Clk", "Mef2", "Myc"]
+
 tr_pp_file = "/home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/full/flybase/fbgn_fbtr_fbpp_expanded_fb_2024_04.tsv.gz"
 #tr_pp_file = "/mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/full/flybase/fbgn_fbtr_fbpp_expanded_fb_2024_04.tsv.gz"
-expanded_genes_list = expand_gene_list_data(genes_list, tr_pp_file)
+#expanded_genes_list = expand_gene_list_data(genes_list, tr_pp_file)
+expanded_genes_list = expand_gene_list_data(four_tf_gene_list, tr_pp_file)
 
 print(expanded_genes_list)
 #exit(9)
@@ -534,12 +560,12 @@ print(expanded_genes_list)
 
 # Bizon's paths:
 input_dirs = [
-    "/mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/to_net_act/"
-    #"/home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy"
+    #"/mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/to_net_act/"
+    "/home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy"
 ]
-output_dir = "/home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy_net_act"# "/mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/net_act"
-output_dir = "/mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/net_act"
-process_netact_input_files(input_dirs, output_dir,expanded_genes_list)
+output_dir = "/home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/4toy_net_act"# "/mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/net_act"
+#output_dir = "/mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/net_act_sources"
+process_netact_input_files(input_dirs, output_dir, expanded_genes_list)
 
 #
 # process_netact_input_files(["/home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy"],
