@@ -89,7 +89,7 @@ rnaseq library:
     name: str
     experiment_info: str[]
     tissue_info: str[]
-    cell_type_id: str                   # cell type ontology id: str should be replaced by an ontology type
+    cell_type_id: str                   # cell type ontology id: str should be replaced by an ontology type  @todo
     anatomy_entity_id: [uberon, cl]
     taxon_id: int                        # 7227 for dmel / 9606 for hsa
     source: str
@@ -101,7 +101,7 @@ expression value:
   represented_as: edge
   inherit_properties: false
   input_label: expression_value
-  source: [gene, transcript]
+  source: [transcript, gene]
   target: rnaseq library
   description: >-
     A set of values for numeric estimation of single gene/transcript expression as measured by a given methodology (represented by the library).
@@ -953,17 +953,36 @@ child pathway of:
 
 
 
-
-# 7.13)
-go subtype of:
+subclass of:
   is_a: annotation
   inherit_properties: true
   represented_as: edge
-  input_label: subtype_of
+  input_label: subclass_of
+  source: ontology term
+  target: ontology term
+  properties:
+    rel_type: str
+
+
+# 7.13)
+go subclass of:
+  is_a: subclass of
+  inherit_properties: true
+  represented_as: edge
+  input_label: go_subclass_of
+  output_label: subclass_of
   source: go
   target: go
 
 
+go subclass of:
+  is_a: annotation
+  inherit_properties: ffalse
+  represented_as: edge
+  input_label: go_subclass_of
+  #output_label: subclass_of
+  source: go
+  target: go
 
 
 # 7.14)
@@ -974,8 +993,8 @@ go gene product:
   inherit_properties: true
   represented_as: edge
   input_label: go_gene_product
-  source: go
-  target: protein
+  source: protein
+  target: go
   properties:
     qualifier: obj
     db_reference: obj
@@ -1271,7 +1290,7 @@ located on chain:
 
 
 
-# https://wiki.flybase.org/wiki/FlyBase:Downloads_Overview#Gene_group_data_.28gene_group_data_fb_.2A.tsv.29
+# https://wiki.flybase.org/wiki/FlyBase:Downloads_Overview#Gene_f_data_.28gene_group_data_fb_.2A.tsv.29
 # id is FBgg# for Flybase data
 gene group:
   represented_as: node

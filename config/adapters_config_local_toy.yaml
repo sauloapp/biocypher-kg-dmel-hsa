@@ -73,6 +73,20 @@ go_ontology_terms:
   nodes: True
   edges: False
 
+go_subclass_of:
+  adapter:
+    module: biocypher_metta.adapters.gene_ontology_adapter
+    cls: GeneOntologyAdapter
+    args:
+      ontology: 'go'
+      label: go_subclass_of
+      type: edge
+      dry_run: True
+
+  outdir: gene_ontology
+  nodes: False
+  edges: True
+
 
 orthology_adapter:
     adapter:
@@ -251,7 +265,6 @@ expression_value:
   outdir: rnaseq
   nodes: False
   edges: True
-
 
 
 uniprotkb_sprot:

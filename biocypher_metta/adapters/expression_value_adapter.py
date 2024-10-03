@@ -185,7 +185,7 @@ class ExpressionValueAdapter(Adapter):
                                 library_data = ("Garland Organ", "FBlc0006089", "RNA-Seq_Profile_FlyAtlas2_L3_Garland_Organ") 
                         # target
                         library_id = library_data[1]
-                        source = ('gene',row[0])
+                        _source = ('gene',row[0])
                         props['value_and_description'] = [
                             (
                                 row[3],         # Expression_Value,
@@ -205,7 +205,7 @@ class ExpressionValueAdapter(Adapter):
                             props['source'] = self.source
                             props['source_url'] = self.source_url
                         
-                        yield source, library_id, self.label, props
+                        yield _source, library_id, self.label, props
 
                 # fca2_fbgn_Mir_gene header:
                 # FBgene ID	      Tissue stage and sex	    Tissue	    TPM 	SD	Enrichment                
@@ -220,7 +220,7 @@ class ExpressionValueAdapter(Adapter):
                                 library_data = ("Whole", "FBlc0005729", "microRNA-Seq_TPM_FlyAtlas2_Adult_Male")
                             elif f'{row[1]}_{row[2]}' == "Adult Female_Whole body":
                                 library_data = ("Whole", "FBlc0005730", "microRNA-Seq_TPM_FlyAtlas2_Adult_Female")                            
-                        source = ('gene',row[0])
+                        _source = ('gene',row[0])
                         # target
                         library_id = library_data[1]
                         props['value_and_description'] = [
@@ -242,7 +242,7 @@ class ExpressionValueAdapter(Adapter):
                             props['source'] = self.source
                             props['source_url'] = self.source_url
                         
-                        yield source, library_id, self.label, props
+                        yield _source, library_id, self.label, props
 
                 # fca2_fbgn_transcriptGene header:
                 # FBgene ID     Tissue stage and sex	Tissue    FBtranscript ID	    FPKM	SD
@@ -259,7 +259,7 @@ class ExpressionValueAdapter(Adapter):
                         library_data = tissue_library_dict[ f'{row[1]}_{row[2]}' ]
                         # target
                         library_id = library_data[1]                        
-                        source = ('transcript', row[3].split('/')[-1])
+                        _source = ('transcript', row[3].split('/')[-1])
                         props['value_and_description'] = [
                             (
                                 row[4],         # Expression_Value
@@ -275,7 +275,7 @@ class ExpressionValueAdapter(Adapter):
                             props['source'] = self.source
                             props['source_url'] = self.source_url
                         
-                        yield source, library_id, self.label, props
+                        yield _source, library_id, self.label, props
 
                 # fca2_fbgn_Mir_transcript header:
                 # FBgene ID     Tissue stage and sex	Tissue    FBtranscript ID	    TPM 	SD              
@@ -292,7 +292,7 @@ class ExpressionValueAdapter(Adapter):
 
                         # target
                         library_id = library_data[1]
-                        source = ('transcript', row[3].split('/')[-1])
+                        _source = ('transcript', row[3].split('/')[-1])
                         props['value_and_description'] = [
                             (
                                 row[4],         # Expression_Value
@@ -308,7 +308,7 @@ class ExpressionValueAdapter(Adapter):
                             props['source'] = self.source
                             props['source_url'] = self.source_url
                         
-                        yield source, library_id, self.label, props
+                        yield _source, library_id, self.label, props
 
             #afca_afca_annotation_group_by_mean header FORMAT:
             #FB gene symbol	cell_type1_5	cell_type1_30	cell_type1_50	cell_type1_70	cell_type2_5	cell_type2_30...
@@ -323,12 +323,12 @@ class ExpressionValueAdapter(Adapter):
                         if fbgn is None:
                             print(f'Gene {row[0]} is not in Flybase or is not a fresh Flybase record: EXCLUDED FROM ATOM SPACE...')
                             continue                        
-                    source = ('gene', fbgn)                    
+                    _source = ('gene', fbgn)                    
                     for exp_value, library_id in zip(row[1:], libraries[1:]):
                         props['value_and_description'] = [
                             (
                                 exp_value,         # Expression_Value
-                                'Log of FPKM',         # Expression_Unit
+                                'Log (base e) of ',         # Expression_Unit
                             ),                            
                         ]
                         props['taxon_id'] = 7227
@@ -336,7 +336,7 @@ class ExpressionValueAdapter(Adapter):
                             props['source'] = self.source
                             props['source_url'] = self.source_url
                         
-                        yield source, library_id, self.label, props
+                        yield _source, library_id, self.label, props
                         
 
 
