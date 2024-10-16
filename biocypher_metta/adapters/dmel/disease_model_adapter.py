@@ -58,8 +58,7 @@ class DiseaseModelAdapter(Adapter):
             if "Gene symbol" in row[1]:     # to skip header (columns' names)
                 continue
             id += 1
-            props = {}
-            props['taxon_id'] = 7227
+            props = {}            
             props['gene'] = row[0]
             #if row[2] != '':
             props['gene_hgnc_id'] = row[2]
@@ -82,6 +81,7 @@ class DiseaseModelAdapter(Adapter):
                 props['interacting_alleles'] = alleles
             props['ev_code_interact_alleles'] = row[10]
             props['reference_id'] = row[11]
+            props['taxon_id'] = 7227
             #print(f'{props}')
             yield f'{self.label}_{id}', self.label, props
 

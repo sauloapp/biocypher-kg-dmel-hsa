@@ -184,8 +184,14 @@ def download_all_fbgn_data():
     #     if gene.startswith("FBgn"):
     #         download_rnaseq_data(gene)
 
-download_all_fbgn_data()
-exit(9)
+
+
+
+# download_all_fbgn_data()
+# exit(9)
+
+
+
 
 def convert_transcriptGene_files(file_list, output_file, transcript_type='regularRNA'):
     # Initialize an empty list to store dataframes

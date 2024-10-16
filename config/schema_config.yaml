@@ -104,7 +104,7 @@ expression value:
   source: [transcript, gene]
   target: rnaseq library
   description: >-
-    A set of values for numeric estimation of single gene/transcript expression as measured by a given methodology (represented by the library).
+    A set of values for numeric estimation of single gene/transcript expression as measured by a given methodology (represented by a library).
   properties:
     value_and_description: list[tuple]]   # this list of tuples is to keep semantics in the DAS context.
                                           # it is (value, description), (value, description),...

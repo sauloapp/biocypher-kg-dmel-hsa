@@ -1,0 +1,42 @@
+[QueryAnswer(subgraph={'_id': 'e4e09d8a9988553daf92e09f8f8abe0d', 'composite_type_hash': '248d364bf02eef99d6da2cdd02416c58', 'is_toplevel': True, 'composite_type': ['a1a6657be79cc0fc1e9b23b9e108f043', '02c86eb2792f3262c21d030a87e19793', 'a1a6657be79cc0fc1e9b23b9e108f043', '02c86eb2792f3262c21d030a87e19793'], 'named_type': 'Expression', 'named_type_hash': 'a1a6657be79cc0fc1e9b23b9e108f043', 'key_0': 'c36cfa7df324578ea7648d82f57a579a', 'key_1': '8a767e1c7698952cd03e04b63482d532', 'key_2': 'c418fbc7638ed7e1e5f53592a589ea0a', 'targets': [{'_id': 'c36cfa7df324578ea7648d82f57a579a', 'composite_type_hash': '02c86eb2792f3262c21d030a87e19793', 'name': 'genes_ids', 'named_type': 'Symbol', 'is_literal': False, 'handle': 'c36cfa7df324578ea7648d82f57a579a', 'type': 'Symbol'}, {'_id': '8a767e1c7698952cd03e04b63482d532', 'composite_type_hash': 'e741de9de620cc6ca1c96d4249d4fec8', 'is_toplevel': True, 'composite_type': ['a1a6657be79cc0fc1e9b23b9e108f043', '02c86eb2792f3262c21d030a87e19793', '02c86eb2792f3262c21d030a87e19793'], 'named_type': 'Expression', 'named_type_hash': 'a1a6657be79cc0fc1e9b23b9e108f043', 'key_0': 'db37c407bcfcdf3a392cb029ce268de9', 'key_1': 'd49d4434531db744a54556fe23ef4cc8', 'targets': [{'_id': 'db37c407bcfcdf3a392cb029ce268de9', 'composite_type_hash': '02c86eb2792f3262c21d030a87e19793', 'name': 'gene_group', 'named_type': 'Symbol', 'is_literal': False, 'handle': 'db37c407bcfcdf3a392cb029ce268de9', 'type': 'Symbol'}, {'_id': 'd49d4434531db744a54556fe23ef4cc8', 'composite_type_hash': '02c86eb2792f3262c21d030a87e19793', 'name': 'FBgg0001558', 'named_type': 'Symbol', 'is_literal': False, 'handle': 'd49d4434531db744a54556fe23ef4cc8', 'type': 'Symbol'}], 'handle': '8a767e1c7698952cd03e04b63482d532', 'type': 'Expression'}, {'_id': 'c418fbc7638ed7e1e5f53592a589ea0a', 'composite_type_hash': '02c86eb2792f3262c21d030a87e19793', 'name': 'FBgn0265262', 'named_type': 'Symbol', 'is_literal': False, 'handle': 'c418fbc7638ed7e1e5f53592a589ea0a', 'type': 'Symbol'}], 'handle': 'e4e09d8a9988553daf92e09f8f8abe0d', 'type': 'Expression'}, assignment=[('v1', 'c418fbc7638ed7e1e5f53592a589ea0a')]), 
+
+QueryAnswer(subgraph={'_id': '56b00f2ed0d4f3538c4d14ffe2f9ea3a', 'composite_type_hash': '248d364bf02eef99d6da2cdd02416c58', 'is_toplevel': True, 'composite_type': ['a1a6657be79cc0fc1e9b23b9e108f043', '02c86eb2792f3262c21d030a87e19793', 'a1a6657be79cc0fc1e9b23b9e108f043', '02c86eb2792f3262c21d030a87e19793'], 'named_type': 'Expression', 'named_type_hash': 'a1a6657be79cc0fc1e9b23b9e108f043', 'key_0': 'c36cfa7df324578ea7648d82f57a579a', 'key_1': '8a767e1c7698952cd03e04b63482d532', 'key_2': 'fb59da27d6e47701576367454349c321', 'targets': [{'_id': 'c36cfa7df324578ea7648d82f57a579a', 'composite_type_hash': '02c86eb2792f3262c21d030a87e19793', 'name': 'genes_ids', 'named_type': 'Symbol', 'is_literal': False, 'handle': 'c36cfa7df324578ea7648d82f57a579a', 'type': 'Symbol'}, {'_id': '8a767e1c7698952cd03e04b63482d532', 'composite_type_hash': 'e741de9de620cc6ca1c96d4249d4fec8', 'is_toplevel': True, 'composite_type': ['a1a6657be79cc0fc1e9b23b9e108f043', '02c86eb2792f3262c21d030a87e19793', '02c86eb2792f3262c21d030a87e19793'], 'named_type': 'Expression', 'named_type_hash': 'a1a6657be79cc0fc1e9b23b9e108f043', 'key_0': 'db37c407bcfcdf3a392cb029ce268de9', 'key_1': 'd49d4434531db744a54556fe23ef4cc8', 'targets': [{'_id': 'db37c407bcfcdf3a392cb029ce268de9', 'composite_type_hash': '02c86eb2792f3262c21d030a87e19793', 'name': 'gene_group', 'named_type': 'Symbol', 'is_literal': False, 'handle': 'db37c407bcfcdf3a392cb029ce268de9', 'type': 'Symbol'}, {'_id': 'd49d4434531db744a54556fe23ef4cc8', 'composite_type_hash': '02c86eb2792f3262c21d030a87e19793', 'name': 'FBgg0001558', 'named_type': 'Symbol', 'is_literal': False, 'handle': 'd49d4434531db744a54556fe23ef4cc8', 'type': 'Symbol'}], 'handle': '8a767e1c7698952cd03e04b63482d532', 'type': 'Expression'}, {'_id': 'fb59da27d6e47701576367454349c321', 'composite_type_hash': '02c86eb2792f3262c21d030a87e19793', 'name': 'FBgn0263598', 'named_type': 'Symbol', 'is_literal': False, 'handle': 'fb59da27d6e47701576367454349c321', 'type': 'Symbol'}], 'handle': '56b00f2ed0d4f3538c4d14ffe2f9ea3a', 'type': 'Expression'}, assignment=[('v1', 'fb59da27d6e47701576367454349c321')]), 
+
+	QueryAnswer(		#answer[i]['targets'][2]['name'] = 'FBgn0032464'
+	subgraph={
+		'_id': '8f8dc41f90688193f3a505e2f2231e93', 'composite_type_hash': '248d364bf02eef99d6da2cdd02416c58', 'is_toplevel': True, 
+		'composite_type': [
+		'a1a6657be79cc0fc1e9b23b9e108f043', '02c86eb2792f3262c21d030a87e19793', 'a1a6657be79cc0fc1e9b23b9e108f043', '02c86eb2792f3262c21d030a87e19793'
+		], 
+		'named_type': 'Expression', 
+		'named_type_hash': 'a1a6657be79cc0fc1e9b23b9e108f043', 
+		'key_0': 'c36cfa7df324578ea7648d82f57a579a', 
+		'key_1': '8a767e1c7698952cd03e04b63482d532', 
+		'key_2': '502a485c0e4feb1e0b661557f2304449', 
+		'targets': [
+					{'_id': 'c36cfa7df324578ea7648d82f57a579a', 'composite_type_hash': '02c86eb2792f3262c21d030a87e19793', 'name': 'genes_ids', 'named_type': 'Symbol', 'is_literal': False, 
+						'handle': 'c36cfa7df324578ea7648d82f57a579a', 'type': 'Symbol'}, 
+					{'_id': '8a767e1c7698952cd03e04b63482d532', 'composite_type_hash': 'e741de9de620cc6ca1c96d4249d4fec8', 'is_toplevel': True, 
+						'composite_type': [
+						'a1a6657be79cc0fc1e9b23b9e108f043', '02c86eb2792f3262c21d030a87e19793', '02c86eb2792f3262c21d030a87e19793'
+						], 
+						'named_type': 'Expression', 
+						'named_type_hash': 'a1a6657be79cc0fc1e9b23b9e108f043', 
+						'key_0': 'db37c407bcfcdf3a392cb029ce268de9', 
+						'key_1': 'd49d4434531db744a54556fe23ef4cc8', 
+						'targets': [
+										{'_id': 'db37c407bcfcdf3a392cb029ce268de9', 'composite_type_hash': '02c86eb2792f3262c21d030a87e19793', 'name': 'gene_group', 'named_type': 'Symbol', 
+										'is_literal': False, 
+										'handle': 'db37c407bcfcdf3a392cb029ce268de9', 'type': 'Symbol'}, 
+										{'_id': 'd49d4434531db744a54556fe23ef4cc8', 'composite_type_hash': '02c86eb2792f3262c21d030a87e19793', 'name': 'FBgg0001558', 'named_type': 'Symbol', 
+										'is_literal': False, 'handle': 'd49d4434531db744a54556fe23ef4cc8', 'type': 'Symbol'}
+						], 
+						'handle': '8a767e1c7698952cd03e04b63482d532', 'type': 'Expression'},
+					{'_id': '502a485c0e4feb1e0b661557f2304449', 'composite_type_hash': '02c86eb2792f3262c21d030a87e19793', 'name': 'FBgn0032464', 'named_type': 'Symbol', 'is_literal': False, 
+					'handle': '502a485c0e4feb1e0b661557f2304449', 'type': 'Symbol'}
+		], 
+		'handle': '8f8dc41f90688193f3a505e2f2231e93', 'type': 'Expression'}, 
+		assignment=[('v1', '502a485c0e4feb1e0b661557f2304449')]
+	)
+]
+

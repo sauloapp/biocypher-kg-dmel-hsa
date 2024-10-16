@@ -31,7 +31,10 @@ def download_gencode(output_dir, config):
     url = config["url"]
     save_dir = pathlib.Path(f"{output_dir}/gencode")
     save_dir.mkdir(parents=True, exist_ok=True)
-    p = save_dir.joinpath("gencode.annotation.gtf.gz")
+    # p = save_dir.joinpath("gencode.annotation.gtf.gz")
+    filename = url.split("/")[-1]
+    p = save_dir.joinpath(filename)
+
     download(url, p)
 
 def download_uniprot(output_dir, config):
@@ -81,7 +84,8 @@ def download_coxpressdb(output_dir, config):
 def download_tflink(output_dir, config):
     print(f"Downloading from {config['name']} .....")
     url = config["url"]
-    filename = "tflink_homo_sapiens_interactions.tsv.gz"
+    # filename = "tflink_homo_sapiens_interactions.tsv.gz" # TFLink_Drosophila_melanogaster_interactions_All_simpleFormat_v1.0.tsv.gz
+    filename = "TFLink_Drosophila_melanogaster_interactions_All_simpleFormat_v1.0.tsv.gz"
     save_dir = pathlib.Path(f"{output_dir}/tflink")
     save_dir.mkdir(parents=True, exist_ok=True)
     p = save_dir.joinpath(filename)
@@ -90,7 +94,8 @@ def download_tflink(output_dir, config):
 def download_string(output_dir, config):
     print(f"Downloading from {config['name']} .....")
     url = config["url"]
-    filename = "string_human_ppi_v12.0.txt.gz"
+    # filename = "string_human_ppi_v12.0.txt.gz"  #7227.protein.links.v12.0.txt.gz
+    filename = "7227.protein.links.v12.0.txt.gz"
     save_dir = pathlib.Path(f"{output_dir}/string")
     save_dir.mkdir(parents=True, exist_ok=True)
     p = save_dir.joinpath(filename)
@@ -218,15 +223,15 @@ def download_data(output_dir: Annotated[pathlib.Path, typer.Option(exists=False,
             download_uniprot(output_dir, config["uniprot"])
             download_reactome(output_dir, config["reactome"])
             download_gaf(output_dir, config["gaf"])
-            download_coxpressdb(output_dir, config["coxpressdb"])
+            # download_coxpressdb(output_dir, config["coxpressdb"])
             download_tflink(output_dir, config["tflink"])
             download_string(output_dir, config["string"])
-            download_tadmap(output_dir, config["tadmap"]) #FIXME: download tadmap data
-            download_roadmap(output_dir, config["roadmap"])
+            # download_tadmap(output_dir, config["tadmap"]) #FIXME: download tadmap data
+            # download_roadmap(output_dir, config["roadmap"])
             download_gtex_eQTL(output_dir, config["gtex_eqtl"])
-            download_topld(output_dir, config["topld"], chr)
-            download_hocomoco(output_dir, config["hocomoco"])
-            download_favor(output_dir, config["favor"], chr)
+            # download_topld(output_dir, config["topld"], chr)
+            # download_hocomoco(output_dir, config["hocomoco"])
+            # download_favor(output_dir, config["favor"], chr)
         except yaml.YAMLError as exc:
             print(f"Error parsing config file: {exc}")
 

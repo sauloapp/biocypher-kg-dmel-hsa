@@ -4,7 +4,7 @@ roadmap:
   url: https://personal.broadinstitute.org/jernst/MODEL_IMPUTED12MARKS
 gencode:
   name: GENCODE v44
-  url: https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_44/gencode.v44.annotation.gtf.gz
+  url: https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/latest_release/gencode.v44.annotation.gtf.gz
 uniprot:
   name: UniProtKB/Swiss-Prot
   url: https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/taxonomic_divisions/uniprot_sprot_human.dat.gz
