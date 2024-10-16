@@ -44,8 +44,6 @@ dmel_genotype_phenotype:
   nodes: True
   edges: False
 
-
-
 gaf:
   adapter:
     module: biocypher_metta.adapters.hsa.gaf_adapter

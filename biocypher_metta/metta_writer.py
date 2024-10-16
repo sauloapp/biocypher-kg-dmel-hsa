@@ -81,71 +81,48 @@ class MeTTaWriter:
 
                     # saulo 2024/07/31: handle "source type" and/or "target_type" being lists of types
                     if isinstance(source_type, str) and isinstance(target_type, str): # most frequent case: source_type, target_type are strings
-                        self.edge_node_types[label.lower()] = {"source": source_type.lower(), "target":target_type.lower(),
-                                                               "output_label": output_label.lower() if output_label is not None else None}
+                        print(f"key: => {k}")
+                        if '.' not in k:                            
+                            self.edge_node_types[label.lower()] = {"source": source_type.lower(), "target":target_type.lower(),
+                                                                "output_label": output_label.lower() if output_label is not None else None}
                     # these elifs should be refactored to a function body
                     elif isinstance(source_type, list) and isinstance(target_type, str):  # gene to pathway, expression_value edge schemas
+                        print(f"source list key: => {k}")
                         for i in range(len(source_type)):
                             source_type[i] = source_type[i].lower()
-                        self.edge_node_types[label.lower()] = {#"source": source_type,
+                        self.edge_node_types[label.lower()] = {"source": source_type,
                                                                "target": target_type.lower(),
                                                                "output_label": output_label.lower() if output_label is not None else None}
-                        self.aux_edge_node_types[label.lower()]  = {#"source": source_type,
+                        self.aux_edge_node_types[label.lower()]  = {"source": source_type,
                                                                "target": target_type.lower(),
-                                                               "output_label": output_label.lower() if output_label is not None else None}
-                        self.edge_node_types[label.lower()]["source"] = []                        
-                        # self.aux_edge_node_types[label.lower()]["source"] = []  
-                        self.aux_edge_node_types[label.lower()]["source"] = source_type
-                        for t in source_type:
-                            self.edge_node_types[label.lower()]["source"].append(t)
-                            # self.aux_edge_node_types[label.lower()]["source"].append(t)
+                                                               "output_label": output_label.lower() if output_label is not None else None}                                                
                         # print(f'Source type: {self.edge_node_types[label.lower()]["source"]} for {label.lower()}')
                         # print(self.edge_node_types[label.lower()])
                     elif isinstance(source_type, str) and isinstance(target_type, list):  # expression edge schema
+                        print(f"TARGET list key: => {k}")
                         for i in range(len(target_type)):
                             target_type[i] = target_type[i].lower()
                         self.edge_node_types[label.lower()] = {"source": source_type.lower(), 
-                                                               # "target": target_type,
+                                                                "target": target_type,
                                                                 "output_label": output_label.lower() if output_label is not None else None}                        
-                        self.edge_node_types[label.lower()]["target"] = []
                         self.aux_edge_node_types[label.lower()] = {"source": source_type.lower(), 
-                                                               # "target": target_type,
+                                                                "target": target_type,
                                                                 "output_label": output_label.lower() if output_label is not None else None}
-                        # self.aux_edge_node_types[label.lower()]["target"] = []
-                        self.aux_edge_node_types[label.lower()]["target"] = target_type
-                        for t in target_type:
-                            self.edge_node_types[label.lower()]["target"].append(t)
-                            # self.aux_edge_node_types[label.lower()]["target"].append(t)
                         # print(f'Target type: {self.edge_node_types[label.lower()]["target"]} for {label.lower()}')
                         # print(self.edge_node_types[label.lower()])
-                    elif isinstance(source_type, list) and isinstance(target_type, list):   # non existing schema
+                    elif isinstance(source_type, list) and isinstance(target_type, list):   # non existing schema at 2024/07
                         for i in range(len(source_type)):
                             source_type[i] = source_type[i].lower()
-                        self.edge_node_types[label.lower()] = {#"source": source_type,
-                                                               "target": target_type.lower(),
-                                                               "output_label": output_label.lower() if output_label is not None else None}
-                        self.aux_edge_node_types[label.lower()]  = {#"source": source_type,
-                                                               "target": target_type.lower(),
-                                                               "output_label": output_label.lower() if output_label is not None else None}
-                        self.edge_node_types[label.lower()]["source"] = []                        
-                        # self.aux_edge_node_types[label.lower()]["source"] = []  
-                        self.aux_edge_node_types[label.lower()]["source"] = source_type
-                        for t in source_type:
-                            self.edge_node_types[label.lower()]["source"].append(t)
                         for i in range(len(target_type)):
                             target_type[i] = target_type[i].lower()
-                        self.edge_node_types[label.lower()] = {"source": source_type.lower(), 
-                                                               # "target": target_type,
-                                                                "output_label": output_label.lower() if output_label is not None else None}                        
-                        self.edge_node_types[label.lower()]["target"] = []
-                        self.aux_edge_node_types[label.lower()] = {"source": source_type.lower(), 
-                                                               # "target": target_type,
-                                                                "output_label": output_label.lower() if output_label is not None else None}
-                        # self.aux_edge_node_types[label.lower()]["target"] = []
-                        self.aux_edge_node_types[label.lower()]["target"] = target_type
-                        for t in target_type:
-                            self.edge_node_types[label.lower()]["target"].append(t)
-
+                        self.edge_node_types[label.lower()] = {"source": source_type,
+                                                               "target": target_type,
+                                                               "output_label": output_label.lower() if output_label is not None else None}
+                        self.aux_edge_node_types[label.lower()]  = {"source": source_type,
+                                                               "target": target_type,
+                                                               "output_label": output_label.lower() if output_label is not None else None}
+                    else:
+                        print(f"UNKOWN key type: => {k}")
             elif v["represented_as"] == "node":
                 label = v["input_label"]
                 if not isinstance(label, list):
@@ -205,8 +182,7 @@ class MeTTaWriter:
 
     def write_edge(self, edge):
         source_id, target_id, label, properties = edge
-        label = label.lower()
-        
+        label = label.lower()       
         # added by saulo to handle list of types in the schema of edge's source
         if isinstance(source_id, tuple):
             source_type = source_id[0]
@@ -221,8 +197,10 @@ class MeTTaWriter:
             # this auxiliar structure was necessary to hold values that are list of types (eg. [gene, transcript]).
             # I don't know why (yet), but self.edge_node_types only holds the last element of the list (look at self.create_data_constructors())
             #####################################################################################################################################
-            if source_type not in self.aux_edge_node_types[label]["source"]:
-                raise TypeError(f"Type '{source_type}' must be one of {self.aux_edge_node_types[label]["source"]}")
+            if source_type not in self.edge_node_types[label]["source"]:
+            #if source_type not in self.aux_edge_node_types[label]["source"]:
+                raise TypeError(f"Type '{source_type}' must be one of {self.edge_node_types[label]["source"]}")
+                #raise TypeError(f"Type '{source_type}' must be one of {self.aux_edge_node_types[label]["source"]}")
             source_id = source_id[1]
         else:
             source_type = self.edge_node_types[label]["source"]
@@ -242,9 +220,10 @@ class MeTTaWriter:
             # this auxiliar structure was necessary to hold values that are list of types (eg. [gene, transcript]).
             # I don't know why (yet), but self.edge_node_types only holds the last element of the list (look at self.create_data_constructors())
             #####################################################################################################################################
-            #if target_type not in self.edge_node_types[label]["target"]:
-            if target_type not in self.aux_edge_node_types[label]["target"]:
-                raise TypeError(f"Type {target_type} must be one of {self.aux_edge_node_types[label]["target"]}")
+            if target_type not in self.edge_node_types[label]["target"]:
+            #if target_type not in self.aux_edge_node_types[label]["target"]:
+                #raise TypeError(f"Type {target_type} must be one of {self.aux_edge_node_types[label]["target"]}")
+                raise TypeError(f"Type {target_type} must be one of {self.edge_node_types[label]["target"]}")
             target_id = target_id[1]
         else:
             target_type = self.edge_node_types[label]["target"]
