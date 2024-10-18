@@ -61,8 +61,10 @@ class Neo4jCSVWriter:
 
                     # saulo: to  handle lists in source and target types (2024/09/17)
                     if isinstance(source_type, str) and isinstance(target_type, str): # most frequent case: source_type, target_type are strings
-                        self.edge_node_types[label.lower()] = {"source": source_type.lower(), "target":target_type.lower(),
-                                                               "output_label": output_label.lower() if output_label is not None else None}
+                        print(f"key: => {k}")
+                        if '.' not in k:                            
+                            self.edge_node_types[label.lower()] = {"source": source_type.lower(), "target":target_type.lower(),
+                                                                "output_label": output_label.lower() if output_label is not None else None}
                     elif isinstance(source_type, list) and isinstance(target_type, str):  # gene to pathway, expression_value edge schemas
                         for i in range(len(source_type)):
                             source_type[i] = source_type[i].lower()
@@ -135,15 +137,16 @@ class Neo4jCSVWriter:
             return str(value).translate(self.translation_table)
         
         if value_type is str:
-            return value.translate(self.translation_table)
-        
+            return value.translate(self.translation_table)        
         return value
     
+
     def preprocess_id(self, prev_id):
         replace_map = str.maketrans({' ': '_', ':':'_'})
         id = prev_id.lower().strip().translate(replace_map)
         return id
     
+
     def write_chunk(self, chunk, headers, file_path, csv_delimiter, preprocess_value):
         with open(file_path, 'a', newline='') as csvfile:
             writer = csv.writer(csvfile, delimiter=csv_delimiter)
@@ -169,6 +172,7 @@ class Neo4jCSVWriter:
         
         pool.close()
         pool.join()
+
 
     def write_nodes(self, nodes, path_prefix=None, adapter_name=None):
         # Determine the output directory based on the given parameters
@@ -254,8 +258,10 @@ RETURN batches, total;
                 # this auxiliar structure was necessary to hold values that are list of types (eg. [gene, transcript]).
                 # I don't know why (yet), but self.edge_node_types only holds the last element of the list (look at self.create_edge_types())
                 #####################################################################################################################################
-                if source_type not in self.aux_edge_node_types[label]["source"]:
-                    raise TypeError(f"Type '{source_type}' must be one of {self.aux_edge_node_types[label]["source"]}")
+                if source_type not in self.edge_node_types[label]["source"]:
+                    raise TypeError(f"Type '{source_type}' must be one of {self.edge_node_types[label]["source"]}")
+                #if source_type not in self.aux_edge_node_types[label]["source"]:
+                    # raise TypeError(f"Type '{source_type}' must be one of {self.aux_edge_node_types[label]["source"]}")
                 source_id = source_id[1]
             else:
                 source_type = self.edge_node_types[label]["source"]
@@ -274,9 +280,10 @@ RETURN batches, total;
                 # this auxiliar structure was necessary to hold values that are list of types (eg. [gene, transcript]).
                 # I don't know why (yet), but self.edge_node_types only holds the last element of the list (look at self.create_edge_types())
                 #####################################################################################################################################
-                #if target_type not in self.edge_node_types[label]["target"]:
-                if target_type not in self.aux_edge_node_types[label]["target"]:
-                    raise TypeError(f"Type {target_type} must be one of {self.aux_edge_node_types[label]["target"]}")
+                if target_type not in self.edge_node_types[label]["target"]:
+                    raise TypeError(f"Type {target_type} must be one of {self.edge_node_types[label]["target"]}")
+                # if target_type not in self.aux_edge_node_types[label]["target"]:
+                #     raise TypeError(f"Type {target_type} must be one of {self.aux_edge_node_types[label]["target"]}")
                 target_id = target_id[1]
             else:
                 target_type = self.edge_node_types[label]["target"]

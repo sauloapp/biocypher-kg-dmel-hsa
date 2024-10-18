@@ -5,8 +5,9 @@ import requests
 import os
 import csv
 import psycopg2
-from flybase_tsv_reader import FlybasePrecomputedTable
+#from flybase_tsv_reader import FlybasePrecomputedTable
 import gzip
+import re
 
 out_dir = "/mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/full/fca2/gene_data/"
 out_dir = "/home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/fca2"
@@ -184,8 +185,14 @@ def download_all_fbgn_data():
     #     if gene.startswith("FBgn"):
     #         download_rnaseq_data(gene)
 
-download_all_fbgn_data()
-exit(9)
+
+
+
+# download_all_fbgn_data()
+# exit(9)
+
+
+
 
 def convert_transcriptGene_files(file_list, output_file, transcript_type='regularRNA'):
     # Initialize an empty list to store dataframes
@@ -239,6 +246,133 @@ def convert_transcriptGene_files(file_list, output_file, transcript_type='regula
     # Write the final dataframe to a gzipped TSV file
     with gzip.open(output_file, 'wt') as f:
         final_df.to_csv(f, sep='\t', index=False)
+
+
+
+
+def parse_file(file_path, micro_rna = False):
+    # Lista que armazenará os dados para o dataframe final
+    data = []
+
+    # Abre o arquivo e lê o conteúdo linha por linha
+    with open(file_path, 'r') as f:
+        lines = f.readlines()
+
+    # Extrai o FBgn ID da linha correspondente
+    fbgn_id = lines[0].split("\t")[1].strip()
+
+
+    # Início da tabela de dados (após a linha do cabeçalho)
+    start_index = 7
+
+    # Faz um loop pelas linhas de dados da tabela
+    for line in lines[start_index:]:
+        # Separa os valores da linha atual
+        values = line.strip().split("\t")
+        
+        # Ignora linhas que não têm dados válidos
+        if len(values) < 3:
+            continue
+
+        # Pega os dados por condição de "Adult Male", "Adult Female" e, se houver, "Larval"
+        tissue = values[0]
+        #adult_male_data = values[1:4]
+        adult_male_data = [ value for value in values[1:4] if value != '-' ]
+        #adult_female_data = values[4:7]
+        adult_female_data = [ value for value in values[4:7] if value != '-' ]
+        larval_data = [ value for value in values[9:12] if value != '-' ]
+
+        # Adiciona as linhas formatadas para Adult Male
+        #if all(adult_male_data):
+        if adult_male_data != []:
+            data.append([fbgn_id, 'Adult Male', tissue] + adult_male_data)
+
+        # Adiciona as linhas formatadas para Adult Female
+        #if all(adult_female_data):
+        if adult_female_data != []:
+            data.append([fbgn_id, 'Adult Female', tissue] + adult_female_data)
+
+        # Adiciona as linhas formatadas para Larval, se houver
+        #if all(larval_data):
+        if larval_data != []:
+            data.append([fbgn_id, 'Larval', tissue] + larval_data)
+
+    # Retorna um dataframe com os dados processados
+    if micro_rna:
+        return pd.DataFrame(data, columns=['#FBgene ID', 'Tissue stage and sex', 'Tissue', 'TPM', 'SD', 'Enrichment'])
+    else:
+        return pd.DataFrame(data, columns=['#FBgene ID', 'Tissue stage and sex', 'Tissue', 'FPKM', 'SD', 'Enrichment'])
+
+
+def generate_fca2_fbgn_output(directory, output_file="fca2_fbgn_gene_output.tsv", micro_rna = False):
+    if micro_rna:
+        files = [f for f in os.listdir(directory) if re.match(r"^FBgn\d{7}_mir\.tsv$", f)]    
+    else:
+        # Usa regex para garantir que o nome siga o padrão FBgnXXXXXXXX_gene.tsv
+        files = [f for f in os.listdir(directory) if re.match(r"^FBgn\d{7}_gene\.tsv$", f)]
+
+    # Lista para armazenar todos os dataframes
+    all_data = []
+
+    # Lê e processa cada arquivo
+    for file in files:
+        file_path = os.path.join(directory, file)
+        df = parse_file(file_path, micro_rna=micro_rna)  # Usa a função parse_file para processar cada arquivo
+        all_data.append(df)
+
+    # Combina todos os dataframes em um único
+    combined_df = pd.concat(all_data, ignore_index=True)
+
+    # Salva o dataframe combinado no arquivo de saída
+    combined_df.to_csv(output_file, sep="\t", index=False)
+    # Write the final dataframe to a gzipped TSV file
+    with gzip.open(output_file, 'wt') as f:
+        combined_df.to_csv(f, sep='\t', index=False)
+
+    print(f"Arquivo {output_file} gerado com sucesso.")
+
+
+
+# def generate_fca2_fbgn_output(directory, output_file="fca2_fbgn_gene_output.tsv"):
+#     # Use a regex pattern to ensure that the file name follows the format FBgnXXXXXXXX_gene.tsv
+#     files = [f for f in os.listdir(directory) if re.match(r"^FBgn\d{7}_gene\.tsv$", f)]
+    
+#     # List to store all the dataframes
+#     all_data = []
+    
+#     for file in files:
+#         file_path = os.path.join(directory, file)
+#         # Read each file and append it to the dataframe list
+#         df = pd.read_csv(file_path, sep="\t")
+#         all_data.append(df)
+    
+#     # Combine all the dataframes into a single one
+#     combined_df = pd.concat(all_data, ignore_index=True)
+    
+#     # Set the column names to the desired format
+#     combined_df.columns = ['#FBgene ID', 'Tissue stage and sex', 'Tissue', 'FPKM', 'SD', 'Enrichment']
+    
+#     # Save the combined dataframe to the output file
+#     combined_df.to_csv(output_file, sep="\t", index=False)
+
+#     print(f"File {output_file} successfully generated.")
+
+directory = "/mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/full/fca2/genes_data"
+out_file = "/mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/full/fca2/fca2_fbgn_gene_output.tsv.gz"
+generate_fca2_fbgn_output(directory, out_file=out_file)
+out_file = "/mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/full/fca2/fca2_fbgn_mir_gene_output.tsv.gz"
+generate_fca2_fbgn_output(directory, output_file = out_file, micro_rna = True)
+exit(9)
+
+#directory = "/home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/fca2/genes"
+#generate_fca2_fbgn_output(directory, output_file="/home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/fca2/fca2_fbgn_gene_output.tsv.gz")
+#generate_fca2_fbgn_output(directory, output_file="/home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/fca2/fca2_fbgn_gene_output.tsv.gz")
+directory = "/home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/fca2/micro_rna_genes"
+#generate_fca2_fbgn_output(directory, output_file="/home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/fca2/fca2_genes_v2.tsv.GZ")
+generate_fca2_fbgn_output(directory, output_file="/home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/fca2/fca2_fbgn_mir_gene_output.tsv.gz", micro_rna=True)
+exit(9)
+
+
 
 file_list = glob.glob("/home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/fca2/transcripts/*_transcriptGene.tsv")
 output_file = "/home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/fca2/fca2_fbgn_transcriptGene_output.tsv.gz"
