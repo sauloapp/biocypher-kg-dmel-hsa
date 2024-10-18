@@ -48,13 +48,14 @@ class Neo4jWriter:
                         target_type = self.convert_input_labels(target_type)
                     output_label = v.get("output_label", None)
 
-                    self.edge_node_types[label.lower()] = {
-                        "source": source_type.lower(),
-                        "target": target_type.lower(),
-                        "output_label": (
-                            output_label.lower() if output_label is not None else None
-                        ),
-                    }
+                    # self.edge_node_types[label.lower()] = {
+                    #     "source": source_type.lower(),
+                    #     "target": target_type.lower(),
+                    #     "output_label": (
+                    #         output_label.lower() if output_label is not None else None
+                    #     ),
+                    # }
+
 
     def write_nodes(self, nodes, path_prefix=None, create_dir=True):
         if path_prefix is not None:
