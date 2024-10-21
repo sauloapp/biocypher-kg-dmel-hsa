@@ -34,8 +34,8 @@ class FlybasePrecomputedTable:
     def _add_row(self, row):
         if row[0] == self.__header[0]:
             return
-        if row not in self.__rows:
-            self.__rows.append(row)
+        #if row not in self.__rows:
+        self.__rows.append(row)
 
 
     def _proces_input_tsv(self, input_file_name: str):
@@ -49,39 +49,7 @@ class FlybasePrecomputedTable:
         else:
             print(f'Invalid input file type. Only gzipped (.gz) or .tsv are allowed: {input_file_name}')
             return
-        #while True:
 
-        # rows = csv.reader(input, delimiter="\t", quotechar='"')
-        # for row in rows:
-        #     #row = input.readline()
-        #     if not row:
-        #         #break
-        #         continue
-        #
-        #     # strip() added to handle "blank" rows in some TSVs
-        #     if not row[0].strip():
-        #         continue
-        #
-        #     if not row[0].startswith("#"):
-        #         if header is None:
-        #             #header = previous.lstrip("# \t")
-        #             #header = [column_name.strip() for column_name in header.split('\t')]
-        #             header = [previous[0].lstrip("#\t "), *previous[1:]]
-        #             self._set_header(header)
-        #             print(f'Header: {header}')
-        #         #else:
-        #         #row_list = [value.strip() for value in row.split('\t')]
-        #         #self._add_row(row_list)
-        #         self._add_row(row)
-        #     if not row[0].startswith("#-----") and not row[0].startswith("## Finished "):
-        #         previous = row
-        #         if header != None and header[0].startswith('High_Throughpu'):
-        #             if 'FBlc0006183' in row[1]:
-        #                 print("Loop..."+str(row))
-        #     elif header[0].startswith('High_Throughpu'):
-        #         print("Loop...")
-
-##########################################################################################################
         lines = input.readlines()
         #print(f'Lines to read: {len(lines)}')
         for i in range(0, len(lines)):
