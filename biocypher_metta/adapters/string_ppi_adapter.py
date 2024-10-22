@@ -49,6 +49,20 @@ class StringPPIAdapter(Adapter):
         self.version = "v12.0"
         super(StringPPIAdapter, self).__init__(write_properties, add_provenance)
 
+    """
+    Code skeleton:
+    class EdgeAdapter:
+    
+        def get_edges(self):
+            self.data_table = self.get_table(self.table_file_name)
+            for row in self.data_table:
+                edge_source_id = self.get_source_id(row)
+                edge_target_id = self.get_target_id(row)
+                if self.valid_ids(edge_source_id, edge_target_id):
+                    properties = self.get_properties(row)
+                    if self.valid_properties(properties)
+                        yield edge_source_id, edge_target_id, self.label, properties
+        """
     def get_edges(self):
         with gzip.open(self.dmel_filepath, "rt") as fp:
             table = csv.reader(fp, delimiter=" ", quotechar='"')
