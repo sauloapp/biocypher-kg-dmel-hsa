@@ -347,7 +347,7 @@ class ExpressionValueAdapter(Adapter):
 
         '''
         symbols_to_fbgn_file = "/mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/full/flybase/fbgn_fbtr_fbpp_expanded_fb_2024_04.tsv.gz"
-        symbols_to_fbgn_file = "/home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/full/flybase/fbgn_fbtr_fbpp_expanded_fb_2024_04.tsv.gz"
+        #symbols_to_fbgn_file = "/home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/full/flybase/fbgn_fbtr_fbpp_expanded_fb_2024_04.tsv.gz"
 
         symbols_to_fbgn_table = FlybasePrecomputedTable(symbols_to_fbgn_file)
         symbols_to_fbgn_dict = {}
