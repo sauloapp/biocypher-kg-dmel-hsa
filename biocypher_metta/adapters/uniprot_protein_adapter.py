@@ -55,7 +55,8 @@ class UniprotProteinAdapter(Adapter):
                     props = {
                         'accessions': record.accessions[1:] if len(record.accessions) > 1 else record.accessions[0],
                         'protein_name': record.entry_name.split('_')[0],
-                        'synonyms': dbxrefs
+                        #'synonyms': dbxrefs
+                        'dbxrefs': dbxrefs,     # ids for related dbs and ontologies
                     }
 
                     if self.add_provenance:

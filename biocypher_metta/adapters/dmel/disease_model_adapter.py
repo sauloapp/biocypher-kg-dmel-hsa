@@ -103,9 +103,3 @@ class DiseaseModelAdapter(Adapter):
 
         return evidence_code, interacting_alleles
     '''                                                                                                                                                                                                ''''''
-
-gga = DiseaseModelAdapter(False,True,
-'/home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy/flybase/disease_model_annotations_fb_2024_02.tsv.gz')
-
-gga.get_nodes()
-    '''

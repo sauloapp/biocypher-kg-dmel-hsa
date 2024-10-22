@@ -359,7 +359,7 @@ def generate_fca2_fbgn_output(directory, output_file="fca2_fbgn_gene_output.tsv"
 
 directory = "/mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/full/fca2/genes_data"
 out_file = "/mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/full/fca2/fca2_fbgn_gene_output.tsv.gz"
-generate_fca2_fbgn_output(directory, out_file=out_file)
+generate_fca2_fbgn_output(directory, output_file=out_file)
 out_file = "/mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/full/fca2/fca2_fbgn_mir_gene_output.tsv.gz"
 generate_fca2_fbgn_output(directory, output_file = out_file, micro_rna = True)
 exit(9)

@@ -262,7 +262,7 @@ protein:
   properties:
     accessions: str[]
     protein_name: str
-    synonyms: str[]
+    dbxrefs: str[]                    # ids for related dbs and ontologies
     # source: str
     # source_url: str
 
