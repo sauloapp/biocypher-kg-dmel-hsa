@@ -26,8 +26,6 @@ position entity:
     source_url: str
 
 
-
-
 # 1.2)
 coding element:
   represented_as: node

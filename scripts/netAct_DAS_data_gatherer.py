@@ -392,7 +392,7 @@ input_dirs = [
     #"/home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy"
 ]
 output_dir = "/home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/4toy_net_act"# "/mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/net_act"
-output_dir = "/mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/tmp_net_act_sources"
+output_dir = "/mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/to_round_1_net_act_sources"
 ROUND = 0
 process_netact_input_files(input_dirs, output_dir, expanded_genes_list)
 input_dirs[0] = output_dir
