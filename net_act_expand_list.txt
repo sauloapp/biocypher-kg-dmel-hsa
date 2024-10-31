@@ -186,13 +186,6 @@ FBtr0083127
 Cp190-RB
 FBpp0082581
 Cp190-PB
-FBgn0039740
-Zinc-finger protein interacting with CP190
-CG7928
-FBtr0085600
-ZIPIC-RA
-FBpp0084965
-ZIPIC-PA
 TfIIA-L
 FBgn0011289
 Transcription factor IIA L
@@ -266,13 +259,6 @@ ash1-RC
 FBpp0297152
 ash1-PC
 Raf
-FBgn0002781
-modifier of mdg4
-CG32491
-FBtr0343765
-mod(mdg4)-RAF
-FBpp0310324
-mod(mdg4)-PAF
 FBgn0003079
 Raf oncogene
 CG2845
@@ -284,34 +270,6 @@ FBtr0344007
 Raf-RE
 FBpp0310458
 Raf-PE
-FBgn0033159
-Down syndrome cell adhesion molecule 1
-CG17800
-FBtr0111054
-Dscam1-RAF
-FBpp0110346
-Dscam1-PAF
-FBgn0266696
-Supervillin
-CG45186
-FBtr0345113
-Svil-RAF
-FBpp0311338
-Svil-PAF
-FBgn0284408
-terribly reduced optic lobes
-CG33950
-FBtr0342806
-trol-RAF
-FBpp0309642
-trol-PAF
-FBgn0285944
-paralytic
-CG9907
-FBtr0303682
-para-RAF
-FBpp0292699
-para-PAF
 Abd-B
 FBgn0000015
 Abdominal B
@@ -372,20 +330,52 @@ FBtr0070146
 Rbf-RA
 FBpp0070141
 Rbf-PA
-FBgn0033159
-Down syndrome cell adhesion molecule 1
-CG17800
-FBtr0111078
-Dscam1-RBF
-FBpp0110372
-Dscam1-PBF
-FBgn0285944
-paralytic
-CG9907
-FBtr0331170
-para-RBF
-FBpp0303597
-para-PBF
+FBgn0038390
+Retinoblastoma-family protein 2
+CG5083
+FBtr0083213
+Rbf2-RA
+FBpp0082667
+Rbf2-PA
+FBgn0052062
+RNA-binding Fox protein 1
+CG32062
+FBtr0113418
+Rbfox1-RE
+FBpp0112330
+Rbfox1-PE
+FBtr0113419
+Rbfox1-RF
+FBpp0112331
+Rbfox1-PF
+FBtr0305093
+Rbfox1-RH
+FBpp0293630
+Rbfox1-PH
+FBtr0305094
+Rbfox1-RI
+FBpp0293631
+Rbfox1-PI
+FBtr0305095
+Rbfox1-RJ
+FBpp0293632
+Rbfox1-PJ
+FBtr0305096
+Rbfox1-RK
+FBpp0293633
+Rbfox1-PK
+FBtr0305097
+Rbfox1-RL
+FBpp0293634
+Rbfox1-PL
+FBtr0332985
+Rbfox1-RM
+FBpp0305201
+Rbfox1-PM
+FBtr0473371
+Rbfox1-RN
+FBpp0422975
+Rbfox1-PN
 mof
 FBgn0014340
 males absent on the first
