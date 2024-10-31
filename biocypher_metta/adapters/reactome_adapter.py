@@ -67,19 +67,19 @@ class ReactomeAdapter(Adapter):
                         _target = pathway_id
                         _props['taxon_id'] = 7227
                         yield _source, _target, self.label, _props
-                    if pathway_id.startswith('R-HSA'):
-                        ensg_id = data[0].split('.')[0]
-                        _id = ensg_id + '_' + pathway_id
-                        # _source = ensg_id
-                        if ensg_id.startswith("ENSG"):
-                            _source = ("gene", ensg_id)
-                        elif ensg_id.startswith("ENSP"):
-                            _source = ("protein", ensg_id)
-                        else:
-                            _source = ("transcript", ensg_id)
-                        _target = pathway_id
-                        _props['taxon_id'] = 9606
-                        yield _source, _target, self.label, _props
+                    # if pathway_id.startswith('R-HSA'):
+                    #     ensg_id = data[0].split('.')[0]
+                    #     _id = ensg_id + '_' + pathway_id
+                    #     # _source = ensg_id
+                    #     if ensg_id.startswith("ENSG"):
+                    #         _source = ("gene", ensg_id)
+                    #     elif ensg_id.startswith("ENSP"):
+                    #         _source = ("protein", ensg_id)
+                    #     else:
+                    #         _source = ("transcript", ensg_id)
+                    #     _target = pathway_id
+                    #     _props['taxon_id'] = 9606
+                    #     yield _source, _target, self.label, _props
                 else:
                     parent, child = line.strip().split('\t')
                     #if parent.startswith('R-HSA'):
@@ -95,15 +95,15 @@ class ReactomeAdapter(Adapter):
                             _source =  child
                             _target =  parent
                             yield  _source, _target, self.label, _props
-                    if parent.startswith('R-HSA'):
-                        _props['taxon_id'] = 9606
-                        if self.label == 'parent_pathway_of':
-                            _id = parent + '_' + child
-                            _source = parent
-                            _target = child
-                            yield _source, _target, self.label, _props
-                        elif self.label == 'child_pathway_of':
-                            _id = child + '_' + parent
-                            _source =  child
-                            _target =  parent
-                            yield  _source, _target, self.label, _props
+                    # if parent.startswith('R-HSA'):
+                    #     _props['taxon_id'] = 9606
+                    #     if self.label == 'parent_pathway_of':
+                    #         _id = parent + '_' + child
+                    #         _source = parent
+                    #         _target = child
+                    #         yield _source, _target, self.label, _props
+                    #     elif self.label == 'child_pathway_of':
+                    #         _id = child + '_' + parent
+                    #         _source =  child
+                    #         _target =  parent
+                    #         yield  _source, _target, self.label, _props

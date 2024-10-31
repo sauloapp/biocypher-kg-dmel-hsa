@@ -81,39 +81,39 @@ class GencodeExonAdapter(Adapter):
                         logger.info(
                             f'fail to process for label to load: {self.label}, type to load: {self.type}, data: {line}')
 
-        with gzip.open(self.hsa_filepath, 'rt') as input:
-            for line in input:
-                if line.startswith('#'):
-                    continue
-                split_line = line.strip().split()
-                if split_line[GencodeExonAdapter.INDEX['type']] == 'exon':
-                    info = self.parse_info_metadata(
-                        split_line[GencodeExonAdapter.INDEX['info']:])
-                    gene_id = info['gene_id'].split('.')[0]
-                    transcript_id = info['transcript_id'].split('.')[0]
-                    exon_id = info['exon_id'].split('.')[0]
-                    chr = split_line[GencodeExonAdapter.INDEX['chr']]
-                    start = int(split_line[GencodeExonAdapter.INDEX['coord_start']])
-                    end = int(split_line[GencodeExonAdapter.INDEX['coord_end']])
-                    props = {}
-                    try:
-                        if check_genomic_location(self.chr, self.start, self.end, chr, start, end):
-                            if self.write_properties:
-                                props = {
-                                    'gene': gene_id,
-                                    'transcript': transcript_id,
-                                    'chr': chr,
-                                    'start': start,
-                                    'end': end,
-                                    'exon_number': int(info.get('exon_number', -1)),
-                                    'exon_id': exon_id,
-                                    'taxon_id': 9606
-                                }
-                                if self.add_provenance:
-                                    props['source'] = self.source
-                                    props['source_url'] = self.source_url
+        # with gzip.open(self.hsa_filepath, 'rt') as input:
+        #     for line in input:
+        #         if line.startswith('#'):
+        #             continue
+        #         split_line = line.strip().split()
+        #         if split_line[GencodeExonAdapter.INDEX['type']] == 'exon':
+        #             info = self.parse_info_metadata(
+        #                 split_line[GencodeExonAdapter.INDEX['info']:])
+        #             gene_id = info['gene_id'].split('.')[0]
+        #             transcript_id = info['transcript_id'].split('.')[0]
+        #             exon_id = info['exon_id'].split('.')[0]
+        #             chr = split_line[GencodeExonAdapter.INDEX['chr']]
+        #             start = int(split_line[GencodeExonAdapter.INDEX['coord_start']])
+        #             end = int(split_line[GencodeExonAdapter.INDEX['coord_end']])
+        #             props = {}
+        #             try:
+        #                 if check_genomic_location(self.chr, self.start, self.end, chr, start, end):
+        #                     if self.write_properties:
+        #                         props = {
+        #                             'gene': gene_id,
+        #                             'transcript': transcript_id,
+        #                             'chr': chr,
+        #                             'start': start,
+        #                             'end': end,
+        #                             'exon_number': int(info.get('exon_number', -1)),
+        #                             'exon_id': exon_id,
+        #                             'taxon_id': 9606
+        #                         }
+        #                         if self.add_provenance:
+        #                             props['source'] = self.source
+        #                             props['source_url'] = self.source_url
 
-                            yield exon_id, self.label, props
-                    except:
-                        logger.info(
-                            f'fail to process for label to load: {self.label}, type to load: {self.type}, data: {line}')
+        #                     yield exon_id, self.label, props
+        #             except:
+        #                 logger.info(
+        #                     f'fail to process for label to load: {self.label}, type to load: {self.type}, data: {line}')

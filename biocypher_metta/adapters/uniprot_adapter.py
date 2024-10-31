@@ -80,47 +80,47 @@ class UniprotAdapter(Adapter):
                                     f'fail to process for edge translation of: {record.id}')
                                 pass
 
-        with gzip.open(self.hsa_filepath, 'rt') as input_file:
-            records = SeqIO.parse(input_file, 'swiss')
-            for record in records:
-                if self.type == 'translates to':
-                    dbxrefs = record.dbxrefs
-                    for item in dbxrefs:
-                        if item.startswith('Ensembl') and 'ENST' in item:
-                            try:
-                                ensg_id = item.split(':')[-1].split('.')[0]
-                                _id = record.id + '_' + ensg_id
-                                _source = ensg_id
-                                _target = record.id
-                                _props = {}
-                                if self.write_properties and self.add_provenance:
-                                    _props['source'] = self.source
-                                    _props['source_url'] = self.source_url
-                                _props['taxon_id'] = 9606
-                                yield _source, _target, self.label, _props
+        # with gzip.open(self.hsa_filepath, 'rt') as input_file:
+        #     records = SeqIO.parse(input_file, 'swiss')
+        #     for record in records:
+        #         if self.type == 'translates to':
+        #             dbxrefs = record.dbxrefs
+        #             for item in dbxrefs:
+        #                 if item.startswith('Ensembl') and 'ENST' in item:
+        #                     try:
+        #                         ensg_id = item.split(':')[-1].split('.')[0]
+        #                         _id = record.id + '_' + ensg_id
+        #                         _source = ensg_id
+        #                         _target = record.id
+        #                         _props = {}
+        #                         if self.write_properties and self.add_provenance:
+        #                             _props['source'] = self.source
+        #                             _props['source_url'] = self.source_url
+        #                         _props['taxon_id'] = 9606
+        #                         yield _source, _target, self.label, _props
 
-                            except:
-                                logger.info(
-                                    f'fail to process for edge translates to: {record.id}')
-                                pass
-                elif self.type == 'translation of':
-                    dbxrefs = record.dbxrefs
-                    for item in dbxrefs:
-                        if item.startswith('Ensembl') and 'ENST' in item:
-                        #if item.startswith('EnsemblMetazoa') and 'FBtr' in item:
-                            try:
-                                ensg_id = item.split(':')[-1].split('.')[0]
-                                _id = ensg_id + '_' + record.id
-                                _target = ensg_id
-                                _source = record.id
-                                _props = {}
-                                if self.write_properties and self.add_provenance:
-                                    _props['source'] = self.source
-                                    _props['source_url'] = self.source_url
-                                _props['taxon_id'] = 9606
-                                yield  _source, _target, self.label, _props
+        #                     except:
+        #                         logger.info(
+        #                             f'fail to process for edge translates to: {record.id}')
+        #                         pass
+        #         elif self.type == 'translation of':
+        #             dbxrefs = record.dbxrefs
+        #             for item in dbxrefs:
+        #                 if item.startswith('Ensembl') and 'ENST' in item:
+        #                 #if item.startswith('EnsemblMetazoa') and 'FBtr' in item:
+        #                     try:
+        #                         ensg_id = item.split(':')[-1].split('.')[0]
+        #                         _id = ensg_id + '_' + record.id
+        #                         _target = ensg_id
+        #                         _source = record.id
+        #                         _props = {}
+        #                         if self.write_properties and self.add_provenance:
+        #                             _props['source'] = self.source
+        #                             _props['source_url'] = self.source_url
+        #                         _props['taxon_id'] = 9606
+        #                         yield  _source, _target, self.label, _props
 
-                            except:
-                                logger.info(
-                                    f'fail to process for edge translation of: {record.id}')
-                                pass
+        #                     except:
+        #                         logger.info(
+        #                             f'fail to process for edge translation of: {record.id}')
+        #                         pass

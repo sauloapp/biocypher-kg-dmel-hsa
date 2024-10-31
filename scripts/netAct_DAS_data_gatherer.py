@@ -1,5 +1,6 @@
 import os
 import pandas as pd
+import re
 import gzip
 #from biocypher_metta.adapters.dmel.flybase_tsv_reader import FlybasePrecomputedTable
 
@@ -9,117 +10,17 @@ import gzip
 #                        "ash1", "FBgn0005386", "Raf", "FBgn0003079", "Abd-B", "FBgn0000015", "Orc2", "FBgn0286788",
 #                        "Rbf", "FBgn0015799", "mof", "FBgn0014340", "msl-1", "FBgn0005617", "Hmr", "FBgn0001206"]
 
-def search_dataframe(target_string, df):
-    # Obtém o número de linhas e colunas no DataFrame
-    num_rows, num_cols = df.shape
+ROUND = 0
 
-    # Percorre cada linha do DataFrame
-    for row_index in range(num_rows):
-        row = df.iloc[row_index]  # Obtém a linha atual como uma Série
+def match_word(word: str, text: str):
+    '''
+    ROUND = 1 exact word
+    '''
+    if ROUND == 0:
+        return word in text
+    elif ROUND == 1:
+        return re.search(rf"\b{re.escape(word)}\b", text) is not None
 
-        # Percorre cada coluna na linha atual
-        line = ""
-        found = False
-        for col_name in df.columns:
-            cell_value = row[col_name]  # Obtém o valor da célula
-            line += cell_value + "\t"
-            # Verifica se o valor da célula é igual à string alvo
-            if cell_value.lower() == target_string.lower():
-                # Se for igual, imprima a linha inteira
-                #print(row)
-                found = True
-        if found:
-            print(line)
-
-def process_flybase_tsv_files(input_directory, expanded_genes_list):
-    new_directory = input_directory + "_net_act"
-    os.makedirs(new_directory, exist_ok=True)
-
-    input_files = [f for f in os.listdir(input_directory) if f.endswith(".tsv")]
-
-    for input_file in input_files:
-        print(f"Table:::::::::::::-->  {input_file}")
-        input_path = os.path.join(input_directory, input_file)
-        output_path = os.path.join(new_directory, input_file)
-
-        header = None
-        relevant_rows = []
-        with open(input_path, 'r') as file:
-            with open(output_path, 'w') as output_file:
-                while True:
-                    row = file.readline()
-                    if not row:
-                        break
-
-                    # strip() added to handle "blank" rows in some TSVs
-                    if not row.strip():
-                        continue
-
-                    if not row.startswith("#"):
-                        if header is None:
-                            header = previous.lstrip("#")
-                            output_file.write(header)
-                            print(header)
-
-                        for gene_symbol in expanded_genes_list:
-                            if gene_symbol.lower() in row.lower():
-                                output_file.write(row)
-                    #if not row.startswith("#-----"):
-                    if not row.startswith("#-----") and not row.startswith("## Finished "):
-                        previous = row
-
-                    #print(row)
-            output_file.close()
-            print(f'Finished for {input_path}')
-        file.close()
-
-
-def process_texttsv_files(input_directory, expanded_genes_list):
-    new_directory = input_directory + "_net_act"
-    os.makedirs(new_directory, exist_ok=True)
-
-    input_files = [f for f in os.listdir(input_directory) if f.endswith(".tsv")]
-
-    for input_file in input_files:
-        print(f"Table:::::::::::::-->  {input_file}")
-        input_path = os.path.join(input_directory, input_file)
-        output_path = os.path.join(new_directory, input_file)
-
-        header = None
-        relevant_rows = []
-        with open(input_path, 'r') as file:
-            with open(output_path, 'w') as output_file:
-                while True:
-                    row = file.readline()
-                    if not row:
-                        break
-
-                    # strip() added to handle "blank" rows in some TSVs
-                    if not row.strip():
-                        continue
-
-                    if not row.startswith("#"):
-                        if header is None:
-                            header = previous.lstrip("#")
-                            output_file.write(header)
-                            print(header)
-
-                        for gene_symbol in expanded_genes_list:
-                            if gene_symbol.lower() in row.lower():
-                                output_file.write(row)
-                    #if not row.startswith("#-----"):
-                    if not row.startswith("#-----") and not row.startswith("## Finished "):
-                        previous = row
-
-                    #print(row)
-            output_file.close()
-            print(f'Finished for {input_path}')
-        file.close()
-
-
-def _add_row(row, __rows):
-    if row not in __rows:
-        __rows.append(row)
 
 
 ########################################################################################################################
@@ -135,13 +36,16 @@ def netact_extract_dmel_data_from_uniprot_invertebrate_data(input_file_name, out
                 #output_file.write(next_line)
                 data_lines.append(next_line)
                 for netact_comp in expanded_genes_list:
-                    if netact_comp.lower() in next_line.lower():        # include because any mention to a netact component
+                    # if netact_comp.lower() in next_line.lower():        # include because any mention to a netact component
+                    if match_word(netact_comp, next_line):
+                    # if match_word(netact_comp.lower(), next_line.lower()):
                         #print(next_line)
                         netact = True
                 next_line = input_file.readline()
                 while next_line and not next_line.startswith("ID"):
                     for netact_comp in expanded_genes_list:
-                        if netact_comp.lower() in next_line.lower():  # include because any mention to a netact component
+                        # if netact_comp.lower() in next_line.lower():  # include because of a mention to a netact component
+                        if match_word(netact_comp, next_line):
                             #print(next_line)
                             netact = True
                     data_lines.append(next_line)
@@ -172,8 +76,21 @@ def netact_extract_dmel_data_from_gz_txt_noheader(input_file_name, output_file_n
                 if not row.strip():
                     continue
                 for gene_symbol in expanded_genes_list:
-                    if gene_symbol.lower() in row.lower():
-                        output_file.write(row)
+                    # if gene_symbol.lower() in row.lower():
+                    word = gene_symbol #.lower()
+                    text = row #.lower()  
+                    if 'fly.name_2_string.' in input_file_name or '7227.protein.links.' in input_file_name:   
+                        print(F'STRING')               
+                        if word.startswith('FBpp') and '7227.FBpp' in text:
+                            if word in text:
+                                output_file.write(row)
+                    elif 'ReactomePathways.' in input_file_name:
+                        if 'Drosophila melanogaster' in text:
+                            if match_word(word.upper(), text.upper()):
+                                output_file.write(row)  
+                    else:
+                        if match_word(word, text):
+                            output_file.write(row)
             output_file.close()
     else:
         file = open(input_file_name, 'r')
@@ -186,8 +103,23 @@ def netact_extract_dmel_data_from_gz_txt_noheader(input_file_name, output_file_n
                 if not row.strip():
                     continue
                 for gene_symbol in expanded_genes_list:
-                    if gene_symbol.lower() in row.lower():
-                        output_file.write(row)
+                    # if gene_symbol.lower() in row.lower():
+                    # if match_word(gene_symbol.lower(), row.lower()):
+                    # if match_word(gene_symbol, row):
+                    #     output_file.write(row)
+                    word: str = gene_symbol #.lower()
+                    text = row #.lower()  
+                    if 'fly.name_2_string.' in input_file_name or '7227.protein.links.' in input_file_name:                           
+                        if word.startswith('FBpp') and '7227.FBpp' in text:
+                            if word in text:
+                                output_file.write(row)
+                    elif 'ReactomePathways.' in input_file_name:
+                        if 'Drosophila melanogaster' in text:
+                            if match_word(word.upper(), text.upper()):
+                                output_file.write(row)  
+                    else:
+                        if match_word(word, text):
+                            output_file.write(row)
         output_file.close()
     file.close()
 
@@ -195,7 +127,6 @@ def netact_extract_dmel_data_from_gz_txt_noheader(input_file_name, output_file_n
 
 def netact_extract_dmel_data_for_first_row_header(input_file_name, output_file_name, expanded_genes_list):
     #print(f"File:::::::::::::-->  {input_file_name}")
-
     header = None
     if input_file_name.endswith(".gz"):
         file = gzip.open(input_file_name, 'rt')
@@ -209,8 +140,16 @@ def netact_extract_dmel_data_for_first_row_header(input_file_name, output_file_n
                 if not row.strip():
                     continue
                 for gene_symbol in expanded_genes_list:
-                    if gene_symbol.lower() in row.lower():
-                        output_file.write(row)
+                    # if gene_symbol.lower() in row.lower():
+                    word = gene_symbol #.lower()
+                    text = row #.lower()
+                    if 'fly.name_2_string.' in input_file_name or '7227.protein.links.' in input_file_name:                  
+                        if word.startswith('FBpp') and '7227.FBpp' in text:
+                            if word in text:
+                                output_file.write(row)
+                    else:
+                        if match_word(word, text):
+                            output_file.write(row)
     else:
         file = open(input_file_name, 'r')
         with open(output_file_name, 'w') as output_file:
@@ -223,8 +162,20 @@ def netact_extract_dmel_data_for_first_row_header(input_file_name, output_file_n
                 if not row.strip():
                     continue
                 for gene_symbol in expanded_genes_list:
-                    if gene_symbol.lower() in row.lower():
-                        output_file.write(row)
+                    # if gene_symbol.lower() in row.lower():
+                    # if match_word(gene_symbol.lower(), row.lower()):
+                    # if match_word(gene_symbol, row):
+                    #     output_file.write(row)
+                    word = gene_symbol #.lower()
+                    text = row #.lower()
+                    if 'fly.name_2_string.' in input_file_name or '7227.protein.links.' in input_file_name:                  
+                        if word.startswith('FBpp') and '7227.FBpp' in text:
+                            if word in text:
+                                output_file.write(row)
+                    else:
+                        if match_word(word, text):
+                            output_file.write(row)
+
     file.close()
 
 
@@ -262,7 +213,6 @@ def process_netact_input_files(input_directories: list[str], output_directory, e
 
         not_input_files_marks = [".tar", ".zip", ".sample", "gtex.forgedb.csv.gz"]
         if any(substring in input_file for substring in not_input_files_marks):
-        #if "ReactionP" in input_file or "ReactomePath" in input_file or ".tar" in input_file or ".zip" in input_file or "sample" in input_file:
             print(f"{input_file} is not a valid input file...")
             continue
         elif "_sprot_" in input_file:
@@ -271,9 +221,9 @@ def process_netact_input_files(input_directories: list[str], output_directory, e
             continue
         elif "Reactome" in input_file or "Drosophila_melanogaster.BDGP6.46.59.gtf.gz" in input_file or ".fb.gz" in input_file:
             netact_extract_dmel_data_from_gz_txt_noheader(input_path, output_path, expanded_genes_list)
-            print(f'Finished for REACTOME or gencode GTF no header gz {output_path}')
+            print(f'Finished for REACTOME or gencode GTF or GAF no header gz {output_path}')
             continue
-        elif "TFLink" in input_file or "tflink" in input_file or "string" in input_file:
+        elif "TFLink" in input_file or "tflink" in input_file or "string" in input_file or "afca_afca" in input_file:
             netact_extract_dmel_data_for_first_row_header(input_path, output_path, expanded_genes_list)
             print(f'Finished for TFLink or String {output_path}')
             continue
@@ -281,7 +231,7 @@ def process_netact_input_files(input_directories: list[str], output_directory, e
             netact_extract_dmel_data_for_first_row_header(input_path, output_path, expanded_genes_list)
             print(f'Finished for gtex gzipped {output_path}')
             continue
-        if input_file.endswith(".gz"):
+        elif input_file.endswith(".gz"):
             # with gzip.open(input_path, 'rt') as file:
             #     with open(output_path, 'w') as output_file:
             file = gzip.open(input_path, 'rt')
@@ -301,10 +251,15 @@ def process_netact_input_files(input_directories: list[str], output_directory, e
                         if header is None and previous is not None:
                             header = previous.lstrip("\t ")
                             output_file.write(header)
-                            # print(f'header: {header}')                    
-                        for gene_symbol in expanded_genes_list:
-                            if gene_symbol.lower() in row.lower():
-                                output_file.write(row)
+                            # print(f'header: {header}')   
+                        if any(match_word(gene_symbol, row) for gene_symbol in expanded_genes_list):
+                            output_file.write(row)
+
+                        # for gene_symbol in expanded_genes_list:
+                        #     # if gene_symbol.lower() in row.lower():
+                        #     # if match_word(gene_symbol.lower(), row.lower()):
+                        #     if match_word(gene_symbol, row):
+                        #         output_file.write(row)
 
                     if not row.startswith("#-----") and not row.startswith("## Finished "):
                         previous = row
@@ -328,7 +283,9 @@ def process_netact_input_files(input_directories: list[str], output_directory, e
                             output_file.write(header)
                             # print(f'header: {header}')                    
                         for gene_symbol in expanded_genes_list:
-                            if gene_symbol.lower() in row.lower():
+                            # if gene_symbol.lower() in row.lower():
+                            # if match_word(gene_symbol.lower(), row.lower()):
+                            if match_word(gene_symbol, row):
                                 output_file.write(row)
 
                     if not row.startswith("#-----") and not row.startswith("## Finished "):
@@ -379,7 +336,9 @@ def expand_gene_list_data(genes_list, fb_fbgn_to_fbtr_fbpp_file):
                 if header is None:
                     header = previous.lstrip("#")
                 for gene_symbol in genes_list:
-                    if gene_symbol.lower() in row.lower():
+                    #if gene_symbol.lower() in row.lower():
+                    # if match_word(gene_symbol.lower(), row.lower()):
+                    if match_word(gene_symbol, row):
                         add_data(expanded_dict[gene_symbol], row)
             # if not row.startswith("#-----"):
             if not row.startswith("#-----") and not row.startswith("## Finished "):
@@ -397,13 +356,14 @@ genes_list = ["Su(var)205", "Top3beta", "Mef2", "Clk", "Dref", "TfIIB", "Myc", "
 
 four_tf_gene_list = ["Abd-B", "Clk", "Mef2", "Myc"]
 
-#tr_pp_file = "/home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/full/flybase/fbgn_fbtr_fbpp_expanded_fb_2024_04.tsv.gz"
+tr_pp_file = "/home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/full/flybase/fbgn_fbtr_fbpp_expanded_fb_2024_04.tsv.gz"
 tr_pp_file = "/mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/full/flybase/fbgn_fbtr_fbpp_expanded_fb_2024_04.tsv.gz"
 expanded_genes_list = expand_gene_list_data(genes_list, tr_pp_file)
 # expanded_genes_list = expand_gene_list_data(four_tf_gene_list, tr_pp_file)
 
-print(expanded_genes_list)
-#exit(9)
+for id in expanded_genes_list:
+    print(id)
+# exit(9)
 # expanded_genes_list = ["Su(var)205", "FBgn0003607", "Top3beta", "FBgn0026015", "Mef2", "FBgn0011656", "Clk", "FBgn0023076",
 #                        "Dref", "FBgn0015664", "TfIIB", "FBgn0004915", "Myc", "FBgn0262656", "AGO2", "FBgn0087035",
 #                        "Nipped-B", "FBgn0026401", "Cp190", "FBgn0000283", "TfIIA-L", "FBgn0011289", "Trl", "FBgn0013263",
@@ -417,7 +377,12 @@ input_dirs = [
     #"/home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/toy"
 ]
 output_dir = "/home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/4toy_net_act"# "/mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/net_act"
+output_dir = "/mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/tmp_net_act_sources"
+ROUND = 0
+process_netact_input_files(input_dirs, output_dir, expanded_genes_list)
+input_dirs[0] = output_dir
 output_dir = "/mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/net_act_sources"
+ROUND = 1
 process_netact_input_files(input_dirs, output_dir, expanded_genes_list)
 
 #

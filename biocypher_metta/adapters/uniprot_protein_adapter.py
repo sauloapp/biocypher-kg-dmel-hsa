@@ -65,20 +65,20 @@ class UniprotProteinAdapter(Adapter):
                 props['taxon_id'] = 9606
                 yield id, self.label, props
 
-        with gzip.open(self.hsa_filepath, 'rt') as input_file:
-            records = SwissProt.parse(input_file)
-            for record in records:
-                dbxrefs = self.get_dbxrefs(record.cross_references)
-                id = record.accessions[0]
-                props = {}
-                if self.write_properties:
-                    props = {
-                        'accessions': record.accessions[1:] if len(record.accessions) > 1 else record.accessions[0],
-                        'protein_name': record.entry_name.split('_')[0],
-                        'synonyms': dbxrefs
-                    }
-                    if self.add_provenance:
-                        props['source'] = self.source
-                        props['source_url'] = self.source_url
-                props['taxon_id'] = 9606
-                yield id, self.label, props
+        # with gzip.open(self.hsa_filepath, 'rt') as input_file:
+        #     records = SwissProt.parse(input_file)
+        #     for record in records:
+        #         dbxrefs = self.get_dbxrefs(record.cross_references)
+        #         id = record.accessions[0]
+        #         props = {}
+        #         if self.write_properties:
+        #             props = {
+        #                 'accessions': record.accessions[1:] if len(record.accessions) > 1 else record.accessions[0],
+        #                 'protein_name': record.entry_name.split('_')[0],
+        #                 'synonyms': dbxrefs
+        #             }
+        #             if self.add_provenance:
+        #                 props['source'] = self.source
+        #                 props['source_url'] = self.source_url
+        #         props['taxon_id'] = 9606
+        #         yield id, self.label, props
