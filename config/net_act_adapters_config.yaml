@@ -131,6 +131,7 @@ dmel_gene_genetic_adapter:
     nodes: False
     edges: True
 
+
 dmel_allele_genetic_interaction_adapter:
     adapter:
         module: biocypher_metta.adapters.dmel.allele_genetic_interaction_adapter

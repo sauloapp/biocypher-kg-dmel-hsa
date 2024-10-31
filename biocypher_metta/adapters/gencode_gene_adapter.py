@@ -122,49 +122,49 @@ class GencodeGeneAdapter(Adapter):
                             #f'fail to process for label to load: {self.label}, type to load: {self.type}, data: {line}')
 
         # self.get_organism_nodes(self.hsa_filepath, hsa_alias_dict, 'gene_type')
-        with gzip.open(self.hsa_filepath, 'rt') as input:
-            for line in input:
-                if line.startswith('#'):
-                    continue
-                # print(line)
-                split_line = line.strip().split()
-                if split_line[GencodeGeneAdapter.INDEX['type']] == 'gene':
-                    info = self.parse_info_metadata(
-                        split_line[GencodeGeneAdapter.INDEX['info']:])
-                    gene_id = info['gene_id']
-                    id = gene_id.split('.')[0]
-                    alias = hsa_alias_dict.get(id)
-                    if not alias:  # check this for dmel
-                        hgnc_id = info.get('hgnc_id')
-                        if hgnc_id:
-                            alias = hsa_alias_dict.get(hgnc_id)
-                    if gene_id.endswith('_PAR_Y'):
-                        id = id + '_PAR_Y'
+        # with gzip.open(self.hsa_filepath, 'rt') as input:
+        #     for line in input:
+        #         if line.startswith('#'):
+        #             continue
+        #         # print(line)
+        #         split_line = line.strip().split()
+        #         if split_line[GencodeGeneAdapter.INDEX['type']] == 'gene':
+        #             info = self.parse_info_metadata(
+        #                 split_line[GencodeGeneAdapter.INDEX['info']:])
+        #             gene_id = info['gene_id']
+        #             id = gene_id.split('.')[0]
+        #             alias = hsa_alias_dict.get(id)
+        #             if not alias:  # check this for dmel
+        #                 hgnc_id = info.get('hgnc_id')
+        #                 if hgnc_id:
+        #                     alias = hsa_alias_dict.get(hgnc_id)
+        #             if gene_id.endswith('_PAR_Y'):
+        #                 id = id + '_PAR_Y'
 
-                    chr = split_line[GencodeGeneAdapter.INDEX['chr']]
-                    start = int(split_line[GencodeGeneAdapter.INDEX['coord_start']])
-                    end = int(split_line[GencodeGeneAdapter.INDEX['coord_end']])
-                    props = {}
-                    try:
-                        if check_genomic_location(self.chr, self.start, self.end, chr, start, end):
-                            if self.write_properties:
-                                props = {
-                                    'gene_type': info['gene_type'],
-                                    'chr': chr,
-                                    'start': start,
-                                    'end': end,
-                                    'gene_name': info['gene_name'],
-                                    'synonyms': alias,
-                                    'taxon_id': 9606
-                                }
-                                if self.add_provenance:
-                                    props['source'] = self.source
-                                    props['source_url'] = self.source_url
+        #             chr = split_line[GencodeGeneAdapter.INDEX['chr']]
+        #             start = int(split_line[GencodeGeneAdapter.INDEX['coord_start']])
+        #             end = int(split_line[GencodeGeneAdapter.INDEX['coord_end']])
+        #             props = {}
+        #             try:
+        #                 if check_genomic_location(self.chr, self.start, self.end, chr, start, end):
+        #                     if self.write_properties:
+        #                         props = {
+        #                             'gene_type': info['gene_type'],
+        #                             'chr': chr,
+        #                             'start': start,
+        #                             'end': end,
+        #                             'gene_name': info['gene_name'],
+        #                             'synonyms': alias,
+        #                             'taxon_id': 9606
+        #                         }
+        #                         if self.add_provenance:
+        #                             props['source'] = self.source
+        #                             props['source_url'] = self.source_url
 
-                            yield id, self.label, props
-                    except:
-                        logger.info(
-                            f'fail to process for label to load: {self.label}, type to load: {self.type}, data: {line}')
+        #                     yield id, self.label, props
+        #             except:
+        #                 logger.info(
+        #                     f'fail to process for label to load: {self.label}, type to load: {self.type}, data: {line}')
 
 
     def to_dmel_summaries_dict(self, fb_summaries_table):

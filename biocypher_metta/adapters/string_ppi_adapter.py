@@ -89,26 +89,26 @@ class StringPPIAdapter(Adapter):
 
                     yield _source, _target, self.label, _props
 
-        with gzip.open(self.hsa_filepath   , "rt") as fp:
-            table = csv.reader(fp, delimiter=" ", quotechar='"')
-            table.__next__() # skip header
-            for row in table:
-                protein1 = row[0].split(".")[1]
-                protein2 = row[1].split(".")[1]
-                if protein1 in self.hsa_ensembl_to_uniprot_map and protein2 in self.hsa_ensembl_to_uniprot_map:
-                    protein1_uniprot = self.hsa_ensembl_to_uniprot_map[protein1]
-                    protein2_uniprot = self.hsa_ensembl_to_uniprot_map[protein2]
-                    _source = protein1_uniprot
-                    _target = protein2_uniprot
-                    _props = {
-                    }
-                    if self.write_properties:
-                        _props = {
-                            "score": float(row[2]) / 1000, # divide by 1000 to normalize score
-                        }
-                        if self.add_provenance:
-                            _props["source"] = self.source
-                            _props["source_url"] = self.source_url
-                    _props['taxon_id'] = 9606  # mandatory property
+        # with gzip.open(self.hsa_filepath   , "rt") as fp:
+        #     table = csv.reader(fp, delimiter=" ", quotechar='"')
+        #     table.__next__() # skip header
+        #     for row in table:
+        #         protein1 = row[0].split(".")[1]
+        #         protein2 = row[1].split(".")[1]
+        #         if protein1 in self.hsa_ensembl_to_uniprot_map and protein2 in self.hsa_ensembl_to_uniprot_map:
+        #             protein1_uniprot = self.hsa_ensembl_to_uniprot_map[protein1]
+        #             protein2_uniprot = self.hsa_ensembl_to_uniprot_map[protein2]
+        #             _source = protein1_uniprot
+        #             _target = protein2_uniprot
+        #             _props = {
+        #             }
+        #             if self.write_properties:
+        #                 _props = {
+        #                     "score": float(row[2]) / 1000, # divide by 1000 to normalize score
+        #                 }
+        #                 if self.add_provenance:
+        #                     _props["source"] = self.source
+        #                     _props["source_url"] = self.source_url
+        #             _props['taxon_id'] = 9606  # mandatory property
 
-                    yield _source, _target, self.label, _props
+        #             yield _source, _target, self.label, _props
