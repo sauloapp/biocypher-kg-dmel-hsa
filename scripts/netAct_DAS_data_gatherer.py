@@ -79,12 +79,12 @@ def netact_extract_dmel_data_from_gz_txt_noheader(input_file_name, output_file_n
                 # strip() added to handle "blank" rows in some TSVs
                 if not row.strip():
                     continue
-                if any(match_word(gene_symbol, row) for gene_symbol in expanded_genes_list):
-                    if 'ReactomePathways.' in input_file_name:
-                        if 'Drosophila melanogaster' in row:
-                            output_file.write(row)
-                    else:
-                        output_file.write(row)
+                if 'ReactomePathways.' in input_file_name:
+                    if 'Drosophila melanogaster' in row:
+                        if any(match_word(gene_symbol.upper(), row.upper()) for gene_symbol in expanded_genes_list):
+                           output_file.write(row)
+                elif any(match_word(gene_symbol, row) for gene_symbol in expanded_genes_list):
+                    output_file.write(row)
 
                 # for gene_symbol in expanded_genes_list:
                 #     # if gene_symbol.lower() in row.lower():
@@ -112,13 +112,13 @@ def netact_extract_dmel_data_from_gz_txt_noheader(input_file_name, output_file_n
                     break
                 # strip() added to handle "blank" rows in some TSVs
                 if not row.strip():
-                    continue
-                if any(match_word(gene_symbol, row) for gene_symbol in expanded_genes_list):
-                    if 'ReactomePathways.' in input_file_name:
-                        if 'Drosophila melanogaster' in row:
-                            output_file.write(row)
-                    else:
-                        output_file.write(row)
+                    continue                
+                if 'ReactomePathways.' in input_file_name:
+                    if 'Drosophila melanogaster' in row:
+                        if any(match_word(gene_symbol.upper(), row.upper()) for gene_symbol in expanded_genes_list):
+                           output_file.write(row)
+                elif any(match_word(gene_symbol, row) for gene_symbol in expanded_genes_list):
+                    output_file.write(row)
 
                 # for gene_symbol in expanded_genes_list:
                 #     word: str = gene_symbol #.lower()
@@ -137,6 +137,29 @@ def netact_extract_dmel_data_from_gz_txt_noheader(input_file_name, output_file_n
         output_file.close()
     file.close()
 
+
+
+def netact_extract_dmel_data_from_FB_GAF(input_file_name, output_file_name, expanded_genes_list):
+    #print(f"File:::::::::::::-->  {input_file_name}")
+
+    if input_file_name.endswith("gz"):
+        file = gzip.open(input_file_name, 'rt')
+        with gzip.open(output_file_name, 'wt') as output_file: #with gzip.open(input_file_name, 'rt') as input_file, gzip.open(output_file_name, 'wt') as output_file:
+            while True:
+                row = file.readline()                
+                if not row:
+                    break
+                if row.startswith('!'):
+                    output_file.write(row)
+                    continue
+                # strip() added to handle "blank" rows in some TSVs
+                if not row.strip():
+                    continue
+                if any(match_word(gene_symbol.upper(), row.upper()) for gene_symbol in expanded_genes_list):
+                    output_file.write(row)
+    
+    output_file.close()
+    file.close()
 
 
 def netact_extract_dmel_data_for_first_row_header(input_file_name, output_file_name, expanded_genes_list):
@@ -232,23 +255,21 @@ def process_netact_input_files(input_directories: list[str], output_directory, e
         not_input_files_marks = [".tar", ".zip", ".sample", "gtex.forgedb.csv.gz"]
         if any(substring in input_file for substring in not_input_files_marks):
             print(f"{input_file} is not a valid input file...")
-            continue
         elif "_sprot_" in input_file:
             netact_extract_dmel_data_from_uniprot_invertebrate_data(input_path, output_path, expanded_genes_list)
             print(f'Finished for UNIPROT {output_path}')
-            continue
-        elif "Reactome" in input_file or "Drosophila_melanogaster.BDGP6.46.59.gtf.gz" in input_file or ".fb.gz" in input_file:
+        elif "Reactome" in input_file or "Drosophila_melanogaster.BDGP6.46.59.gtf.gz" in input_file:
             netact_extract_dmel_data_from_gz_txt_noheader(input_path, output_path, expanded_genes_list)
             print(f'Finished for REACTOME or gencode GTF or GAF no header gz {output_path}')
-            continue
         elif "TFLink" in input_file or "tflink" in input_file or "string" in input_file or "afca_afca" in input_file:
             netact_extract_dmel_data_for_first_row_header(input_path, output_path, expanded_genes_list)
             print(f'Finished for TFLink or String {output_path}')
-            continue
         elif "gtex" in input_file:
             netact_extract_dmel_data_for_first_row_header(input_path, output_path, expanded_genes_list)
             print(f'Finished for gtex gzipped {output_path}')
-            continue
+        elif "gene_association.fb.gz" in input_file:
+            netact_extract_dmel_data_from_FB_GAF(input_path, output_path, expanded_genes_list)
+            print(f'Finished for REACTOME or gencode GTF or GAF no header gz {output_path}')
         elif input_file.endswith(".gz"):
             # with gzip.open(input_path, 'rt') as file:
             #     with open(output_path, 'w') as output_file:
