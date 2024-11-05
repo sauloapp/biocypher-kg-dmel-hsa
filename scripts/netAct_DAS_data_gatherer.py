@@ -269,7 +269,7 @@ def process_netact_input_files(input_directories: list[str], output_directory, e
             print(f'Finished for gtex gzipped {output_path}')
         elif "gene_association.fb.gz" in input_file:
             netact_extract_dmel_data_from_FB_GAF(input_path, output_path, expanded_genes_list)
-            print(f'Finished for REACTOME or gencode GTF or GAF no header gz {output_path}')
+            print(f'Finished for Flybase GAF gz {output_path}')
         elif input_file.endswith(".gz"):
             # with gzip.open(input_path, 'rt') as file:
             #     with open(output_path, 'w') as output_file:
@@ -327,9 +327,9 @@ def process_netact_input_files(input_directories: list[str], output_directory, e
                     if not row.startswith("#-----") and not row.startswith("## Finished "):
                         previous = row
 
-        output_file.close()
-        print(f'Finished for gzipped {output_path}')
-        file.close()
+                output_file.close()
+                print(f'Finished for gzipped {output_path}')
+            file.close()
 
 
 def add_data(gene_symbol_list, row):

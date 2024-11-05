@@ -16,9 +16,13 @@ class FlybasePrecomputedTable:
     def get_rows(self):
         return self.__rows
 
-    def to_pandas_dataframe(self):
+    def to_pandas_dataframe(self) -> pandas.DataFrame:
         dataframe = pandas.DataFrame(self.__rows, columns=self.__header)
         return dataframe
+    
+    def from_pandas_dataframe(self, df: pandas.DataFrame):
+        self.__header = list(df.columns)
+        self.__rows = df.values.tolist()
 
     def extract_date_string(self, file_name):
         pattern = r"fb_(\d{4}_\d{2})"

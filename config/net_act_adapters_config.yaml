@@ -224,11 +224,11 @@ RNASeq_library:
                              /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/net_act_sources/scRNA-Seq_gene_expression_fb_2024_04.tsv.gz,
                              /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/net_act_sources/high-throughput_gene_expression_fb_2024_04.tsv.gz,
                              /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/net_act_sources/gene_rpkm_report_fb_2024_04.tsv.gz,
-                             /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/net_act_sources/fca2/fca2_fbgn_gene_output.tsv.gz,
-                             /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/net_act_sources/fca2/fca2_fbgn_transcriptGene_output.tsv.gz,
-                             /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/net_act_sources/fca2/fca2_fbgn_mir_gene_output.tsv.gz,
-                             /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/net_act_sources/fca2/fca2_fbgn_mir_transcript_output.tsv.gz,
-                             /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/net_act_sources/afca/afca_afca_annotation_group_by_mean.tsv.gz
+                             /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/net_act_sources/fca2_fbgn_gene_output.tsv.gz,
+                             /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/net_act_sources/fca2_fbgn_transcriptGene_output.tsv.gz,
+                             /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/net_act_sources/fca2_fbgn_mir_gene_output.tsv.gz,
+                             /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/net_act_sources/fca2_fbgn_mir_transcript_output.tsv.gz,
+                             /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/net_act_sources/afca_afca_annotation_group_by_mean.tsv.gz,
       ]
       hsa_filepaths: [
 
@@ -250,11 +250,11 @@ expression_value:
                              /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/net_act_sources/scRNA-Seq_gene_expression_fb_2024_04.tsv.gz,
                              /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/net_act_sources/high-throughput_gene_expression_fb_2024_04.tsv.gz,
                              /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/net_act_sources/gene_rpkm_report_fb_2024_04.tsv.gz,
-                             /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/net_act_sources/fca2/fca2_fbgn_gene_output.tsv.gz,
-                             /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/net_act_sources/fca2/fca2_fbgn_transcriptGene_output.tsv.gz,
-                             /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/net_act_sources/fca2/fca2_fbgn_mir_gene_output.tsv.gz,
-                             /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/net_act_sources/fca2/fca2_fbgn_mir_transcript_output.tsv.gz,
-                             /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/net_act_sources/afca/afca_afca_annotation_group_by_mean.tsv.gz,
+                             /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/net_act_sources/fca2_fbgn_gene_output.tsv.gz,
+                             /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/net_act_sources/fca2_fbgn_transcriptGene_output.tsv.gz,
+                             /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/net_act_sources/fca2_fbgn_mir_gene_output.tsv.gz,
+                             /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/net_act_sources/fca2_fbgn_mir_transcript_output.tsv.gz,
+                             /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/net_act_sources/afca_afca_annotation_group_by_mean.tsv.gz,
       ]      
       #hsa_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/net_act_sources/uniprot/uniprot_sprot_human.dat.gz
       #type: expression value

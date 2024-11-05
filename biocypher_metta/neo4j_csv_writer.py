@@ -259,7 +259,7 @@ RETURN batches, total;
                 # I don't know why (yet), but self.edge_node_types only holds the last element of the list (look at self.create_edge_types())
                 #####################################################################################################################################
                 if source_type not in self.edge_node_types[label]["source"]:
-                    raise TypeError(f"Type '{source_type}' must be one of {self.edge_node_types[label]["source"]}")
+                    raise TypeError(f"Type '{source_type}' must be one of {self.edge_node_types[label]['source']}")
                 #if source_type not in self.aux_edge_node_types[label]["source"]:
                     # raise TypeError(f"Type '{source_type}' must be one of {self.aux_edge_node_types[label]["source"]}")
                 source_id = source_id[1]
@@ -281,7 +281,7 @@ RETURN batches, total;
                 # I don't know why (yet), but self.edge_node_types only holds the last element of the list (look at self.create_edge_types())
                 #####################################################################################################################################
                 if target_type not in self.edge_node_types[label]["target"]:
-                    raise TypeError(f"Type {target_type} must be one of {self.edge_node_types[label]["target"]}")
+                    raise TypeError(f"Type {target_type} must be one of {self.edge_node_types[label]['target']}")
                 # if target_type not in self.aux_edge_node_types[label]["target"]:
                 #     raise TypeError(f"Type {target_type} must be one of {self.aux_edge_node_types[label]["target"]}")
                 target_id = target_id[1]

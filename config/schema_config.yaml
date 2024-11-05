@@ -161,12 +161,24 @@ epigenomic port:
 
 
 # 1.7)
+# ontology term:
+#   represented_as: node
+#   is_a: ontology class
+#   input_label: ontology term
+#   properties:
+#     taxon_id: int    # 7227 for dmel / 9606 for hsa    (To be inherited by all types to identify the organism/species that the type refers to)
+#     source: str
+#     source_url: str
+
 ontology term:
-  represented_as: node
   is_a: ontology class
+  represented_as: node
   input_label: ontology term
   properties:
-    taxon_id: int    # 7227 for dmel / 9606 for hsa    (To be inherited by all types to identify the organism/species that the type refers to)
+    id: str
+    term_name: str
+    description: str
+    synonyms: str[]
     source: str
     source_url: str
 
@@ -465,6 +477,34 @@ go:
     subontology: str                # GO “namespaces” (BP, MF, CC)
 
 
+# Flybase development ontology (FBdv#)
+FBdv:
+  is_a: ontology term
+  represented_as: node
+  input_label: FBdv
+  inherit_properties: true
+
+# Flybase gross anatomy ontology (FBbt#)
+FBbt:
+  is_a: ontology term
+  represented_as: node
+  input_label: FBbt
+  inherit_properties: true
+
+# Flybase Controlled Vocabulary ontology (FBcv#)
+FBcv:
+  is_a: ontology term
+  represented_as: node
+  input_label: FBcv
+  inherit_properties: true
+
+# Molecular interactions ontology (MI)
+mi:
+  is_a: ontology term
+  represented_as: node
+  input_label: mi
+  inherit_properties: true
+
 
 
 # https://bioportal.bioontology.org/ontologies/DOID
@@ -666,7 +706,36 @@ post translational interaction:
   source: protein
   target: protein
   properties:
-    score: float
+    score: float    # STRING DB score
+    # For  PSI-MI tables (HUPO Proteomics Standards Initiative):
+    source_gene: gene       # A
+    target_gene: gene       # B
+    detection_method: mi    # Molecular Interaction Ontology
+    pubmed_ids: str[]
+    source_taxon_id: int
+    target_taxon_id: int
+    interaction_type: mi    # Molecular Interaction Ontology
+    interaction_comments: str
+
+
+# Schema for protein-RNA and RNA-RNA interactions  (there are 3349 such interactions in the FB_2024_05 FB release)
+physical interaction:
+  is_a: expression
+  inherit_properties: true
+  represented_as: edge
+  input_label: physically_interacts_with
+  source: [protein, transcript]
+  target: [protein, transcript]
+  properties:
+    # score: float    # NOT USED HERE; for STRING
+    source_gene: gene       # A
+    target_gene: gene       # B
+    detection_method: mi    # Molecular Interaction Ontology
+    pubmed_ids: str[]
+    source_taxon_id: int
+    target_taxon_id: int
+    interaction_type: mi    # Molecular Interaction Ontology
+    interaction_comments: str
 
 
 # 7.23)
@@ -982,6 +1051,42 @@ go subclass of:
   source: go
   target: go
 
+
+FBdv subclass of:
+  is_a: subclass of
+  inherit_properties: true
+  represented_as: edge
+  input_label: FBdv_subclass_of
+  output_label: subclass_of
+  source: FBdv
+  target: FBdv
+
+FBbt subclass of:
+  is_a: subclass of
+  inherit_properties: true
+  represented_as: edge
+  input_label: FBbt_subclass_of
+  output_label: subclass_of
+  source: FBbt
+  target: FBbt
+
+FBcv subclass of:
+  is_a: subclass of
+  inherit_properties: true
+  represented_as: edge
+  input_label: FBcv_subclass_of
+  output_label: subclass_of
+  source: FBcv
+  target: FBcv
+
+mi subclass of:
+  is_a: subclass of
+  inherit_properties: true
+  represented_as: edge
+  input_label: mi_subclass_of
+  output_label: subclass_of
+  source: mi
+  target: mi
 
 # 7.14)
 # saulo
@@ -1335,7 +1440,7 @@ disease model:
     ortholog_hgnc_id: str
     ortholog_hgnc_symbol: str             # this should be linked to in the Gene data type
     evidence_code: str                    # evidence code and interacting alleles are in the same field (column) in the tsv file
-    interacting_alleles: allele[]            # but they occur both very infrequently
+    interacting_alleles: allele[]         # but they occur *together* very infrequently
     ev_code_interact_alleles: str
     reference_FBrf_id: str
 
@@ -1353,11 +1458,12 @@ genotype phenotype:
   properties:
     genotype_FBids: str
     genotype_symbols: str       # string composed of one or more allele symbol(s)
-    phenotype_id: str           # The Flybase Anatomy id (FBbt#)  or Flybase Controlled Vocabulary id (FBcv#)
-    phenotype_name: str
-    qualifier_names: str[]
-    qualifier_ids: str[]        # zero or more FBcv# and/or FBdv# to add information to the phenotype
-    reference: str              # FBrf#
+    phenotype_term_id: [FBbt, FBcv]           # The Flybase Anatomy id (FBbt#)  or Flybase Controlled Vocabulary id (FBcv#)
+    phenotype_term_name: str
+    qualifier_term_names: str[]
+    qualifier_term_ids: list[tuple]         # zero or more FBcv# and/or FBdv# to add information to the phenotype.
+                                            # format: [('FBdv', FBdv:XXXXXXX), ('FBbt', FBbt:YYYYYYY)]
+    reference: str                          # FBrf# FB flistliterature ref id
     taxon_id: int                        # 7227 for dmel / 9606 for hsa
 
 

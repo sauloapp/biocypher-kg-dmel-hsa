@@ -1,0 +1,71 @@
+dmel_pysical_interaction:
+  adapter:
+    module: biocypher_metta.adapters.dmel.dmel_physical_interaction_psimi_adapter.py
+    cls: PhysicalInteractionAdapter
+    args:
+       dmel_filepath: [
+        /home/saulo/snet/hyperon/github/das-pk/shared_hsa_dmel2metta/data/net_act/flybase_net_act/physical_interactions_mitab_fb_2024_03.tsv.gz,
+        # /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/net_act_sources/physical_interactions_mitab_fb_2024_04.tsv.gz
+       ]
+  outdir: flybase/mi_interactions
+  nodes: False
+  edges: True
+
+
+
+FB_development_ontology:
+  adapter:
+    module: biocypher_metta.adapters.dmel.FBdevelopment_ontology_adapter
+    cls: FBDevelopmentOntologyAdapter
+    args:
+      ontology: 'FBdv'
+      type: node
+      dry_run: False
+      add_description: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: flybase_ontologies
+  nodes: True
+  edges: False
+
+FBdv_subclass_of:
+  adapter:
+    module: biocypher_metta.adapters.dmel.FBdevelopment_ontology_adapter
+    cls: FBDevelopmentOntologyAdapter
+    args:
+      ontology: 'FBdv'
+      label: FBdv_subclass_of
+      type: edge
+      dry_run: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: flybase_ontologies
+  nodes: False
+  edges: True
+
+
+molecular_interactions_ontology:
+  adapter:
+    module: biocypher_metta.adapters.molecular_interactions_ontology_adapter
+    cls: MolecularInteractionsOntologyAdapter
+    args:
+      ontology: 'mi'
+      type: node
+      dry_run: False
+      add_description: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: flybase_ontologies
+  nodes: True
+  edges: False
+
+molecular_interactions_subclass_of:
+  adapter:
+    module: biocypher_metta.adapters.molecular_interactions_ontology_adapter
+    cls: MolecularInteractionsOntologyAdapter
+    args:
+      ontology: 'mi'
+      label: mi_subclass_of
+      type: edge
+      dry_run: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: flybase_ontologies
+  nodes: False
+  edges: True

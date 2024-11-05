@@ -199,8 +199,8 @@ class MeTTaWriter:
             #####################################################################################################################################
             if source_type not in self.edge_node_types[label]["source"]:
             #if source_type not in self.aux_edge_node_types[label]["source"]:
-                raise TypeError(f"Type '{source_type}' must be one of {self.edge_node_types[label]["source"]}")
-                #raise TypeError(f"Type '{source_type}' must be one of {self.aux_edge_node_types[label]["source"]}")
+                raise TypeError(f"Type '{source_type}' must be one of {self.edge_node_types[label]['source']}")
+                #raise TypeError(f"Type '{source_type}' must be one of {self.aux_edge_node_types[label]['source']}")
             source_id = source_id[1]
         else:
             source_type = self.edge_node_types[label]["source"]
@@ -223,7 +223,7 @@ class MeTTaWriter:
             if target_type not in self.edge_node_types[label]["target"]:
             #if target_type not in self.aux_edge_node_types[label]["target"]:
                 #raise TypeError(f"Type {target_type} must be one of {self.aux_edge_node_types[label]["target"]}")
-                raise TypeError(f"Type {target_type} must be one of {self.edge_node_types[label]["target"]}")
+                raise TypeError(f"Type {target_type} must be one of {self.edge_node_types[label]['target']}")
             target_id = target_id[1]
         else:
             target_type = self.edge_node_types[label]["target"]
