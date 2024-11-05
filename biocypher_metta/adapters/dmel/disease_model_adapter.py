@@ -102,4 +102,3 @@ class DiseaseModelAdapter(Adapter):
         interacting_alleles = interacting_alleles if interacting_alleles else None
 
         return evidence_code, interacting_alleles
-    '''                                                                                                                                                                                                ''''''

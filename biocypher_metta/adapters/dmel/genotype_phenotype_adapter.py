@@ -59,12 +59,12 @@ class GenotypePhenotypeAdapter(Adapter):
             props = {}
             props['genotype_symbols'] = row[0].replace(' ', '@')
             genotype_FBids = row[1].replace(' ', '@')
-            props['phenotype_name'] = row[2]
-            props['phenotype_id'] = row[3]
+            props['phenotype_term_name'] = row[2]
+            props['phenotype_term_id'] = row[3]
             if row[4] != '':
-                props['qualifier_names'] = [ name for name in row[4].split('|') ]
+                props['qualifier_term_names'] = [ name for name in row[4].split('|') ]
             if row[5] != '':
-                props['qualifier_ids'] = [ name for name in row[5].split('|') ]
+                props['qualifier_term_ids'] = [ name for name in row[5].split('|') ]
             props['reference'] = row[6]
             props['taxon_id'] = 7227
             #print(f'{props}')
