@@ -23,6 +23,7 @@ class FlybasePrecomputedTable:
     def from_pandas_dataframe(self, df: pandas.DataFrame):
         self.__header = list(df.columns)
         self.__rows = df.values.tolist()
+        return self
 
     def extract_date_string(self, file_name):
         pattern = r"fb_(\d{4}_\d{2})"
@@ -43,7 +44,6 @@ class FlybasePrecomputedTable:
 
 
     def _proces_input_tsv(self, input_file_name: str):
-
         header = None
         previous: str = None
         if input_file_name.endswith(".gz"):
@@ -59,6 +59,7 @@ class FlybasePrecomputedTable:
         for i in range(0, len(lines)):
         #for row in input:
             row = lines[i]
+            # print(row)
             # strip() added to handle "blank" row in TSVs
             if not row or not row.strip():
                 continue
@@ -68,8 +69,6 @@ class FlybasePrecomputedTable:
                     header = previous.lstrip("#\t ")
                     header = [column_name.strip() for column_name in header.split('\t') ]
                     self._set_header(header)
-                    # print(f'header: {header}')
-                # else:
                 row_list = [value.strip() for value in row.split('\t')]
                 self._add_row(row_list)
             if not row.startswith("#-----") and not row.startswith("## Finished "):

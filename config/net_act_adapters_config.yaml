@@ -86,6 +86,131 @@ go_subclass_of:
   nodes: False
   edges: True
 
+sequence_ontology:
+  adapter:
+    module: biocypher_metta.adapters.sequence_ontology_adapter
+    cls: SequenceOntologyAdapter
+    args:
+      ontology: 'so'
+      type: node
+      dry_run: False
+      add_description: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: flybase_ontologies
+  nodes: True
+  edges: False
+
+so_sequence_subclass_of:
+  adapter:
+    module: biocypher_metta.adapters.sequence_ontology_adapter
+    cls: SequenceOntologyAdapter
+    args:
+      ontology: 'so'
+      label: so_subclass_of
+      type: edge
+      dry_run: False
+  7    cache_dir: ./ontology_dataset_cache
+  outdir: flybase_ontologies
+  nodes: False
+  edges: True
+
+
+dmel_gene_to_sequence_ontology:
+  adapter:
+    module: biocypher_metta.adapters.gene_so_adapter
+    cls: GeneToSequenceOntologyAdapter
+    args:
+       filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/net_act_sources/dmel_gene_sequence_ontology_annotations_fb_2024_05.tsv.gz
+  outdir: gene_so
+  nodes: False
+  edges: True
+
+FB_development_ontology:
+  adapter:
+    module: biocypher_metta.adapters.dmel.FBdevelopment_ontology_adapter
+    cls: FBDevelopmentOntologyAdapter
+    args:
+      ontology: 'FBdv'
+      type: node
+      dry_run: False
+      add_description: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: flybase_ontologies
+  nodes: True
+  edges: False
+
+FBdv_subclass_of:
+  adapter:
+    module: biocypher_metta.adapters.dmel.FBdevelopment_ontology_adapter
+    cls: FBDevelopmentOntologyAdapter
+    args:
+      ontology: 'FBdv'
+      label: FBdv_subclass_of
+      type: edge
+      dry_run: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: flybase_ontologies
+  nodes: False
+  edges: True
+
+
+molecular_interactions_ontology:
+  adapter:
+    module: biocypher_metta.adapters.molecular_interactions_ontology_adapter
+    cls: MolecularInteractionsOntologyAdapter
+    args:
+      ontology: 'mi'
+      type: node
+      dry_run: False
+      add_description: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: flybase_ontologies
+  nodes: True
+  edges: False
+
+molecular_interactions_subclass_of:
+  adapter:
+    module: biocypher_metta.adapters.molecular_interactions_ontology_adapter
+    cls: MolecularInteractionsOntologyAdapter
+    args:
+      ontology: 'mi'
+      label: mi_subclass_of
+      type: edge
+      dry_run: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: flybase_ontologies
+  nodes: False
+  edges: True
+
+
+disease_ontology:
+  adapter:
+    module: biocypher_metta.adapters.disease_ontology_adapter
+    cls: DiseaseOntologyAdapter
+    args:
+      ontology: 'do'
+      type: node
+      dry_run: False
+      add_description: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: flybase_ontologies
+  nodes: True
+  edges: False
+
+disease_do_subclass_of:
+  adapter:
+    module: biocypher_metta.adapters.disease_ontology_adapter
+    cls: DiseaseOntologyAdapter
+    args:
+      ontology: 'do'
+      label: do_subclass_of
+      type: edge
+      dry_run: False
+      cache_dir: ./ontology_dataset_cache
+  outdir: flybase_ontologies
+  nodes: False
+  edges: True
+
 
 orthology_adapter:
     adapter:
@@ -119,6 +244,59 @@ allele:
   outdir: allele
   nodes: True
   edges: False
+
+allele:
+  adapter:
+    module: biocypher_metta.adapters.allele_adapter
+    cls: AlleleAdapter
+    args:
+       dmel_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/net_act_sources/fbal_to_fbgn_fb_2024_04.tsv.gz
+       label: allele
+  outdir: allele
+  nodes: True
+  edges: False
+
+
+dmel_gene_to_allele:
+  adapter:
+    module: biocypher_metta.adapters.allele_adapter
+    cls: AlleleAdapter
+    args:
+       dmel_filepath: /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/net_act_sources/fbal_to_fbgn_fb_2024_04.tsv.gz
+       label: gene_to_allele
+  outdir: allele
+  nodes: False
+  edges: True
+
+# ptp stands for "protein or transcript to protein"
+dmel_ptp_pysical_interaction:
+  adapter:
+    module: biocypher_metta.adapters.dmel.dmel_physical_interaction_psimi_adapter
+    cls: PhysicalInteractionAdapter
+    args:
+       dmel_filepaths: [
+          /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/net_act_sources/physical_interactions_mitab_fb_2024_04.tsv.gz,
+          /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/net_act_sources/fbgn_fbtr_fbpp_expanded_fb_2024_05.tsv.gz
+       ]
+       label: ptp_physically_interacts_with
+  outdir: flybase/mi_interactions
+  nodes: False
+  edges: True
+
+# ptt stands for "protein or transcript to transcript"
+dmel_ptt_pysical_interaction:
+  adapter:
+    module: biocypher_metta.adapters.dmel.dmel_physical_interaction_psimi_adapter
+    cls: PhysicalInteractionAdapter
+    args:
+       dmel_filepaths: [
+          /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/net_act_sources/physical_interactions_mitab_fb_2024_04.tsv.gz,
+          /mnt/hdd_2/saulo/snet/rejuve.bio/das/shared_rep/data/input/net_act_sources/fbgn_fbtr_fbpp_expanded_fb_2024_05.tsv.gz
+       ]
+       label: ptt_physically_interacts_with
+  outdir: flybase/mi_interactions
+  nodes: False
+  edges: True
 
 
 dmel_gene_genetic_adapter:
