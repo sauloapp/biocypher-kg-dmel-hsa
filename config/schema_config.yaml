@@ -428,13 +428,25 @@ allele:
   is_a: genomic variant
   inherit_properties: true
   properties:
-      gene: gene
+      #gene: gene
       allele_symbol: str
       taxon_id: int                        # 7227 for dmel / 9606 for hsa
   description: >-
       Different versions of the same variant (in a specific  locus) are called alleles[1, 2]. Most commonly used referring to genes.
 
 
+# saulo
+# Used in the so_adapter.py  for dmel data
+gene to allele association:
+  is_a: annotation
+  inherit_properties: true
+  represented_as: edge
+  input_label: gene_to_allele
+  # output_label: belongs_to
+  source: gene
+  target: allele
+  properties:
+    taxon_id: str   # 7227 for dmel
 
 # Human:
 #
@@ -505,20 +517,26 @@ mi:
   input_label: mi
   inherit_properties: true
 
+# Sequence ontology (SO)
+so:
+  is_a: ontology term
+  represented_as: node
+  input_label: so
+  inherit_properties: true
 
-
-# https://bioportal.bioontology.org/ontologies/DOID
-disease ontology:
+# https://purl.obolibrary.org/obo/doid.owl
+# disease ontology
+do:
   is_a: ontology term
   inherit_properties: true
   represented_as: node
-  input_label: disease_ontology
-  properties:
-    term_name: str
-    description: str                        # definition
-    synonyms: str[]
-    subsetdef: str[]
-    xref: str                                #  like dbxref: ids for other databases
+  input_label: do
+  # properties:
+  #   term_name: str
+  #   description: str                        # definition
+  #   synonyms: str[]
+  #   subsetdef: str[]
+  #   xref: str                                #  like dbxref: ids for other databases
 
 
 
@@ -706,36 +724,62 @@ post translational interaction:
   source: protein
   target: protein
   properties:
-    score: float    # STRING DB score
-    # For  PSI-MI tables (HUPO Proteomics Standards Initiative):
-    source_gene: gene       # A
-    target_gene: gene       # B
+    score: float    # STRING DB score    
+    source_gene: gene       
+    target_gene: gene       
     detection_method: mi    # Molecular Interaction Ontology
     pubmed_ids: str[]
     source_taxon_id: int
     target_taxon_id: int
     interaction_type: mi    # Molecular Interaction Ontology
     interaction_comments: str
+    source_comments: str
+    target_comments: str    
 
 
-# Schema for protein-RNA and RNA-RNA interactions  (there are 3349 such interactions in the FB_2024_05 FB release)
-physical interaction:
+# Schema for RNA-protein and protein-protein interactions (there are 3349 RNA-prot and RNA-RNA interactions in the FB_2024_05 FB release) and protein-protein a
+# Biocypher doesn't accept source AND targets as lists of types in the same schema
+# # ptp stands for "protein or transcript to protein"
+ptp physically interacts with:
   is_a: expression
   inherit_properties: true
   represented_as: edge
-  input_label: physically_interacts_with
+  input_label: ptp_physically_interacts_with
   source: [protein, transcript]
-  target: [protein, transcript]
+  target: protein
   properties:
-    # score: float    # NOT USED HERE; for STRING
-    source_gene: gene       # A
-    target_gene: gene       # B
+    source_gene: gene       
+    target_gene: gene       
     detection_method: mi    # Molecular Interaction Ontology
     pubmed_ids: str[]
     source_taxon_id: int
     target_taxon_id: int
     interaction_type: mi    # Molecular Interaction Ontology
     interaction_comments: str
+    source_comments: str
+    target_comments: str    
+
+
+# Schema for protein-RNA and RNA-RNA interactions  (there are 3349 such interactions in the FB_2024_05 FB release)   physical interaction:
+# ptt stands for "protein or transcript to transcript"
+ptt physically interacts with:
+  is_a: expression
+  inherit_properties: true
+  represented_as: edge
+  input_label: ptt_physically_interacts_with
+  source: [protein, transcript]
+  target: transcript   
+  properties:
+    source_gene: gene       
+    target_gene: gene       
+    detection_method: mi    # Molecular Interaction Ontology
+    pubmed_ids: str[]
+    source_taxon_id: int
+    target_taxon_id: int
+    interaction_type: mi    # Molecular Interaction Ontology
+    interaction_comments: str
+    source_comments: str
+    target_comments: str    
 
 
 # 7.23)
@@ -952,9 +996,6 @@ dnase hypersensitivity site:
 
 
 
-
-
-
 # —-------------------------------------------------------------------------------------------------------------------------------------
 # Associations
 # —-------------------------------------------------------------------------------------------------------------------------------------
@@ -1042,14 +1083,14 @@ go subclass of:
   target: go
 
 
-go subclass of:
-  is_a: annotation
-  inherit_properties: ffalse
-  represented_as: edge
-  input_label: go_subclass_of
-  #output_label: subclass_of
-  source: go
-  target: go
+# go subclass of:
+#   is_a: annotation
+#   inherit_properties: ffalse
+#   represented_as: edge
+#   input_label: go_subclass_of
+#   output_label: subclass_of
+#   source: go
+#   target: go
 
 
 FBdv subclass of:
@@ -1088,6 +1129,24 @@ mi subclass of:
   source: mi
   target: mi
 
+so subclass of:
+  is_a: subclass of
+  inherit_properties: true
+  represented_as: edge
+  input_label: so_subclass_of
+  output_label: subclass_of
+  source: so
+  target: so
+
+do subclass of:
+  is_a: subclass of
+  inherit_properties: true
+  represented_as: edge
+  input_label: do_subclass_of
+  output_label: subclass_of
+  source: do
+  target: do
+
 # 7.14)
 # saulo
 # Used in the GAFAdapter for human data
@@ -1107,8 +1166,7 @@ go gene product:
 
 
 # 7.15)
-# saulo
-# Used in the GAFAdapter  for dmel data
+# Used in the GAFAdapter  for dmel data - comment by saulo
 go gene:
   is_a: annotation
   inherit_properties: true
@@ -1122,6 +1180,18 @@ go gene:
     db_reference: obj
     evidence: str
 
+# saulo
+# Used in the so_adapter.py  for dmel data
+gene to so:
+  is_a: annotation
+  inherit_properties: true
+  represented_as: edge
+  input_label: gene_to_so
+  # output_label: belongs_to
+  source: gene
+  target: so
+  properties:
+    taxon_id: str   # 7227 for dmel
 
 
 

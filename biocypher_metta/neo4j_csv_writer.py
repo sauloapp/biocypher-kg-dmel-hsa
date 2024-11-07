@@ -61,7 +61,7 @@ class Neo4jCSVWriter:
 
                     # saulo: to  handle lists in source and target types (2024/09/17)
                     if isinstance(source_type, str) and isinstance(target_type, str): # most frequent case: source_type, target_type are strings
-                        print(f"key: => {k}")
+                        print(f"key: => {k}")# \n{v}")
                         if '.' not in k:                            
                             self.edge_node_types[label.lower()] = {"source": source_type.lower(), "target":target_type.lower(),
                                                                 "output_label": output_label.lower() if output_label is not None else None}
@@ -81,6 +81,7 @@ class Neo4jCSVWriter:
                             self.aux_edge_node_types[label.lower()]["source"].append(t)
                         # print(f'Source type: {self.edge_node_types[label.lower()]["source"]} for {label.lower()}')
                         # print(self.edge_node_types[label.lower()])
+                        print(f"key: => {k} \n{v}")
                     elif isinstance(source_type, str) and isinstance(target_type, list):  # expression edge schema
                         for i in range(len(target_type)):
                             target_type[i] = target_type[i].lower()
@@ -99,32 +100,27 @@ class Neo4jCSVWriter:
                         # print(f'Target type: {self.edge_node_types[label.lower()]["target"]} for {label.lower()}')
                         # print(self.edge_node_types[label.lower()])
                     elif isinstance(source_type, list) and isinstance(target_type, list):   # non existing schema
+                        print(f"key: => {k} \n{v}")
                         for i in range(len(source_type)):
                             source_type[i] = source_type[i].lower()
-                        self.edge_node_types[label.lower()] = {#"source": source_type,
-                                                               "target": target_type.lower(),
-                                                               "output_label": output_label.lower() if output_label is not None else None}
-                        self.aux_edge_node_types[label.lower()]  = {#"source": source_type,
-                                                               "target": target_type.lower(),
-                                                               "output_label": output_label.lower() if output_label is not None else None}
-                        self.edge_node_types[label.lower()]["source"] = []                        
-                        # self.aux_edge_node_types[label.lower()]["source"] = []  
-                        self.aux_edge_node_types[label.lower()]["source"] = source_type
-                        for t in source_type:
-                            self.edge_node_types[label.lower()]["source"].append(t)
                         for i in range(len(target_type)):
                             target_type[i] = target_type[i].lower()
-                        self.edge_node_types[label.lower()] = {"source": source_type.lower(), 
-                                                               # "target": target_type,
-                                                                "output_label": output_label.lower() if output_label is not None else None}                        
+
+                        self.edge_node_types[label.lower()]["source"] = []
+                        for t in source_type:
+                            self.edge_node_types[label.lower()]["source"].append(t)
                         self.edge_node_types[label.lower()]["target"] = []
-                        self.aux_edge_node_types[label.lower()] = {"source": source_type.lower(), 
-                                                               # "target": target_type,
-                                                                "output_label": output_label.lower() if output_label is not None else None}
-                        # self.aux_edge_node_types[label.lower()]["target"] = []
-                        self.aux_edge_node_types[label.lower()]["target"] = target_type
                         for t in target_type:
                             self.edge_node_types[label.lower()]["target"].append(t)                                
+
+                        self.edge_node_types[label.lower()] = {#"source": source_type,
+                                                               #"target": target_type.lower(),
+                                                               "output_label": output_label.lower() if output_label is not None else None}
+                        
+                        self.edge_node_types[label.lower()] = {#"source": source_type.lower(), 
+                                                               # "target": target_type,
+                                                                "output_label": output_label.lower() if output_label is not None else None}                        
+
 
 
     def preprocess_value(self, value):

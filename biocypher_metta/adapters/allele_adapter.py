@@ -25,7 +25,6 @@ FBal0100372	Myc[P0]	FBgn0262656	Myc
 FBal0009407	kst[01318]	FBgn0004167	kst
 FBal0091321	Ecol\lacZ[kst-01318]	FBgn0014447	Ecol\lacZ
 FBal0091320	Ecol\lacZ[mam-04615]	FBgn0014447	Ecol\lacZ
-
 '''
 from biocypher_metta.adapters.dmel.flybase_tsv_reader import FlybasePrecomputedTable
 #from flybase_tsv_reader import FlybasePrecomputedTable
@@ -35,9 +34,9 @@ import re
 
 class AlleleAdapter(Adapter):
 
-    def __init__(self, write_properties, add_provenance, dmel_filepath=None):
+    def __init__(self, write_properties, add_provenance, dmel_filepath=None, label='allele'):
         self.dmel_filepath = dmel_filepath
-        self.label = 'allele'
+        self.label = label
         self.source = 'FLYBASE'
         self.source_url = 'https://flybase.org/'
         super(AlleleAdapter, self).__init__(write_properties, add_provenance)
@@ -49,12 +48,25 @@ class AlleleAdapter(Adapter):
         #header:
         #AlleleID	AlleleSymbol	GeneID	GeneSymbol
         rows = fb_gg_table.get_rows()
-        rows = rows[1:] # :-(
         for row in rows:
             props = {}
             allele_id = row[0]
             props['allele_symbol'] = row[1]
-            props['gene'] = row[2]
+            # props['gene'] = row[2]
             props['taxon_id'] = 7227
 
             yield allele_id, self.label, props
+
+    def get_edges(self):
+        fb_gg_table = FlybasePrecomputedTable(self.dmel_filepath)
+        self.version = fb_gg_table.extract_date_string(self.dmel_filepath)
+        #header:
+        #AlleleID	AlleleSymbol	GeneID	GeneSymbol
+        rows = fb_gg_table.get_rows()
+        for row in rows:
+            props = {}
+            source = row[2]
+            target = row[0]
+            props['taxon_id'] = 7227
+
+            yield source, target, self.label, props
