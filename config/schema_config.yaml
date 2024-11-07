@@ -87,7 +87,7 @@ rnaseq library:
     name: str
     experiment_info: str[]
     tissue_info: str[]
-    cell_type_id: str                   # cell type ontology id: str should be replaced by an ontology type  @todo
+    cell_type_id: FBbt                   # cell type ontology id: str should be replaced by an ontology type  @todo
     anatomy_entity_id: [uberon, cl]
     taxon_id: int                        # 7227 for dmel / 9606 for hsa
     source: str
